@@ -13,7 +13,7 @@ export async function POST(req: Request) {
 
     const { data: user } = await supabase
       .from('users')
-      .select('id')
+      .select('*')
       .eq('clerk_id', userId)
       .single()
 
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
 
     const { data: creator } = await supabase
       .from('creators')
-      .select('id, status')
+      .select('*')
       .eq('user_id', user.id)
       .single()
 
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     // One active offering per creator
     const { data: existing } = await supabase
       .from('offerings')
-      .select('id')
+      .select('*')
       .eq('creator_id', creator.id)
       .eq('status', 'active')
       .limit(1)

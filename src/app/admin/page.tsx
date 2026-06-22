@@ -1,12 +1,11 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { PLATFORMS, type PlatformKey, formatFollowers } from '@/lib/platforms'
-import type { CreatorRow } from '@/types/database'
 import ApprovalButtons from './ApprovalButtons'
 
 export default async function AdminPage() {
   const supabase = createAdminClient()
-  const { data: pending } = await supabase.from('creators').select('*').eq('status', 'pending').order('created_at', { ascending: true }) as { data: CreatorRow[] | null }
-  const { data: recent } = await supabase.from('creators').select('*').in('status', ['approved', 'rejected']).order('updated_at', { ascending: false }).limit(20) as { data: CreatorRow[] | null }
+  const { data: pending } = await supabase.from('creators').select('*').eq('status', 'pending').order('created_at', { ascending: true })
+  const { data: recent } = await supabase.from('creators').select('*').in('status', ['approved', 'rejected']).order('updated_at', { ascending: false }).limit(20)
 
   return (
     <div>

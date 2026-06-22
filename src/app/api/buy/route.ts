@@ -14,7 +14,7 @@ export async function POST(req: Request) {
 
     const { data: user } = await supabase
       .from('users')
-      .select('id, age_verified, balance')
+      .select('*')
       .eq('clerk_id', userId)
       .single()
 
@@ -50,7 +50,7 @@ export async function POST(req: Request) {
     // Anti wash-trading
     const { data: offeringCreator } = await supabase
       .from('creators')
-      .select('user_id')
+      .select('*')
       .eq('id', offering.creator_id)
       .single()
 

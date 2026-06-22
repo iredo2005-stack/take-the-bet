@@ -15,7 +15,7 @@ export async function POST(req: Request) {
 
     const { data: user } = await supabase
       .from('users')
-      .select('id, age_verified')
+      .select('*')
       .eq('clerk_id', userId)
       .single()
 
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
 
     const { data: existing } = await supabase
       .from('creators')
-      .select('id')
+      .select('*')
       .eq('user_id', user.id)
       .single()
 
@@ -65,7 +65,7 @@ export async function POST(req: Request) {
     while (true) {
       const { data: taken } = await supabase
         .from('creators')
-        .select('id')
+        .select('*')
         .eq('slug', slug)
         .maybeSingle()
 

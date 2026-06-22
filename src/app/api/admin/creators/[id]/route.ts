@@ -18,7 +18,7 @@ export async function PATCH(req: Request, { params }: Props) {
     // Verify caller is admin
     const { data: adminUser } = await supabase
       .from('users')
-      .select('role')
+      .select('*')
       .eq('clerk_id', userId)
       .single()
 

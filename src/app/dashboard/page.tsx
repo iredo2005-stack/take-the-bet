@@ -4,8 +4,6 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { formatCurrency, formatNumber } from '@/lib/utils'
 import type { CreatorRow, OfferingRow } from '@/types/database'
 import CreatorGrid from './CreatorGrid'
-import WalletPanel from '@/components/WalletPanel'
-import ProfileSetup from '@/components/ProfileSetup'
 
 type HoldingWithDetails = {
   id: string; shares_owned: number; avg_buy_price: number; total_invested: number
@@ -70,28 +68,25 @@ export default async function DashboardPage() {
 
   const { data: creatorRaw } = await supabase.from('creators').select('*').eq('user_id', user.id).maybeSingle()
   const creator = creatorRaw?.id ? creatorRaw : null
-  const balance = Number(user.balance ?? 0)
 
   if (creator && creator.status === 'approved') {
     const { data: offerings } = await supabase.from('offerings').select('*').eq('creator_id', creator.id).order('created_at', { ascending: false })
-    return <CreatorView creator={creator} offerings={offerings || []} holdings={holdings} balance={balance} username={user.username ?? null} profilePublic={user.profile_public ?? true} />
+    return <CreatorView creator={creator} offerings={offerings || []} holdings={holdings} />
   }
 
   let statusBanner: { type: 'pending' | 'rejected'; message: string } | null = null
   if (creator && creator.status === 'pending') statusBanner = { type: 'pending', message: 'Your creator application is under review.' }
   else if (creator && creator.status === 'rejected') statusBanner = { type: 'rejected', message: 'Your creator application was not approved.' }
 
-  return <FanView userName={user.full_name} holdings={holdings} creators={listings} bets={bets} statusBanner={statusBanner} hasApplied={!!creator} balance={balance} username={user.username ?? null} profilePublic={user.profile_public ?? true} />
+  return <FanView userName={user.full_name} holdings={holdings} creators={listings} bets={bets} statusBanner={statusBanner} hasApplied={!!creator} />
 }
 
 // ─── Fan View ────────────────────────────────────────────────────────────────
 
-function FanView({ userName, holdings, creators, bets, statusBanner, hasApplied, balance, username, profilePublic }: {
+function FanView({ userName, holdings, creators, bets, statusBanner, hasApplied }: {
   userName: string | null; holdings: HoldingWithDetails[]; creators: CreatorListing[]; bets?: any[]
-  statusBanner?: { type: 'pending' | 'rejected'; message: string } | null; hasApplied?: boolean; balance: number
-  username: string | null; profilePublic: boolean
+  statusBanner?: { type: 'pending' | 'rejected'; message: string } | null; hasApplied?: boolean
 }) {
-  const firstName = userName?.split(' ')[0] || 'there'
   return (
     <div>
       {/* Hero */}
@@ -103,9 +98,6 @@ function FanView({ userName, holdings, creators, bets, statusBanner, hasApplied,
           Invest in creators early. Prices follow real growth — subscribers, views, and momentum.
         </p>
       </div>
-
-      <ProfileSetup currentUsername={username} profilePublic={profilePublic} />
-      <WalletPanel balance={balance} />
 
       {statusBanner && (
         <div className={`rounded-2xl p-4 mb-6 border ${statusBanner.type === 'pending' ? 'bg-yellow-500/5 border-yellow-500/20' : 'bg-down/5 border-down/20'}`}>
@@ -137,15 +129,13 @@ function FanView({ userName, holdings, creators, bets, statusBanner, hasApplied,
 
 // ─── Creator View ────────────────────────────────────────────────────────────
 
-function CreatorView({ creator, offerings, holdings, balance, username, profilePublic }: { creator: CreatorRow; offerings: OfferingRow[]; holdings: HoldingWithDetails[]; balance: number; username: string | null; profilePublic: boolean }) {
+function CreatorView({ creator, offerings, holdings }: { creator: CreatorRow; offerings: OfferingRow[]; holdings: HoldingWithDetails[] }) {
   const totalRaised = offerings.reduce((s, o) => s + Number(o.total_raised), 0)
   const totalSold = offerings.reduce((s, o) => s + o.shares_sold, 0)
   const hasActive = offerings.some((o) => o.status === 'active')
 
   return (
     <div>
-      <ProfileSetup currentUsername={username} profilePublic={profilePublic} />
-      <WalletPanel balance={balance} />
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-4">
           {creator.photo_url ? <img src={creator.photo_url} alt={creator.display_name} className="w-14 h-14 rounded-full object-cover border border-edge" />

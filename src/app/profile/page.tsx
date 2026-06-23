@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { UserButton } from '@clerk/nextjs'
 import ProfileSetup from '@/components/ProfileSetup'
+import WalletPanel from '@/components/WalletPanel'
 
 export default async function ProfilePage() {
   const user = await requireUser()
@@ -32,6 +33,9 @@ export default async function ProfilePage() {
             <p className="text-[#8A8A82] text-xs mt-1">Member since {new Date(user.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</p>
           </div>
         </div>
+
+        {/* Balance */}
+        <WalletPanel balance={Number(user.balance ?? 0)} />
 
         {/* Username setup */}
         <ProfileSetup currentUsername={user.username ?? null} profilePublic={user.profile_public ?? true} />

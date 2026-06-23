@@ -100,7 +100,7 @@ function FanView({ userName, holdings, creators, bets, statusBanner, hasApplied,
           The stock market for <span className="text-accent">creators</span>
         </h1>
         <p className="text-[#8A8A82] text-sm leading-relaxed max-w-md">
-          Buy shares in the creators you believe in. Profit when they grow.
+          Invest in creators early. Prices follow real growth — subscribers, views, and momentum.
         </p>
       </div>
 

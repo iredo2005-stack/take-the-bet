@@ -53,7 +53,7 @@ export default function LiveHome({ initialFeed, initialTicker }: { initialFeed: 
               The stock market<br /><span className="text-accent">for creators.</span>
             </h1>
             <p className="text-[#8A8A82] text-sm leading-relaxed max-w-sm mx-auto">
-              Buy shares in creators you believe in. Prices rise with demand. Profit when they grow.
+              Invest in creators early. Prices follow real growth — subscribers, views, and momentum. Profit when you spot winners.
             </p>
           </div>
 

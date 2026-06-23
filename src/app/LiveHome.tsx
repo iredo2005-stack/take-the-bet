@@ -50,7 +50,7 @@ export default function LiveHome({ initialFeed, initialTicker }: { initialFeed: 
           {/* Hero */}
           <div className="text-center mb-8">
             <h1 className="text-3xl sm:text-4xl font-bold text-[#F5F5F0] leading-[1.1] mb-3 tracking-tight">
-              The stock market<br /><span className="text-accent">for people.</span>
+              The stock market<br /><span className="text-accent">for creators.</span>
             </h1>
             <p className="text-[#8A8A82] text-sm leading-relaxed max-w-sm mx-auto">
               Buy shares in creators you believe in. Prices rise with demand. Profit when they grow.

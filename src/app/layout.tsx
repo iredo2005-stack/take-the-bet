@@ -13,7 +13,7 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'Hype — The stock market for people',
+  title: 'Hype — The stock market for creators',
   description: 'Buy shares in creators you believe in. Profit when they grow.',
   icons: { icon: '/favicon.svg' },
 }

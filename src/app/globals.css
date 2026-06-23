@@ -25,3 +25,6 @@ input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 input[type="number"] { -moz-appearance: textfield; }
 input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
+
+/* Safe area for mobile bottom nav (notch phones) */
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }

@@ -1,9 +1,16 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import { ClerkProvider } from '@clerk/nextjs'
+import MobileNav from '@/components/MobileNav'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+}
 
 export const metadata: Metadata = {
   title: 'Take The Bet — The stock market for people',
@@ -24,7 +31,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       }}
     >
       <html lang="en" className={inter.variable}>
-        <body>{children}</body>
+        <body className="pb-16 sm:pb-0">
+          {children}
+          <MobileNav />
+        </body>
       </html>
     </ClerkProvider>
   )

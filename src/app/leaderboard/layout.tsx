@@ -2,7 +2,7 @@ import { UserButton } from '@clerk/nextjs'
 import Link from 'next/link'
 import { requireUser } from '@/lib/auth'
 
-export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function LeaderboardLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser()
 
   return (
@@ -12,17 +12,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
           Take The Bet
         </Link>
         <div className="flex items-center gap-3">
-          <Link href="/leaderboard" className="text-gray-400 hover:text-white text-sm transition-colors hidden sm:block">🏆 Leaderboard</Link>
+          <Link href="/leaderboard" className="text-white text-sm font-medium">🏆 Leaderboard</Link>
+          <Link href="/dashboard" className="text-gray-400 hover:text-white text-sm transition-colors">Dashboard</Link>
           {user.role === 'admin' && (
-            <Link href="/admin" className="text-xs bg-accent/10 text-accent border border-accent/20 px-2.5 py-1 rounded-full font-medium hover:bg-accent/20 transition-colors">
-              Admin
-            </Link>
+            <Link href="/admin" className="text-xs bg-accent/10 text-accent border border-accent/20 px-2.5 py-1 rounded-full font-medium hover:bg-accent/20 transition-colors">Admin</Link>
           )}
-          <span className="text-gray-400 text-sm hidden sm:block">{user.full_name || user.email}</span>
           <UserButton afterSignOutUrl="/" />
         </div>
       </nav>
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8">{children}</main>
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8">{children}</main>
     </div>
   )
 }

@@ -1,10 +1,11 @@
 import Link from 'next/link'
+import { Logo } from '@/components/Logo'
 
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-bg flex flex-col pb-16 sm:pb-0">
-      <nav className="bg-card px-5 py-3 flex items-center justify-between border-b border-edge">
-        <span className="text-accent font-bold text-sm tracking-tight">Take The Bet</span>
+      <nav className="bg-card px-5 py-2.5 flex items-center justify-between border-b border-edge">
+        <Logo size="sm" />
         <div className="flex items-center gap-2.5">
           <Link href="/sign-in" className="text-xs text-[#8A8A82] hover:text-[#F5F5F0] transition-colors px-2 py-1">Log in</Link>
           <Link href="/sign-up" className="text-xs bg-accent hover:bg-accent-hover text-bg font-semibold px-3.5 py-1.5 rounded-md transition-colors">Sign up</Link>

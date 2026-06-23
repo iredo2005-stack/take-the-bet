@@ -1,3 +1,4 @@
+import { Logo } from "@/components/Logo"
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { auth } from '@clerk/nextjs/server'
@@ -41,7 +42,7 @@ export default async function CreatorPage({ params }: Props) {
   return (
     <div className="min-h-screen bg-bg pb-20 sm:pb-0">
       <nav className="bg-card border-b border-edge px-4 sm:px-6 py-2.5 flex items-center justify-between">
-        <Link href="/dashboard" className="text-accent font-bold text-sm tracking-tight">Take The Bet</Link>
+        <Link href="/dashboard"><Logo size="sm" /></Link>
         <Link href="/sign-up" className="text-xs text-[#8A8A82] hover:text-[#F5F5F0] transition-colors">Sign up</Link>
       </nav>
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-5">

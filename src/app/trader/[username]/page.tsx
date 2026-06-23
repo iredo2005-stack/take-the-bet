@@ -1,3 +1,4 @@
+import { Logo } from "@/components/Logo"
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -8,7 +9,7 @@ type Props = { params: Promise<{ username: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { username } = await params
-  return { title: `@${username} — Take The Bet`, description: `View ${username}'s trading profile on Take The Bet.` }
+  return { title: `@${username} — Hype`, description: `View ${username}'s trading profile on Hype.` }
 }
 
 export default async function TraderProfilePage({ params }: Props) {
@@ -168,11 +169,11 @@ function Shell({ username, children }: { username: string; children: React.React
   return (
     <div className="min-h-screen bg-bg">
       <nav className="bg-card border-b border-edge px-4 sm:px-6 py-3 flex items-center justify-between">
-        <Link href="/" className="text-white font-bold text-lg tracking-tight hover:text-accent transition-colors">Take The Bet</Link>
+        <Link href="/"><Logo size="sm" /></Link>
         <Link href="/sign-up" className="text-sm text-gray-400 hover:text-white transition-colors">Sign up</Link>
       </nav>
       <main className="max-w-2xl mx-auto px-4 sm:px-6 py-8">{children}</main>
-      <footer className="text-center py-6"><p className="text-gray-700 text-xs">take-the-bet.vercel.app/trader/{username}</p></footer>
+      <footer className="text-center py-6"><p className="text-gray-700 text-xs">hype.vercel.app/trader/{username}</p></footer>
     </div>
   )
 }

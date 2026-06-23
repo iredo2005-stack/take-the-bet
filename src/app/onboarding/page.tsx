@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Logo } from '@/components/Logo'
 
 const currentYear = new Date().getFullYear()
 const years = Array.from({ length: 100 }, (_, i) => currentYear - i)
@@ -51,7 +52,7 @@ export default function OnboardingPage() {
     <main className="min-h-screen bg-bg flex items-center justify-center px-6">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <a href="/" className="text-accent font-bold text-xl tracking-tight">Take The Bet</a>
+          <a href="/"><Logo size="md" /></a>
         </div>
         <div className="bg-card rounded-2xl border border-edge p-8">
           <div className="text-center mb-6">
@@ -60,7 +61,7 @@ export default function OnboardingPage() {
             </div>
             <h1 className="text-2xl font-bold text-[#F5F5F0] mb-2">Age Verification</h1>
             <p className="text-[#8A8A82] text-sm leading-relaxed">
-              Take The Bet is a real-money financial platform. You must be <strong className="text-[#F5F5F0]">18 or older</strong>.
+              Hype is a real-money financial platform. You must be <strong className="text-[#F5F5F0]">18 or older</strong>.
             </p>
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">

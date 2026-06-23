@@ -13,8 +13,9 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'Take The Bet — The stock market for people',
+  title: 'Hype — The stock market for people',
   description: 'Buy shares in creators you believe in. Profit when they grow.',
+  icons: { icon: '/favicon.svg' },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

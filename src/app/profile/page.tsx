@@ -1,3 +1,4 @@
+import { Logo } from "@/components/Logo"
 import { requireUser } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
@@ -10,7 +11,7 @@ export default async function ProfilePage() {
   return (
     <div className="min-h-screen bg-bg pb-24">
       <nav className="bg-card border-b border-edge px-4 py-3 flex items-center justify-between sm:px-6">
-        <Link href="/dashboard" className="text-accent font-bold text-lg tracking-tight">Take The Bet</Link>
+        <Link href="/dashboard"><Logo size="sm" /></Link>
         <UserButton afterSignOutUrl="/" />
       </nav>
       <main className="max-w-lg mx-auto px-4 sm:px-6 py-8">

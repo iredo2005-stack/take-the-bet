@@ -59,6 +59,14 @@ export default async function DashboardPage() {
     }
   })
 
+  // Fetch open video bets
+  const { data: rawBets } = await supabase.from('video_bets').select('*, bet_outcomes(*), creators(display_name, photo_url)').eq('status', 'open').order('deadline', { ascending: true })
+  const bets = ((rawBets || []) as any[]).map((b) => ({
+    id: b.id, question: b.question, bet_type: b.bet_type, deadline: b.deadline, total_pool: Number(b.total_pool), status: b.status,
+    creator_name: b.creators?.display_name ?? '', creator_photo: b.creators?.photo_url ?? null,
+    outcomes: ((b.bet_outcomes || []) as any[]).sort((a: any, b: any) => a.sort_order - b.sort_order).map((o: any) => ({ id: o.id, label: o.label, pool_amount: Number(o.pool_amount) })),
+  }))
+
   const { data: creatorRaw } = await supabase.from('creators').select('*').eq('user_id', user.id).maybeSingle()
   const creator = creatorRaw?.id ? creatorRaw : null
   const balance = Number(user.balance ?? 0)
@@ -72,13 +80,13 @@ export default async function DashboardPage() {
   if (creator && creator.status === 'pending') statusBanner = { type: 'pending', message: 'Your creator application is under review.' }
   else if (creator && creator.status === 'rejected') statusBanner = { type: 'rejected', message: 'Your creator application was not approved.' }
 
-  return <FanView userName={user.full_name} holdings={holdings} creators={listings} statusBanner={statusBanner} hasApplied={!!creator} balance={balance} />
+  return <FanView userName={user.full_name} holdings={holdings} creators={listings} bets={bets} statusBanner={statusBanner} hasApplied={!!creator} balance={balance} />
 }
 
 // ─── Fan View ────────────────────────────────────────────────────────────────
 
-function FanView({ userName, holdings, creators, statusBanner, hasApplied, balance }: {
-  userName: string | null; holdings: HoldingWithDetails[]; creators: CreatorListing[]
+function FanView({ userName, holdings, creators, bets, statusBanner, hasApplied, balance }: {
+  userName: string | null; holdings: HoldingWithDetails[]; creators: CreatorListing[]; bets?: any[]
   statusBanner?: { type: 'pending' | 'rejected'; message: string } | null; hasApplied?: boolean; balance: number
 }) {
   const firstName = userName?.split(' ')[0] || 'there'
@@ -104,7 +112,7 @@ function FanView({ userName, holdings, creators, statusBanner, hasApplied, balan
       )}
 
       <h2 className="text-lg font-bold text-white mb-4">Find Your Creator</h2>
-      <CreatorGrid creators={creators} />
+      <CreatorGrid creators={creators} bets={bets} />
       <div className="mt-10"><Portfolio holdings={holdings} /></div>
 
       {!hasApplied && (

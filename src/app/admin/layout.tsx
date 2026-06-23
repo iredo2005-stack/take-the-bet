@@ -15,6 +15,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <span className="text-xs bg-accent/10 text-accent border border-accent/20 px-2 py-0.5 rounded-full font-medium">Admin</span>
         </div>
         <div className="flex items-center gap-3">
+          <Link href="/admin" className="text-gray-400 hover:text-white text-sm transition-colors">Creators</Link>
+          <Link href="/admin/bets" className="text-gray-400 hover:text-white text-sm transition-colors">Bets</Link>
           <Link href="/dashboard" className="text-gray-400 hover:text-white text-sm transition-colors">Dashboard</Link>
           <UserButton afterSignOutUrl="/" />
         </div>

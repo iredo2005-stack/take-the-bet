@@ -94,8 +94,16 @@ function FanView({ userName, holdings, creators, bets, statusBanner, hasApplied,
   const firstName = userName?.split(' ')[0] || 'there'
   return (
     <div>
-      <h1 className="text-lg font-bold text-[#F5F5F0] mb-0.5">Hey {firstName}!</h1>
-      <p className="text-[#8A8A82] text-xs mb-4">Find creators to invest in.</p>
+      {/* Hero */}
+      <div className="mb-6 pt-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-[#F5F5F0] leading-tight tracking-tight mb-1.5">
+          The stock market for <span className="text-accent">creators</span>
+        </h1>
+        <p className="text-[#8A8A82] text-sm leading-relaxed max-w-md">
+          Buy shares in the creators you believe in. Profit when they grow.
+        </p>
+      </div>
+
       <ProfileSetup currentUsername={username} profilePublic={profilePublic} />
       <WalletPanel balance={balance} />
 
@@ -114,7 +122,6 @@ function FanView({ userName, holdings, creators, bets, statusBanner, hasApplied,
         </div>
       )}
 
-      <h2 className="text-sm font-bold text-[#F5F5F0] mb-3">Find Your Creator</h2>
       <CreatorGrid creators={creators} bets={bets} />
       <div className="mt-10"><Portfolio holdings={holdings} /></div>
 

@@ -19,7 +19,7 @@ function daysInMonth(month: string, year: string): number {
   return new Date(parseInt(year), parseInt(month), 0).getDate()
 }
 
-const selectCls = "flex-1 bg-subtle border border-edge rounded-xl px-3 py-3 text-white focus:outline-none focus:ring-2 focus:ring-accent/30 transition appearance-none"
+const selectCls = "flex-1 bg-subtle border border-edge rounded-xl px-3 py-3 text-[#F5F5F0] focus:outline-none focus:ring-2 focus:ring-accent/30 transition appearance-none"
 
 export default function OnboardingPage() {
   const [year, setYear] = useState('')
@@ -36,44 +36,36 @@ export default function OnboardingPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!isComplete) return
-    setLoading(true)
-    setError('')
+    setLoading(true); setError('')
     const dob = `${year}-${month}-${day.padStart(2, '0')}`
     try {
-      const res = await fetch('/api/auth/verify-age', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ dateOfBirth: dob }),
-      })
+      const res = await fetch('/api/auth/verify-age', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dateOfBirth: dob }) })
       const data = await res.json()
       if (data.blocked) { router.push('/onboarding/blocked'); return }
       if (data.success) { router.push('/dashboard'); return }
-      setError(data.error || 'Something went wrong. Please try again.')
-    } catch { setError('Network error. Please try again.') }
-    finally { setLoading(false) }
+      setError(data.error || 'Something went wrong.')
+    } catch { setError('Network error.') } finally { setLoading(false) }
   }
 
   return (
     <main className="min-h-screen bg-bg flex items-center justify-center px-6">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <a href="/" className="text-white font-bold text-xl tracking-tight">Take The Bet</a>
+          <a href="/" className="text-accent font-bold text-xl tracking-tight">Take The Bet</a>
         </div>
-
         <div className="bg-card rounded-2xl border border-edge p-8">
           <div className="text-center mb-6">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-accent/10 border border-accent/20 mb-4">
               <span className="text-2xl">🔐</span>
             </div>
-            <h1 className="text-2xl font-bold text-white mb-2">Age Verification</h1>
-            <p className="text-gray-400 text-sm leading-relaxed">
-              Take The Bet is a real-money financial platform. You must be <strong className="text-white">18 or older</strong>.
+            <h1 className="text-2xl font-bold text-[#F5F5F0] mb-2">Age Verification</h1>
+            <p className="text-[#8A8A82] text-sm leading-relaxed">
+              Take The Bet is a real-money financial platform. You must be <strong className="text-[#F5F5F0]">18 or older</strong>.
             </p>
           </div>
-
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Date of birth</label>
+              <label className="block text-sm font-medium text-[#F5F5F0] mb-2">Date of birth</label>
               <div className="flex gap-2">
                 <select value={month} onChange={(e) => setMonth(e.target.value)} className={selectCls}>
                   <option value="" disabled>Month</option>
@@ -89,16 +81,13 @@ export default function OnboardingPage() {
                 </select>
               </div>
             </div>
-
             {error && <p className="text-down text-sm bg-down/10 border border-down/20 rounded-lg px-4 py-2">{error}</p>}
-
             <button type="submit" disabled={!isComplete || loading}
-              className="w-full bg-accent hover:bg-accent-hover disabled:opacity-40 text-white font-semibold py-3 rounded-xl transition-colors">
+              className="w-full bg-accent hover:bg-accent-hover disabled:opacity-40 text-bg font-semibold py-3 rounded-xl transition-colors">
               {loading ? 'Verifying…' : 'Continue →'}
             </button>
           </form>
-
-          <p className="text-center text-xs text-gray-600 mt-5">Your date of birth is used only for age verification and is never shown publicly.</p>
+          <p className="text-center text-xs text-[#8A8A82] mt-5">Your date of birth is used only for age verification and is never shown publicly.</p>
         </div>
       </div>
     </main>

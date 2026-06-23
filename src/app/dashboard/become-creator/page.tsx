@@ -53,7 +53,7 @@ export default function BecomeCreatorPage() {
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1.5">Public profile link <span className="text-down">*</span></label>
             <input type="url" value={form.profileUrl} onChange={(e) => update('profileUrl', e.target.value)} placeholder={sp?.placeholder || 'https://...'} required className={inputCls} />
-            <p className="text-gray-600 text-xs mt-1">We&apos;ll review this to verify your audience.</p>
+            <p className="text-[#8A8A82] text-xs mt-1">We&apos;ll review this to verify your audience.</p>
           </div>
           <div className="border-t border-edge pt-5"><p className="text-gray-500 text-xs mb-4 uppercase tracking-wide font-medium">Profile info</p></div>
           <ImageUpload label="Profile photo" value={form.photoUrl} onChange={(url) => update('photoUrl', url)} required hint="Your public profile photo." />
@@ -66,8 +66,8 @@ export default function BecomeCreatorPage() {
             <textarea value={form.bio} onChange={(e) => update('bio', e.target.value)} placeholder="Tell us about your content..." rows={3} maxLength={500} className={inputCls + ' resize-none'} />
           </div>
           {error && <p className="text-down text-sm bg-down/10 border border-down/20 rounded-lg px-4 py-2">{error}</p>}
-          <button type="submit" disabled={loading || !valid || !meets} className="w-full bg-accent hover:bg-accent-hover disabled:opacity-40 text-white font-semibold py-3 rounded-xl transition-colors">{loading ? 'Submitting…' : 'Submit Application →'}</button>
-          <p className="text-center text-xs text-gray-600">Applications are reviewed within 24–48 hours.</p>
+          <button type="submit" disabled={loading || !valid || !meets} className="w-full bg-accent hover:bg-accent-hover disabled:opacity-40 text-bg font-semibold py-3 rounded-xl transition-colors">{loading ? 'Submitting…' : 'Submit Application →'}</button>
+          <p className="text-center text-xs text-[#8A8A82]">Applications are reviewed within 24–48 hours.</p>
         </form>
       </div>
     </div>

@@ -41,7 +41,7 @@ function AppCard({ creator, showActions }: { creator: any; showActions: boolean 
           {p && <div className="flex items-center gap-3 text-sm text-gray-400 mb-2"><span className="text-white font-medium">{p.label}</span><span>{formatFollowers(creator.declared_followers)} {p.unit}</span></div>}
           {creator.profile_url && <a href={creator.profile_url} target="_blank" rel="noopener noreferrer" className="text-accent text-sm underline underline-offset-2 mb-2 inline-block">View profile →</a>}
           {creator.bio && <p className="text-gray-500 text-sm leading-relaxed mt-1">{creator.bio}</p>}
-          <p className="text-gray-600 text-xs mt-2">/c/{creator.slug}</p>
+          <p className="text-[#8A8A82] text-xs mt-2">/c/{creator.slug}</p>
         </div>
       </div>
       {showActions && <div className="mt-4 pt-4 border-t border-edge"><ApprovalButtons creatorId={creator.id} /></div>}

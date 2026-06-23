@@ -41,7 +41,7 @@ export default function CreateOfferingPage() {
           <ImageUpload label="Cover image" value={form.imageUrl} onChange={(url) => update('imageUrl', url)} required hint="This image appears on your offering page." />
           <div><label className="block text-sm font-medium text-gray-300 mb-1.5">Bio / Story <span className="text-down">*</span></label>
             <textarea value={form.description} onChange={(e) => update('description', e.target.value)} placeholder="Why should fans buy these shares?" rows={4} maxLength={500} required className={inputCls + ' resize-none'} />
-            <p className="text-gray-600 text-xs mt-1 text-right">{form.description.length}/500</p></div>
+            <p className="text-[#8A8A82] text-xs mt-1 text-right">{form.description.length}/500</p></div>
           <div className="grid grid-cols-2 gap-3">
             <div><label className="block text-sm font-medium text-gray-300 mb-1.5">Price per share <span className="text-down">*</span></label>
               <div className="relative"><span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
@@ -57,8 +57,8 @@ export default function CreateOfferingPage() {
             </div>
           )}
           {error && <p className="text-down text-sm bg-down/10 border border-down/20 rounded-lg px-4 py-2">{error}</p>}
-          <button type="submit" disabled={loading || !valid} className="w-full bg-accent hover:bg-accent-hover disabled:opacity-40 text-white font-semibold py-3 rounded-xl transition-colors">{loading ? 'Creating…' : 'Launch Offering →'}</button>
-          <p className="text-center text-xs text-gray-600">The offering goes live immediately.</p>
+          <button type="submit" disabled={loading || !valid} className="w-full bg-accent hover:bg-accent-hover disabled:opacity-40 text-bg font-semibold py-3 rounded-xl transition-colors">{loading ? 'Creating…' : 'Launch Offering →'}</button>
+          <p className="text-center text-xs text-[#8A8A82]">The offering goes live immediately.</p>
         </form>
       </div>
     </div>

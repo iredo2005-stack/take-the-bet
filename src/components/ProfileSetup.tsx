@@ -42,7 +42,7 @@ export default function ProfileSetup({ currentUsername, profilePublic }: { curre
             className="w-full bg-subtle border border-edge rounded-lg pl-7 pr-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-accent/30 transition" />
         </div>
         <button onClick={handleSave} disabled={loading || username.length < 3}
-          className="bg-accent hover:bg-accent-hover disabled:opacity-40 text-white font-semibold text-xs px-4 py-2 rounded-lg transition-colors">
+          className="bg-accent hover:bg-accent-hover disabled:opacity-40 text-bg font-semibold text-xs px-4 py-2 rounded-lg transition-colors">
           {loading ? '…' : saved ? '✓' : 'Save'}
         </button>
       </div>

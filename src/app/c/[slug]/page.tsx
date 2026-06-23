@@ -78,7 +78,7 @@ function TrustBadges({ commissionRate }: { commissionRate: number }) {
       <div className="space-y-2.5">
         <Badge icon="✓" color="up" title="Platform Verified" desc="This creator's identity has been confirmed by Take The Bet." />
         <Badge icon="⬡" color="accent" title={`${pct}% on initial offering`} desc={`A ${pct}% platform fee is applied only when shares are first purchased. Shown transparently on every transaction.`} />
-        <Badge icon="◈" color="purple-400" title="Bot-Filtered" desc="Creator metrics are filtered to remove fake followers and bot activity. Numbers reflect real human engagement." />
+        <Badge icon="◈" color="accent" title="Bot-Filtered" desc="Creator metrics are filtered to remove fake followers and bot activity. Numbers reflect real human engagement." />
       </div>
     </div>
   )

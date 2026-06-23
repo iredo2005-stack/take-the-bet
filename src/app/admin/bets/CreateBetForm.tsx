@@ -83,7 +83,7 @@ export default function CreateBetForm({ creators }: { creators: { id: string; na
 
       {error && <p className="text-down text-sm">{error}</p>}
       <button type="submit" disabled={loading || !creatorId || !question || !deadline}
-        className="bg-accent hover:bg-accent-hover disabled:opacity-40 text-white font-semibold py-2.5 px-6 rounded-xl transition-colors text-sm">
+        className="bg-accent hover:bg-accent-hover disabled:opacity-40 text-bg font-semibold py-2.5 px-6 rounded-xl transition-colors text-sm">
         {loading ? 'Creating…' : 'Create Bet'}
       </button>
     </form>

@@ -104,7 +104,7 @@ export default function WalletPanel({ balance }: Props) {
                   <button
                     onClick={handleDeposit}
                     disabled={loading || amount < 1}
-                    className="bg-accent hover:bg-accent-hover disabled:opacity-40 text-white font-semibold text-sm px-4 py-2 rounded-lg transition-colors"
+                    className="bg-accent hover:bg-accent-hover disabled:opacity-40 text-bg font-semibold text-sm px-4 py-2 rounded-lg transition-colors"
                   >
                     {loading ? '...' : 'Add funds'}
                   </button>
@@ -138,7 +138,7 @@ export default function WalletPanel({ balance }: Props) {
               )}
 
               {error && <p className="text-down text-xs">{error}</p>}
-              <p className="text-gray-600 text-xs">Demo mode: deposits are instant. In production, funds arrive after MoonPay confirmation.</p>
+              <p className="text-[#8A8A82] text-xs">Demo mode: deposits are instant. In production, funds arrive after MoonPay confirmation.</p>
             </>
           )}
         </div>

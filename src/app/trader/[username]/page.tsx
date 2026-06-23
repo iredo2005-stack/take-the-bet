@@ -81,7 +81,7 @@ export default async function TraderProfilePage({ params }: Props) {
           <div>
             <h1 className="text-2xl font-bold text-white">@{username}</h1>
             {user.full_name && <p className="text-gray-400 text-sm">{user.full_name}</p>}
-            <p className="text-gray-600 text-xs mt-1">Member since {new Date(user.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</p>
+            <p className="text-[#8A8A82] text-xs mt-1">Member since {new Date(user.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</p>
           </div>
         </div>
 

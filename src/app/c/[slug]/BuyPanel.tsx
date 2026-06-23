@@ -52,7 +52,7 @@ export default function BuyPanel({ offering, isOwner }: Props) {
       <p className="text-up text-xs mb-4">Price moved to {formatCurrency(result.newPrice)}</p>
       <div className="flex flex-col gap-2">
         <button onClick={() => { setResult(null); setShares(1) }} className="w-full bg-subtle hover:bg-muted border border-edge text-white font-semibold py-2.5 rounded-xl transition-colors text-sm">Buy More</button>
-        <a href="/dashboard" className="w-full bg-accent hover:bg-accent-hover text-white font-semibold py-2.5 rounded-xl transition-colors text-sm block text-center">View Portfolio →</a>
+        <a href="/dashboard" className="w-full bg-accent hover:bg-accent-hover text-bg font-semibold py-2.5 rounded-xl transition-colors text-sm block text-center">View Portfolio →</a>
       </div>
     </div>
   )
@@ -69,7 +69,7 @@ export default function BuyPanel({ offering, isOwner }: Props) {
               className="flex-1 bg-subtle border border-edge rounded-lg px-3 py-2 text-white text-center font-semibold focus:outline-none focus:ring-2 focus:ring-accent/30 transition [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none" />
             <button onClick={() => setShares((s) => Math.min(maxShares, s + 1))} disabled={shares >= maxShares} className="w-9 h-9 rounded-lg bg-subtle border border-edge text-white font-bold hover:bg-muted disabled:opacity-30 transition">+</button>
           </div>
-          <p className="text-gray-600 text-xs mt-1 text-right">{maxShares} available</p>
+          <p className="text-[#8A8A82] text-xs mt-1 text-right">{maxShares} available</p>
         </div>
         <div className="bg-subtle rounded-xl p-3 space-y-1.5 text-sm">
           <div className="flex justify-between text-gray-400"><span>Spot price</span><span className="text-gray-300">{formatCurrency(currentSpot)}</span></div>
@@ -83,7 +83,7 @@ export default function BuyPanel({ offering, isOwner }: Props) {
           className="w-full bg-up hover:brightness-110 disabled:bg-muted disabled:text-gray-500 text-white font-bold py-3 rounded-xl transition-all text-sm">
           {loading ? 'Processing…' : maxShares > 0 ? `Buy ${shares} share${shares > 1 ? 's' : ''} — ${formatCurrency(total)}` : 'Sold Out'}
         </button>
-        <p className="text-center text-xs text-gray-600">Price rises with demand · Paid from balance</p>
+        <p className="text-center text-xs text-[#8A8A82]">Price rises with demand · Paid from balance</p>
       </div>
     </div>
   )

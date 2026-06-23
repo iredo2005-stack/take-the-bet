@@ -96,7 +96,7 @@ export default function CreatorGrid({ creators, bets = [] }: { creators: Creator
         <>
           {/* Search */}
           <div className="relative mb-4">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 text-xs">🔍</span>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8A8A82] text-xs">🔍</span>
             <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search creators..."
               className="w-full bg-card border border-edge rounded-lg pl-8 pr-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-accent/30 transition" />
           </div>
@@ -137,7 +137,7 @@ function CreatorCard({ creator }: { creator: CreatorListing }) {
         )}
         <div className="flex-1 min-w-0">
           <h3 className="text-white text-sm font-semibold truncate leading-tight">{creator.display_name}</h3>
-          <p className="text-gray-600 text-xs truncate">{offering.title}</p>
+          <p className="text-[#8A8A82] text-xs truncate">{offering.title}</p>
         </div>
         {/* Sparkline */}
         <Sparkline data={creator.priceHistory} isUp={isUp} />
@@ -148,7 +148,7 @@ function CreatorCard({ creator }: { creator: CreatorListing }) {
         <div>
           <p className="text-white text-base font-bold leading-tight">{formatCurrency(offering.current_price)}</p>
           {hasBase && (
-            <p className="text-gray-600 text-[10px] mt-0.5">FV {formatCurrency(creator.basePrice)}</p>
+            <p className="text-[#8A8A82] text-[10px] mt-0.5">FV {formatCurrency(creator.basePrice)}</p>
           )}
         </div>
         <div className="text-right">
@@ -157,7 +157,7 @@ function CreatorCard({ creator }: { creator: CreatorListing }) {
           }`}>
             {isUp ? '+' : ''}{pctChange.toFixed(1)}%
           </span>
-          <p className="text-gray-600 text-[10px] mt-1">{formatNumber(offering.shares_sold)} sold</p>
+          <p className="text-[#8A8A82] text-[10px] mt-1">{formatNumber(offering.shares_sold)} sold</p>
         </div>
       </div>
     </Link>
@@ -183,8 +183,8 @@ function BetCard({ bet }: { bet: BetListing }) {
         <div className="flex-1 min-w-0">
           <p className="text-white text-sm font-semibold leading-snug">{bet.question}</p>
           <div className="flex items-center gap-2 mt-1">
-            <span className="text-gray-600 text-[10px]">{bet.creator_name}</span>
-            <span className="text-gray-600 text-[10px]">·</span>
+            <span className="text-[#8A8A82] text-[10px]">{bet.creator_name}</span>
+            <span className="text-[#8A8A82] text-[10px]">·</span>
             <span className={`text-[10px] font-medium ${hoursLeft > 0 ? 'text-yellow-400' : 'text-gray-500'}`}>{timeLabel}</span>
           </div>
         </div>
@@ -198,7 +198,7 @@ function BetCard({ bet }: { bet: BetListing }) {
           return (
             <div key={o.id} className="relative">
               <div className="flex items-center justify-between bg-subtle rounded-lg px-3 py-2 relative overflow-hidden">
-                <div className="absolute inset-0 rounded-lg opacity-20" style={{ width: `${pct}%`, background: isTop ? '#10B981' : '#3B82F6' }} />
+                <div className="absolute inset-0 rounded-lg opacity-20" style={{ width: `${pct}%`, background: isTop ? '#22C55E' : '#D4AF37' }} />
                 <span className="text-white text-xs font-medium relative z-10">{o.label}</span>
                 <span className={`text-xs font-bold relative z-10 ${isTop ? 'text-up' : 'text-accent'}`}>{Math.round(pct)}%</span>
               </div>
@@ -209,7 +209,7 @@ function BetCard({ bet }: { bet: BetListing }) {
 
       {/* Footer */}
       <div className="flex items-center justify-between">
-        <span className="text-gray-600 text-[10px]">${total.toFixed(0)} pool</span>
+        <span className="text-[#8A8A82] text-[10px]">${total.toFixed(0)} pool</span>
         <span className="text-[10px] bg-accent/10 text-accent px-2 py-0.5 rounded font-medium">{bet.bet_type === 'binary' ? 'Yes/No' : 'Multi'}</span>
       </div>
     </div>

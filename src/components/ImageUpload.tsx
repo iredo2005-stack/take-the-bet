@@ -49,13 +49,13 @@ export default function ImageUpload({ label, value, onChange, required, hint }: 
           ) : (
             <><div className="w-10 h-10 rounded-full bg-card border border-edge flex items-center justify-center text-gray-400 text-lg">📷</div>
             <span className="text-gray-400 text-sm font-medium">Tap to upload a photo</span>
-            <span className="text-gray-600 text-xs">JPG, PNG, WebP · Max 5MB</span></>
+            <span className="text-[#8A8A82] text-xs">JPG, PNG, WebP · Max 5MB</span></>
           )}
         </button>
       )}
       <input ref={inputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
       {error && <p className="text-down text-xs mt-2">{error}</p>}
-      {hint && !error && <p className="text-gray-600 text-xs mt-1">{hint}</p>}
+      {hint && !error && <p className="text-[#8A8A82] text-xs mt-1">{hint}</p>}
     </div>
   )
 }

@@ -120,7 +120,7 @@ function FanView({ userName, holdings, creators, bets, statusBanner, hasApplied,
 
       {!hasApplied && (
         <div className="mt-10 pt-6 border-t border-edge text-center">
-          <p className="text-gray-600 text-sm mb-2">Are you a content creator?</p>
+          <p className="text-[#8A8A82] text-sm mb-2">Are you a content creator?</p>
           <Link href="/dashboard/become-creator" className="text-gray-500 hover:text-accent text-sm font-medium transition-colors">Apply to be a creator →</Link>
         </div>
       )}
@@ -145,7 +145,7 @@ function CreatorView({ creator, offerings, holdings, balance, username, profileP
           : <div className="w-14 h-14 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center text-accent text-xl font-bold">{creator.display_name[0]}</div>}
           <div><h1 className="text-2xl font-bold text-white">{creator.display_name}</h1><p className="text-gray-500 text-sm">/c/{creator.slug}</p></div>
         </div>
-        {!hasActive && <Link href="/dashboard/create-offering" className="bg-accent hover:bg-accent-hover text-white font-semibold px-5 py-2.5 rounded-xl transition-colors text-center text-sm">+ New Offering</Link>}
+        {!hasActive && <Link href="/dashboard/create-offering" className="bg-accent hover:bg-accent-hover text-bg font-semibold px-5 py-2.5 rounded-xl transition-colors text-center text-sm">+ New Offering</Link>}
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
         <StatCard label="Offerings" value={String(offerings.length)} />

@@ -58,7 +58,7 @@ export default function WalletPanel({ balance }: Props) {
       <div className="flex items-center justify-between mb-4">
         <div>
           <p className="text-gray-500 text-xs uppercase tracking-wide mb-1">Balance</p>
-          <p className="text-white text-2xl font-bold">{formatCurrency(balance)}</p>
+          <p className="text-[#F5F5F0] text-lg font-bold">{formatCurrency(balance)}</p>
         </div>
         <div className="flex gap-2">
           <button

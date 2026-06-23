@@ -94,8 +94,8 @@ function FanView({ userName, holdings, creators, bets, statusBanner, hasApplied,
   const firstName = userName?.split(' ')[0] || 'there'
   return (
     <div>
-      <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">Hey {firstName}!</h1>
-      <p className="text-gray-400 mb-6">Find creators to invest in.</p>
+      <h1 className="text-lg font-bold text-[#F5F5F0] mb-0.5">Hey {firstName}!</h1>
+      <p className="text-[#8A8A82] text-xs mb-4">Find creators to invest in.</p>
       <ProfileSetup currentUsername={username} profilePublic={profilePublic} />
       <WalletPanel balance={balance} />
 
@@ -114,7 +114,7 @@ function FanView({ userName, holdings, creators, bets, statusBanner, hasApplied,
         </div>
       )}
 
-      <h2 className="text-lg font-bold text-white mb-4">Find Your Creator</h2>
+      <h2 className="text-sm font-bold text-[#F5F5F0] mb-3">Find Your Creator</h2>
       <CreatorGrid creators={creators} bets={bets} />
       <div className="mt-10"><Portfolio holdings={holdings} /></div>
 
@@ -143,7 +143,7 @@ function CreatorView({ creator, offerings, holdings, balance, username, profileP
         <div className="flex items-center gap-4">
           {creator.photo_url ? <img src={creator.photo_url} alt={creator.display_name} className="w-14 h-14 rounded-full object-cover border border-edge" />
           : <div className="w-14 h-14 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center text-accent text-xl font-bold">{creator.display_name[0]}</div>}
-          <div><h1 className="text-2xl font-bold text-white">{creator.display_name}</h1><p className="text-gray-500 text-sm">/c/{creator.slug}</p></div>
+          <div><h1 className="text-base font-bold text-[#F5F5F0]">{creator.display_name}</h1><p className="text-gray-500 text-sm">/c/{creator.slug}</p></div>
         </div>
         {!hasActive && <Link href="/dashboard/create-offering" className="bg-accent hover:bg-accent-hover text-bg font-semibold px-5 py-2.5 rounded-xl transition-colors text-center text-sm">+ New Offering</Link>}
       </div>
@@ -152,7 +152,7 @@ function CreatorView({ creator, offerings, holdings, balance, username, profileP
         <StatCard label="Total Raised" value={formatCurrency(totalRaised)} />
         <StatCard label="Shares Sold" value={formatNumber(totalSold)} />
       </div>
-      <h2 className="text-lg font-bold text-white mb-4">Your Offerings</h2>
+      <h2 className="text-sm font-bold text-[#F5F5F0] mb-3">Your Offerings</h2>
       {offerings.length === 0 ? (
         <div className="bg-card border border-edge rounded-2xl p-6 text-center mb-8"><p className="text-gray-500 mb-4">No offerings yet.</p><Link href="/dashboard/create-offering" className="text-accent font-semibold text-sm">Create your first offering →</Link></div>
       ) : (
@@ -168,7 +168,7 @@ function CreatorView({ creator, offerings, holdings, balance, username, profileP
 function Portfolio({ holdings }: { holdings: HoldingWithDetails[] }) {
   if (holdings.length === 0) return (
     <div className="bg-card border border-edge rounded-2xl p-6">
-      <h2 className="text-lg font-bold text-white mb-3">Your Portfolio</h2>
+      <h2 className="text-sm font-bold text-[#F5F5F0] mb-3">Your Portfolio</h2>
       <p className="text-gray-500 text-sm">You don&apos;t own any shares yet.</p>
     </div>
   )
@@ -180,14 +180,14 @@ function Portfolio({ holdings }: { holdings: HoldingWithDetails[] }) {
 
   return (
     <div>
-      <h2 className="text-lg font-bold text-white mb-4">Your Portfolio</h2>
+      <h2 className="text-sm font-bold text-[#F5F5F0] mb-3">Your Portfolio</h2>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
         <StatCard label="Invested" value={formatCurrency(totalInvested)} />
         <StatCard label="Current Value" value={formatCurrency(currentValue)} />
         <div className={`bg-card border rounded-xl p-4 ${isUp ? 'border-up/30' : 'border-down/30'}`}>
           <div className="text-gray-500 text-xs uppercase tracking-wide mb-1">P&L</div>
           <div className={`font-bold truncate ${isUp ? 'text-up' : 'text-down'}`}>
-            <span className="text-lg">{isUp ? '+' : ''}{formatCurrency(pnl)}</span>
+            <span className="text-sm">{isUp ? '+' : ''}{formatCurrency(pnl)}</span>
             <span className="text-xs font-medium ml-1">({isUp ? '+' : ''}{pnlPct.toFixed(1)}%)</span>
           </div>
         </div>
@@ -226,7 +226,7 @@ function HoldingCard({ holding }: { holding: HoldingWithDetails }) {
 // ─── Shared ──────────────────────────────────────────────────────────────────
 
 function StatCard({ label, value }: { label: string; value: string }) {
-  return <div className="bg-card border border-edge rounded-xl p-4"><div className="text-gray-500 text-xs uppercase tracking-wide mb-1">{label}</div><div className="text-white text-lg font-bold truncate">{value}</div></div>
+  return <div className="bg-card border border-edge rounded-xl p-4"><div className="text-gray-500 text-xs uppercase tracking-wide mb-1">{label}</div><div className="text-[#F5F5F0] text-sm font-bold truncate">{value}</div></div>
 }
 
 function OfferingCard({ offering, slug }: { offering: OfferingRow; slug: string }) {

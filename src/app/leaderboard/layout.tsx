@@ -8,7 +8,7 @@ export default async function LeaderboardLayout({ children }: { children: React.
   return (
     <div className="min-h-screen bg-bg">
       <nav className="bg-card border-b border-edge px-4 sm:px-6 py-3 flex items-center justify-between">
-        <Link href="/dashboard" className="text-accent font-bold text-lg tracking-tight hover:text-accent-hover transition-colors">
+        <Link href="/dashboard" className="text-accent font-bold text-sm tracking-tight hover:text-accent-hover transition-colors">
           Take The Bet
         </Link>
         <div className="flex items-center gap-3">

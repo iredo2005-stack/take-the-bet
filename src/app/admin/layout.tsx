@@ -11,7 +11,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="min-h-screen bg-bg">
       <nav className="bg-card border-b border-edge px-4 sm:px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Link href="/dashboard" className="text-accent font-bold text-lg tracking-tight hover:text-accent-hover transition-colors">Take The Bet</Link>
+          <Link href="/dashboard" className="text-accent font-bold text-sm tracking-tight hover:text-accent-hover transition-colors">Take The Bet</Link>
           <span className="text-xs bg-accent/10 text-accent border border-accent/20 px-2 py-0.5 rounded-full font-medium">Admin</span>
         </div>
         <div className="flex items-center gap-3">

@@ -30,148 +30,114 @@ export default async function CreatorPage({ params }: Props) {
   let isOwner = false
   try { const { userId } = await auth(); if (userId) { const supabase = createAdminClient(); const { data: v } = await supabase.from('users').select('id').eq('clerk_id', userId).single(); if (v && v.id === creator.user_id) isOwner = true } } catch {}
 
+  const metrics: CreatorMetrics = {
+    subscribers: creator.subscribers ?? 0, monthly_views: creator.monthly_views ?? 0,
+    engagement_rate: Number(creator.engagement_rate ?? 0), post_frequency: creator.post_frequency ?? 'regular',
+    monthly_growth_percent: Number(creator.monthly_growth_percent ?? 0),
+  }
+  const basePrice = offering ? basePricePerShare(metrics, offering.total_shares) : 0
+  const hasMetrics = metrics.subscribers > 0 || metrics.monthly_views > 0
+
   return (
-    <div className="min-h-screen bg-bg">
-      <nav className="bg-card border-b border-edge px-4 sm:px-6 py-3 flex items-center justify-between">
-        <Link href="/" className="text-white font-bold text-lg tracking-tight hover:text-accent transition-colors">Take The Bet</Link>
-        <Link href="/sign-up" className="text-sm text-gray-400 hover:text-white transition-colors">Sign up</Link>
+    <div className="min-h-screen bg-bg pb-20 sm:pb-0">
+      <nav className="bg-card border-b border-edge px-4 sm:px-6 py-2.5 flex items-center justify-between">
+        <Link href="/dashboard" className="text-accent font-bold text-sm tracking-tight">Take The Bet</Link>
+        <Link href="/sign-up" className="text-xs text-[#8A8A82] hover:text-[#F5F5F0] transition-colors">Sign up</Link>
       </nav>
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
-        <CreatorHeader creator={creator} offering={offering} />
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-5">
+        {/* Creator header — compact */}
+        <div className="flex items-center gap-3 mb-4">
+          {(offering as any)?.image_url || creator.photo_url ? (
+            <img src={(offering as any)?.image_url || creator.photo_url} alt={creator.display_name} className="w-10 h-10 rounded-xl object-cover border border-edge flex-shrink-0" />
+          ) : (
+            <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent text-sm font-bold flex-shrink-0">{creator.display_name[0]}</div>
+          )}
+          <div className="min-w-0">
+            <h1 className="text-base font-bold text-[#F5F5F0] truncate">{creator.display_name}</h1>
+            {creator.bio && <p className="text-[#8A8A82] text-xs truncate">{creator.bio.slice(0, 80)}</p>}
+          </div>
+          {hasMetrics && basePrice > 0 && (
+            <div className="ml-auto text-right flex-shrink-0">
+              <p className="text-[#8A8A82] text-[10px] uppercase tracking-wide">Fair Value</p>
+              <p className="text-[#F5F5F0] text-xs font-semibold">{formatCurrency(basePrice)}</p>
+            </div>
+          )}
+        </div>
+
         {offering ? (
           <>
-            <TrustBadges commissionRate={Number(offering.primary_commission_rate)} />
-            <PriceSection creator={creator} offering={offering} priceHistory={priceHistory} />
-            <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 mb-4">
-              <OfferingStats offering={offering} />
+            {/* Big chart */}
+            <PriceChart history={priceHistory} currentPrice={Number(offering.current_price)} initialPrice={Number(offering.initial_price)} />
+
+            {/* Stats row — compact */}
+            <div className="grid grid-cols-4 gap-2 mb-3">
+              <MiniStat label="Available" value={formatNumber(offering.shares_available)} />
+              <MiniStat label="Sold" value={formatNumber(offering.shares_sold)} />
+              <MiniStat label="Raised" value={formatCurrency(Number(offering.total_raised))} />
+              <MiniStat label="Supply" value={formatNumber(offering.total_shares)} />
+            </div>
+
+            {/* Trust + Buy */}
+            <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 mb-3">
+              <div className="sm:col-span-3">
+                <OfferingInfo offering={offering} />
+                <TrustBadges commissionRate={Number(offering.primary_commission_rate)} />
+              </div>
               <BuyPanel offering={offering} isOwner={isOwner} />
             </div>
+
             <HowItWorks commissionRate={Number(offering.primary_commission_rate)} />
           </>
         ) : (
-          <div className="bg-card border border-edge rounded-2xl p-8 text-center"><p className="text-gray-400">This creator hasn&apos;t launched an offering yet.</p></div>
+          <div className="bg-card border border-edge rounded-xl p-6 text-center"><p className="text-[#8A8A82] text-xs">No active offering yet.</p></div>
         )}
       </main>
     </div>
   )
 }
 
-function CreatorHeader({ creator, offering }: { creator: CreatorRow; offering: OfferingRow | null }) {
-  const img = (offering as any)?.image_url || creator.photo_url
+function MiniStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col sm:flex-row items-start gap-5 mb-6">
-      {img ? <img src={img} alt={creator.display_name} className="w-20 h-20 rounded-2xl object-cover border border-edge flex-shrink-0" />
-      : <div className="w-20 h-20 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent text-3xl font-bold flex-shrink-0">{creator.display_name[0]}</div>}
-      <div className="flex-1 min-w-0">
-        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">{creator.display_name}</h1>
-        {creator.bio && <p className="text-gray-400 text-sm leading-relaxed whitespace-pre-line">{creator.bio}</p>}
-      </div>
+    <div className="bg-card border border-edge rounded-lg p-2.5 text-center">
+      <p className="text-[#8A8A82] text-[9px] uppercase tracking-wider mb-0.5">{label}</p>
+      <p className="text-[#F5F5F0] text-xs font-bold truncate">{value}</p>
     </div>
   )
+}
+
+function OfferingInfo({ offering }: { offering: OfferingRow }) {
+  return offering.description ? (
+    <div className="bg-card border border-edge rounded-xl p-3 mb-2">
+      <h2 className="text-[#F5F5F0] text-xs font-semibold mb-1">{offering.title}</h2>
+      <p className="text-[#8A8A82] text-xs leading-relaxed whitespace-pre-line">{offering.description}</p>
+    </div>
+  ) : null
 }
 
 function TrustBadges({ commissionRate }: { commissionRate: number }) {
   const pct = (commissionRate * 100).toFixed(0)
   return (
-    <div className="bg-card border border-edge rounded-2xl p-4 sm:p-5 mb-4 space-y-3">
-      <h3 className="text-white font-semibold text-sm">Trust &amp; Transparency</h3>
-      <div className="space-y-2.5">
-        <Badge icon="✓" color="up" title="Platform Verified" desc="This creator's identity has been confirmed by Take The Bet." />
-        <Badge icon="⬡" color="accent" title={`${pct}% on initial offering`} desc={`A ${pct}% platform fee is applied only when shares are first purchased. Shown transparently on every transaction.`} />
-        <Badge icon="◈" color="accent" title="Bot-Filtered" desc="Creator metrics are filtered to remove fake followers and bot activity. Numbers reflect real human engagement." />
+    <div className="bg-card border border-edge rounded-xl p-3 space-y-2">
+      <p className="text-[#F5F5F0] text-[10px] font-semibold uppercase tracking-wider">Trust & Transparency</p>
+      <div className="flex flex-wrap gap-1.5">
+        <span className="text-[10px] font-medium px-2 py-1 rounded-md bg-up/10 text-up border border-up/10">✓ Verified</span>
+        <span className="text-[10px] font-medium px-2 py-1 rounded-md bg-accent/10 text-accent border border-accent/10">{pct}% initial fee</span>
+        <span className="text-[10px] font-medium px-2 py-1 rounded-md bg-accent/10 text-accent border border-accent/10">◈ Bot-Filtered</span>
+        <span className="text-[10px] font-medium px-2 py-1 rounded-md bg-subtle text-[#8A8A82] border border-edge">20% Treasury</span>
       </div>
     </div>
   )
-}
-
-function Badge({ icon, color, title, desc }: { icon: string; color: string; title: string; desc: string }) {
-  return (
-    <div className="flex items-start gap-3">
-      <span className={`inline-flex items-center justify-center w-7 h-7 rounded-lg bg-${color}/10 text-${color} text-xs flex-shrink-0 mt-0.5`}>{icon}</span>
-      <div><p className="text-white text-sm font-medium">{title}</p><p className="text-gray-500 text-xs leading-relaxed">{desc}</p></div>
-    </div>
-  )
-}
-
-function PriceSection({ creator, offering, priceHistory }: { creator: any; offering: OfferingRow; priceHistory: PriceHistoryRow[] }) {
-  const marketPrice = Number(offering.current_price)
-  const metrics: CreatorMetrics = {
-    subscribers: creator.subscribers ?? 0,
-    monthly_views: creator.monthly_views ?? 0,
-    engagement_rate: Number(creator.engagement_rate ?? 0),
-    post_frequency: creator.post_frequency ?? 'regular',
-    monthly_growth_percent: Number(creator.monthly_growth_percent ?? 0),
-  }
-  const basePrice = basePricePerShare(metrics, offering.total_shares)
-  const hasMetrics = metrics.subscribers > 0 || metrics.monthly_views > 0
-  const diff = hasMetrics && basePrice > 0 ? ((marketPrice - basePrice) / basePrice) * 100 : null
-
-  return (
-    <div className="bg-card border border-edge rounded-2xl p-5 sm:p-6 mb-4">
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-5">
-        <div>
-          <p className="text-gray-500 text-xs uppercase tracking-wide mb-1">Market Price</p>
-          <p className="text-3xl font-bold text-white">{formatCurrency(marketPrice)}</p>
-        </div>
-        <div className="flex items-end gap-4">
-          {hasMetrics && basePrice > 0 && (
-            <div className="text-right">
-              <p className="text-gray-500 text-xs uppercase tracking-wide mb-1">Fair Value</p>
-              <p className="text-lg font-semibold text-gray-300">{formatCurrency(basePrice)}</p>
-            </div>
-          )}
-          {diff !== null && (
-            <div className={`text-xs font-medium px-2 py-1 rounded-lg mb-0.5 ${
-              diff > 5 ? 'bg-down/10 text-down' : diff < -5 ? 'bg-up/10 text-up' : 'bg-subtle text-gray-400'
-            }`}>
-              {diff > 5 ? `${diff.toFixed(0)}% above fair value` : diff < -5 ? `${Math.abs(diff).toFixed(0)}% below fair value` : 'Near fair value'}
-            </div>
-          )}
-        </div>
-      </div>
-      <PriceChart history={priceHistory} currentPrice={marketPrice} initialPrice={Number(offering.initial_price)} />
-    </div>
-  )
-}
-
-function OfferingStats({ offering }: { offering: OfferingRow }) {
-  const publicAvail = offering.shares_available
-  const treasury = (offering as any).treasury_shares ?? 0
-  const totalPublic = offering.total_shares - treasury
-  const soldPct = totalPublic > 0 ? Math.round((offering.shares_sold / totalPublic) * 100) : 0
-
-  return (
-    <div className="sm:col-span-3 bg-card border border-edge rounded-2xl p-5">
-      <h2 className="text-white font-semibold mb-4">{offering.title}</h2>
-      {offering.description && <p className="text-gray-400 text-sm leading-relaxed mb-4 whitespace-pre-line">{offering.description}</p>}
-      <div className="space-y-3">
-        <Row label="Public shares" value={`${formatNumber(publicAvail)} / ${formatNumber(totalPublic)}`} />
-        {treasury > 0 && <Row label="Treasury (liquidity)" value={`${formatNumber(treasury)} (${Math.round((treasury / offering.total_shares) * 100)}%)`} />}
-        <Row label="Shares sold" value={formatNumber(offering.shares_sold)} />
-        <Row label="Total raised" value={formatCurrency(Number(offering.total_raised))} />
-        <div>
-          <div className="flex justify-between text-xs text-gray-500 mb-1.5"><span>Sold</span><span>{soldPct}%</span></div>
-          <div className="h-2 bg-subtle rounded-full overflow-hidden"><div className="h-full bg-accent rounded-full transition-all" style={{ width: `${soldPct}%` }} /></div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function Row({ label, value }: { label: string; value: string }) {
-  return <div className="flex justify-between text-sm"><span className="text-gray-500">{label}</span><span className="text-white font-medium">{value}</span></div>
 }
 
 function HowItWorks({ commissionRate }: { commissionRate: number }) {
   const pct = (commissionRate * 100).toFixed(0)
   return (
-    <div className="bg-card border border-edge rounded-2xl p-5">
-      <h3 className="text-white font-semibold text-sm mb-3">How pricing works</h3>
-      <div className="space-y-2 text-sm text-gray-400">
-        <p>Share prices are driven by <span className="text-white">supply and demand</span>. The market price moves when users buy.</p>
-        <p><span className="text-white">Fair value</span> is anchored to real creator metrics — subscribers, views, engagement, and growth. If the market price is far above fair value, the share may be overpriced.</p>
-        <p>A <span className="text-white">{pct}% platform fee applies only to the initial offering</span>. Always shown before you confirm.</p>
-        <p>The platform holds <span className="text-white">20% of total shares</span> as a treasury for liquidity, so trades can happen even with few users.</p>
+    <div className="bg-card border border-edge rounded-xl p-3 mt-3">
+      <p className="text-[#F5F5F0] text-[10px] font-semibold uppercase tracking-wider mb-2">How pricing works</p>
+      <div className="space-y-1.5 text-[11px] text-[#8A8A82] leading-relaxed">
+        <p>Prices move with <span className="text-[#F5F5F0]">supply and demand</span>. More buyers push the price up.</p>
+        <p><span className="text-[#F5F5F0]">{pct}% fee</span> on the initial offering only. 20% treasury held for liquidity.</p>
+        <p>Metrics are <span className="text-[#F5F5F0]">bot-filtered</span> to reflect real engagement.</p>
       </div>
     </div>
   )

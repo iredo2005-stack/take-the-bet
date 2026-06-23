@@ -71,6 +71,10 @@ export async function POST(req: Request) {
 
     const commissionRate = parseFloat(process.env.PRIMARY_COMMISSION_RATE || '0.05')
 
+    // 20% of shares held by platform treasury for liquidity
+    const treasury = Math.floor(totalShares * 0.20)
+    const available = totalShares - treasury
+
     const { data: offering, error: offeringError } = await supabase
       .from('offerings')
       .insert({
@@ -79,11 +83,12 @@ export async function POST(req: Request) {
         description: description.trim(),
         image_url: imageUrl.trim(),
         total_shares: totalShares,
-        shares_available: totalShares,
+        shares_available: available,
         initial_price: initialPrice,
         current_price: initialPrice,
         status: 'active',
         primary_commission_rate: commissionRate,
+        treasury_shares: treasury,
       })
       .select()
       .single()

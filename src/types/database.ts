@@ -44,6 +44,11 @@ export type Database = {
           platform: string | null
           declared_followers: number | null
           profile_url: string | null
+          subscribers: number
+          monthly_views: number
+          engagement_rate: number
+          post_frequency: string
+          monthly_growth_percent: number
           created_at: string
           updated_at: string
         }
@@ -58,6 +63,11 @@ export type Database = {
           platform?: string | null
           declared_followers?: number | null
           profile_url?: string | null
+          subscribers?: number
+          monthly_views?: number
+          engagement_rate?: number
+          post_frequency?: string
+          monthly_growth_percent?: number
           created_at?: string
           updated_at?: string
         }
@@ -78,6 +88,7 @@ export type Database = {
           primary_commission_rate: number
           shares_sold: number
           total_raised: number
+          treasury_shares: number
           created_at: string
           updated_at: string
         }
@@ -95,6 +106,7 @@ export type Database = {
           primary_commission_rate?: number
           shares_sold?: number
           total_raised?: number
+          treasury_shares?: number
           created_at?: string
           updated_at?: string
         }

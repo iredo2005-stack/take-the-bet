@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { auth } from '@clerk/nextjs/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { formatCurrency, formatNumber } from '@/lib/utils'
+import { basePricePerShare, type CreatorMetrics } from '@/lib/pricing'
 import type { CreatorRow, OfferingRow, PriceHistoryRow } from '@/types/database'
 import PriceChart from './PriceChart'
 import BuyPanel from './BuyPanel'
@@ -40,13 +41,7 @@ export default async function CreatorPage({ params }: Props) {
         {offering ? (
           <>
             <TrustBadges commissionRate={Number(offering.primary_commission_rate)} />
-            <div className="bg-card border border-edge rounded-2xl p-5 sm:p-6 mb-4">
-              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 mb-5">
-                <div><p className="text-gray-500 text-xs uppercase tracking-wide mb-1">Current Price</p><p className="text-3xl font-bold text-white">{formatCurrency(Number(offering.current_price))}</p></div>
-                <p className="text-gray-500 text-sm">Initial: {formatCurrency(Number(offering.initial_price))}</p>
-              </div>
-              <PriceChart history={priceHistory} currentPrice={Number(offering.current_price)} initialPrice={Number(offering.initial_price)} />
-            </div>
+            <PriceSection creator={creator} offering={offering} priceHistory={priceHistory} />
             <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 mb-4">
               <OfferingStats offering={offering} />
               <BuyPanel offering={offering} isOwner={isOwner} />
@@ -98,19 +93,65 @@ function Badge({ icon, color, title, desc }: { icon: string; color: string; titl
   )
 }
 
+function PriceSection({ creator, offering, priceHistory }: { creator: any; offering: OfferingRow; priceHistory: PriceHistoryRow[] }) {
+  const marketPrice = Number(offering.current_price)
+  const metrics: CreatorMetrics = {
+    subscribers: creator.subscribers ?? 0,
+    monthly_views: creator.monthly_views ?? 0,
+    engagement_rate: Number(creator.engagement_rate ?? 0),
+    post_frequency: creator.post_frequency ?? 'regular',
+    monthly_growth_percent: Number(creator.monthly_growth_percent ?? 0),
+  }
+  const basePrice = basePricePerShare(metrics, offering.total_shares)
+  const hasMetrics = metrics.subscribers > 0 || metrics.monthly_views > 0
+  const diff = hasMetrics && basePrice > 0 ? ((marketPrice - basePrice) / basePrice) * 100 : null
+
+  return (
+    <div className="bg-card border border-edge rounded-2xl p-5 sm:p-6 mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-5">
+        <div>
+          <p className="text-gray-500 text-xs uppercase tracking-wide mb-1">Market Price</p>
+          <p className="text-3xl font-bold text-white">{formatCurrency(marketPrice)}</p>
+        </div>
+        <div className="flex items-end gap-4">
+          {hasMetrics && basePrice > 0 && (
+            <div className="text-right">
+              <p className="text-gray-500 text-xs uppercase tracking-wide mb-1">Fair Value</p>
+              <p className="text-lg font-semibold text-gray-300">{formatCurrency(basePrice)}</p>
+            </div>
+          )}
+          {diff !== null && (
+            <div className={`text-xs font-medium px-2 py-1 rounded-lg mb-0.5 ${
+              diff > 5 ? 'bg-down/10 text-down' : diff < -5 ? 'bg-up/10 text-up' : 'bg-subtle text-gray-400'
+            }`}>
+              {diff > 5 ? `${diff.toFixed(0)}% above fair value` : diff < -5 ? `${Math.abs(diff).toFixed(0)}% below fair value` : 'Near fair value'}
+            </div>
+          )}
+        </div>
+      </div>
+      <PriceChart history={priceHistory} currentPrice={marketPrice} initialPrice={Number(offering.initial_price)} />
+    </div>
+  )
+}
+
 function OfferingStats({ offering }: { offering: OfferingRow }) {
-  const pct = offering.total_shares > 0 ? Math.round((offering.shares_sold / offering.total_shares) * 100) : 0
+  const publicAvail = offering.shares_available
+  const treasury = (offering as any).treasury_shares ?? 0
+  const totalPublic = offering.total_shares - treasury
+  const soldPct = totalPublic > 0 ? Math.round((offering.shares_sold / totalPublic) * 100) : 0
+
   return (
     <div className="sm:col-span-3 bg-card border border-edge rounded-2xl p-5">
       <h2 className="text-white font-semibold mb-4">{offering.title}</h2>
       {offering.description && <p className="text-gray-400 text-sm leading-relaxed mb-4 whitespace-pre-line">{offering.description}</p>}
       <div className="space-y-3">
-        <Row label="Shares available" value={`${formatNumber(offering.shares_available)} / ${formatNumber(offering.total_shares)}`} />
+        <Row label="Public shares" value={`${formatNumber(publicAvail)} / ${formatNumber(totalPublic)}`} />
+        {treasury > 0 && <Row label="Treasury (liquidity)" value={`${formatNumber(treasury)} (${Math.round((treasury / offering.total_shares) * 100)}%)`} />}
         <Row label="Shares sold" value={formatNumber(offering.shares_sold)} />
         <Row label="Total raised" value={formatCurrency(Number(offering.total_raised))} />
         <div>
-          <div className="flex justify-between text-xs text-gray-500 mb-1.5"><span>Sold</span><span>{pct}%</span></div>
-          <div className="h-2 bg-subtle rounded-full overflow-hidden"><div className="h-full bg-accent rounded-full transition-all" style={{ width: `${pct}%` }} /></div>
+          <div className="flex justify-between text-xs text-gray-500 mb-1.5"><span>Sold</span><span>{soldPct}%</span></div>
+          <div className="h-2 bg-subtle rounded-full overflow-hidden"><div className="h-full bg-accent rounded-full transition-all" style={{ width: `${soldPct}%` }} /></div>
         </div>
       </div>
     </div>
@@ -127,9 +168,10 @@ function HowItWorks({ commissionRate }: { commissionRate: number }) {
     <div className="bg-card border border-edge rounded-2xl p-5">
       <h3 className="text-white font-semibold text-sm mb-3">How pricing works</h3>
       <div className="space-y-2 text-sm text-gray-400">
-        <p>Share prices are driven by <span className="text-white">supply and demand</span> — more buyers push the price up.</p>
+        <p>Share prices are driven by <span className="text-white">supply and demand</span>. The market price moves when users buy.</p>
+        <p><span className="text-white">Fair value</span> is anchored to real creator metrics — subscribers, views, engagement, and growth. If the market price is far above fair value, the share may be overpriced.</p>
         <p>A <span className="text-white">{pct}% platform fee applies only to the initial offering</span>. Always shown before you confirm.</p>
-        <p>Creator metrics are <span className="text-white">bot-filtered</span> to ensure prices reflect real engagement.</p>
+        <p>The platform holds <span className="text-white">20% of total shares</span> as a treasury for liquidity, so trades can happen even with few users.</p>
       </div>
     </div>
   )

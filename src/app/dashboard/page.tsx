@@ -12,7 +12,10 @@ type HoldingWithDetails = {
 }
 type CreatorListing = {
   id: string; display_name: string; slug: string; photo_url: string | null; bio: string | null
-  offering: { title: string; image_url: string | null; current_price: number; shares_sold: number; total_shares: number; shares_available: number }
+  subscribers: number; declared_followers: number | null
+  offering: { id: string; title: string; image_url: string | null; current_price: number; initial_price: number; shares_sold: number; total_shares: number; shares_available: number; created_at: string }
+  priceHistory: number[]
+  basePrice: number
 }
 
 export default async function DashboardPage() {
@@ -22,11 +25,39 @@ export default async function DashboardPage() {
   const { data: rawHoldings } = await supabase.from('holdings').select(`id, shares_owned, avg_buy_price, total_invested, offerings ( id, title, current_price, initial_price, creators ( display_name, slug, photo_url ) )`).eq('user_id', user.id).gt('shares_owned', 0)
   const holdings = (rawHoldings || []) as unknown as HoldingWithDetails[]
 
-  const { data: rawListings } = await supabase.from('offerings').select(`id, title, current_price, shares_sold, total_shares, shares_available, image_url, creators ( id, display_name, slug, photo_url, bio )`).eq('status', 'active').order('shares_sold', { ascending: false })
-  const listings: CreatorListing[] = ((rawListings || []) as any[]).map((o) => ({
-    id: o.creators.id, display_name: o.creators.display_name, slug: o.creators.slug, photo_url: o.creators.photo_url, bio: o.creators.bio,
-    offering: { title: o.title, image_url: o.image_url, current_price: Number(o.current_price), shares_sold: o.shares_sold, total_shares: o.total_shares, shares_available: o.shares_available },
-  }))
+  const { data: rawListings } = await supabase.from('offerings').select(`id, title, current_price, initial_price, shares_sold, total_shares, shares_available, image_url, created_at, creators ( id, display_name, slug, photo_url, bio, subscribers, monthly_views, engagement_rate, post_frequency, monthly_growth_percent, declared_followers )`).eq('status', 'active').order('shares_sold', { ascending: false })
+
+  // Fetch recent price history for sparklines (last 10 points per offering)
+  const offeringIds = (rawListings || []).map((o: any) => o.id)
+  let priceMap: Record<string, number[]> = {}
+  if (offeringIds.length > 0) {
+    const { data: prices } = await supabase.from('price_history').select('offering_id, price').in('offering_id', offeringIds).order('recorded_at', { ascending: true })
+    for (const p of (prices || []) as any[]) {
+      if (!priceMap[p.offering_id]) priceMap[p.offering_id] = []
+      priceMap[p.offering_id].push(Number(p.price))
+    }
+    // Keep last 10 points per offering
+    for (const k of Object.keys(priceMap)) {
+      if (priceMap[k].length > 10) priceMap[k] = priceMap[k].slice(-10)
+    }
+  }
+
+  const listings: CreatorListing[] = ((rawListings || []) as any[]).map((o) => {
+    const c = o.creators
+    const metrics = { subscribers: c.subscribers ?? 0, monthly_views: c.monthly_views ?? 0, engagement_rate: Number(c.engagement_rate ?? 0), post_frequency: c.post_frequency ?? 'regular', monthly_growth_percent: Number(c.monthly_growth_percent ?? 0) }
+    const bv = (metrics.subscribers * 0.01 + metrics.monthly_views * 0.001 + metrics.engagement_rate * 100)
+    const fm = ({ regular: 1, rare: 0.8, inactive: 0.6 } as Record<string, number>)[metrics.post_frequency] ?? 1
+    const gm = metrics.monthly_growth_percent >= 20 ? 1.5 : metrics.monthly_growth_percent >= 5 ? 1.2 : metrics.monthly_growth_percent >= 0 ? 1.0 : 0.7
+    const baseVal = bv * fm * gm
+    const bp = o.total_shares > 0 ? Math.round((baseVal / o.total_shares) * 100) / 100 : 0
+    return {
+      id: c.id, display_name: c.display_name, slug: c.slug, photo_url: c.photo_url, bio: c.bio,
+      subscribers: c.subscribers ?? 0, declared_followers: c.declared_followers,
+      offering: { id: o.id, title: o.title, image_url: o.image_url, current_price: Number(o.current_price), initial_price: Number(o.initial_price), shares_sold: o.shares_sold, total_shares: o.total_shares, shares_available: o.shares_available, created_at: o.created_at },
+      priceHistory: priceMap[o.id] || [Number(o.initial_price), Number(o.current_price)],
+      basePrice: bp,
+    }
+  })
 
   const { data: creatorRaw } = await supabase.from('creators').select('*').eq('user_id', user.id).maybeSingle()
   const creator = creatorRaw?.id ? creatorRaw : null

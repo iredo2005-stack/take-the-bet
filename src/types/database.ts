@@ -14,6 +14,8 @@ export type Database = {
           age_verified: boolean
           role: string
           balance: number
+          username: string | null
+          profile_public: boolean
           created_at: string
           updated_at: string
         }
@@ -27,6 +29,8 @@ export type Database = {
           age_verified?: boolean
           role?: string
           balance?: number
+          username?: string | null
+          profile_public?: boolean
           created_at?: string
           updated_at?: string
         }

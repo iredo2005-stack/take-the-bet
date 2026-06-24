@@ -57,6 +57,8 @@ export default function AddCreatorPage() {
 
   const [seeding, setSeeding] = useState(false)
   const [seedResult, setSeedResult] = useState<string | null>(null)
+  const [recalculating, setRecalculating] = useState(false)
+  const [recalcResult, setRecalcResult] = useState<any[] | null>(null)
 
   async function handleSeed() {
     if (!confirm('Seed 8 example gaming creators (Ninja, Pokimane, xQc, etc.)?')) return
@@ -69,16 +71,44 @@ export default function AddCreatorPage() {
     } catch { setSeedResult('Network error') } finally { setSeeding(false) }
   }
 
+  async function handleRecalculate() {
+    if (!confirm('Recalculate ALL creator prices using current formula (100K shares, $0.25 floor)?')) return
+    setRecalculating(true); setRecalcResult(null)
+    try {
+      const res = await fetch('/api/admin/recalculate', { method: 'POST' })
+      const data = await res.json()
+      if (res.ok) { setRecalcResult(data.results); router.refresh() }
+      else setSeedResult(data.error || 'Failed')
+    } catch { setSeedResult('Network error') } finally { setRecalculating(false) }
+  }
+
   return (
     <div className="max-w-lg mx-auto">
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-lg font-bold text-[#F5F5F0]">Add Creator</h1>
-        <button onClick={handleSeed} disabled={seeding}
-          className="bg-subtle border border-edge text-[#8A8A82] hover:text-accent text-[10px] font-semibold px-3 py-1.5 rounded-lg transition-colors disabled:opacity-40">
-          {seeding ? 'Seeding…' : '🎮 Seed Gaming Creators'}
-        </button>
+        <div className="flex gap-2">
+          <button onClick={handleRecalculate} disabled={recalculating}
+            className="bg-subtle border border-edge text-[#8A8A82] hover:text-accent text-[10px] font-semibold px-3 py-1.5 rounded-lg transition-colors disabled:opacity-40">
+            {recalculating ? 'Recalculating…' : '🔄 Recalculate All'}
+          </button>
+          <button onClick={handleSeed} disabled={seeding}
+            className="bg-subtle border border-edge text-[#8A8A82] hover:text-accent text-[10px] font-semibold px-3 py-1.5 rounded-lg transition-colors disabled:opacity-40">
+            {seeding ? 'Seeding…' : '🎮 Seed'}
+          </button>
+        </div>
       </div>
       {seedResult && <p className="text-accent text-xs mb-4 bg-accent/10 border border-accent/20 rounded-lg px-3 py-2">{seedResult}</p>}
+      {recalcResult && (
+        <div className="bg-card border border-accent/20 rounded-xl p-4 mb-5 space-y-1">
+          <p className="text-accent text-xs font-semibold mb-2">✓ Recalculated {recalcResult.length} creators:</p>
+          {recalcResult.map((r: any) => (
+            <div key={r.name} className="flex items-center justify-between text-xs">
+              <span className="text-[#F5F5F0]">{r.name}</span>
+              <span className="text-accent font-mono font-bold">${r.price.toFixed(2)}</span>
+            </div>
+          ))}
+        </div>
+      )}
 
       {success && (
         <div className="bg-up/10 border border-up/20 rounded-xl p-4 mb-5">

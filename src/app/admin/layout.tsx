@@ -17,6 +17,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
         <div className="flex items-center gap-3">
           <Link href="/admin" className="text-[#8A8A82] hover:text-[#F5F5F0] text-xs transition-colors">Creators</Link>
+          <Link href="/admin/add-creator" className="text-[#8A8A82] hover:text-[#F5F5F0] text-xs transition-colors">+ Add</Link>
           <Link href="/admin/bets" className="text-[#8A8A82] hover:text-[#F5F5F0] text-xs transition-colors">Bets</Link>
           <Link href="/dashboard" className="text-[#8A8A82] hover:text-[#F5F5F0] text-xs transition-colors">Dashboard</Link>
           <UserButton afterSignOutUrl="/" />

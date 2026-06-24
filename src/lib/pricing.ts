@@ -71,11 +71,12 @@ export function calculateBaseValue(metrics: CreatorMetrics): number {
 }
 
 export const DEFAULT_TOTAL_SHARES = 100_000
+export const MIN_SHARE_PRICE = 0.25
 
 export function basePricePerShare(metrics: CreatorMetrics, totalShares: number = DEFAULT_TOTAL_SHARES): number {
   const bv = calculateBaseValue(metrics)
-  if (totalShares <= 0) return 0
-  return round2(bv / totalShares)
+  if (totalShares <= 0) return MIN_SHARE_PRICE
+  return Math.max(MIN_SHARE_PRICE, round2(bv / totalShares))
 }
 
 // ── Treasury ─────────────────────────────────────────────────────────────────

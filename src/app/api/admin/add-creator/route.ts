@@ -54,7 +54,7 @@ export async function POST(req: Request) {
     const gm = gp >= 20 ? 1.5 : gp >= 5 ? 1.2 : gp >= 0 ? 1.0 : 0.7
     const baseValue = rawBase * (fm[postFrequency] ?? 1) * gm
     const totalShares = 100_000
-    const initialPrice = Math.max(0.01, Math.round((baseValue / totalShares) * 100) / 100)
+    const initialPrice = Math.max(0.25, Math.round((baseValue / totalShares) * 100) / 100)
 
     const commissionRate = parseFloat(process.env.PRIMARY_COMMISSION_RATE || '0.05')
     const treasury = Math.floor(totalShares * 0.20)

@@ -34,7 +34,7 @@ export default function AddCreatorPage() {
   const gm = gp >= 20 ? 1.5 : gp >= 5 ? 1.2 : gp >= 0 ? 1.0 : 0.7
   const rawBase = (subs * 0.01) + (views * 0.001) + (eng * 100)
   const baseValue = rawBase * (fm[form.postFrequency] ?? 1) * gm
-  const previewPrice = subs > 0 ? Math.max(0.01, Math.round((baseValue / 100_000) * 100) / 100) : 0
+  const previewPrice = subs > 0 ? Math.max(0.25, Math.round((baseValue / 100_000) * 100) / 100) : 0
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault(); setLoading(true); setError(''); setSuccess(null)

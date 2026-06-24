@@ -58,7 +58,7 @@ export async function POST(req: Request) {
       const gm = c.growth >= 20 ? 1.5 : c.growth >= 5 ? 1.2 : c.growth >= 0 ? 1.0 : 0.7
       const baseValue = rawBase * (fm[c.freq] ?? 1) * gm
       const totalShares = 100_000
-      const initialPrice = Math.max(0.01, Math.round((baseValue / totalShares) * 100) / 100)
+      const initialPrice = Math.max(0.25, Math.round((baseValue / totalShares) * 100) / 100)
       const treasury = Math.floor(totalShares * 0.20)
 
       const { data: offering } = await supabase.from('offerings').insert({

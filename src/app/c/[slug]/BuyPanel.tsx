@@ -44,18 +44,30 @@ export default function BuyPanel({ offering, isOwner }: Props) {
     </div>
   )
 
-  if (result) return (
-    <div className="sm:col-span-2 bg-card border border-up/30 rounded-2xl p-5 text-center">
-      <div className="text-3xl mb-3">🎉</div>
-      <h3 className="text-white font-bold text-lg mb-1">Purchase Complete!</h3>
-      <p className="text-gray-400 text-sm mb-2">You bought <span className="text-white font-semibold">{result.shares} share{result.shares > 1 ? 's' : ''}</span> for <span className="text-white font-semibold">{formatCurrency(result.totalAmount)}</span></p>
-      <p className="text-up text-xs mb-4">Price moved to {formatCurrency(result.newPrice)}</p>
-      <div className="flex flex-col gap-2">
-        <button onClick={() => { setResult(null); setShares(1) }} className="w-full bg-subtle hover:bg-muted border border-edge text-white font-semibold py-2.5 rounded-xl transition-colors text-sm">Buy More</button>
-        <a href="/dashboard" className="w-full bg-accent hover:bg-accent-hover text-bg font-semibold py-2.5 rounded-xl transition-colors text-sm block text-center">View Portfolio →</a>
+  if (result) {
+    const resultFee = result.totalAmount - (result.totalAmount / (1 + commission))
+    const resultShares = result.shares
+    const resultSubtotal = result.totalAmount - resultFee
+    return (
+      <div className="sm:col-span-2 bg-card border border-up/30 rounded-2xl p-5">
+        <div className="text-center mb-4">
+          <div className="text-3xl mb-2">🎉</div>
+          <h3 className="text-[#F5F5F0] font-bold text-base mb-1">Purchase Complete!</h3>
+          <p className="text-up text-xs font-medium">Price moved to {formatCurrency(result.newPrice)}</p>
+        </div>
+        <div className="bg-subtle rounded-xl p-3 space-y-1.5 text-xs mb-4">
+          <div className="flex justify-between text-[#8A8A82]"><span>{resultShares} share{resultShares > 1 ? 's' : ''}</span><span className="text-[#F5F5F0]">{formatCurrency(resultSubtotal)}</span></div>
+          <div className="flex justify-between text-[#8A8A82]"><span>Trading fee ({(commission * 100).toFixed(0)}%)</span><span className="text-accent">{formatCurrency(resultFee)}</span></div>
+          <div className="border-t border-edge pt-1.5 flex justify-between font-semibold"><span className="text-[#F5F5F0]">Total paid</span><span className="text-[#F5F5F0]">{formatCurrency(result.totalAmount)}</span></div>
+        </div>
+        <p className="text-[#8A8A82] text-[10px] text-center mb-4">The fee is a one-time trading commission — your shares are now valued at market price.</p>
+        <div className="flex flex-col gap-2">
+          <button onClick={() => { setResult(null); setShares(1) }} className="w-full bg-subtle hover:bg-muted border border-edge text-[#F5F5F0] font-semibold py-2.5 rounded-xl transition-colors text-sm">Buy More</button>
+          <a href="/portfolio" className="w-full bg-accent hover:bg-accent-hover text-bg font-semibold py-2.5 rounded-xl transition-colors text-sm block text-center">View Portfolio →</a>
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
 
   return (
     <div className="sm:col-span-2 bg-card border border-accent/30 rounded-2xl p-5">
@@ -71,12 +83,12 @@ export default function BuyPanel({ offering, isOwner }: Props) {
           </div>
           <p className="text-[#8A8A82] text-xs mt-1 text-right">{maxShares} available</p>
         </div>
-        <div className="bg-subtle rounded-xl p-3 space-y-1.5 text-sm">
-          <div className="flex justify-between text-gray-400"><span>Spot price</span><span className="text-gray-300">{formatCurrency(currentSpot)}</span></div>
-          <div className="flex justify-between text-gray-400"><span>Avg × {shares}</span><span className="text-gray-300">{formatCurrency(avgPrice)} × {shares} = {formatCurrency(subtotal)}</span></div>
-          <div className="flex justify-between text-gray-400"><span>Fee ({(commission * 100).toFixed(0)}%)</span><span className="text-gray-300">{formatCurrency(fee)}</span></div>
-          <div className="border-t border-edge pt-1.5 flex justify-between font-semibold"><span className="text-gray-300">Total</span><span className="text-white">{formatCurrency(total)}</span></div>
-          {shares > 1 && <div className="flex justify-between text-xs text-gray-500 pt-1"><span>Price after buy</span><span className="text-accent">{formatCurrency(newPrice)}</span></div>}
+        <div className="bg-subtle rounded-xl p-3 space-y-1.5 text-xs">
+          <div className="flex justify-between text-[#8A8A82]"><span>{shares} share{shares > 1 ? 's' : ''} × {formatCurrency(avgPrice)}</span><span className="text-[#F5F5F0]">{formatCurrency(subtotal)}</span></div>
+          <div className="flex justify-between text-[#8A8A82]"><span>Trading fee ({(commission * 100).toFixed(0)}%)</span><span className="text-accent">{formatCurrency(fee)}</span></div>
+          <div className="border-t border-edge pt-1.5 flex justify-between font-semibold"><span className="text-[#F5F5F0]">You pay</span><span className="text-[#F5F5F0]">{formatCurrency(total)}</span></div>
+          {shares > 1 && <div className="flex justify-between text-[#8A8A82] pt-1"><span>Price after buy</span><span className="text-accent">{formatCurrency(newPrice)}</span></div>}
+          <p className="text-[#8A8A82] text-[9px] pt-1">Fee is a one-time commission. Your shares are valued at market price after purchase.</p>
         </div>
         {error && <p className="text-down text-sm bg-down/10 border border-down/20 rounded-lg px-3 py-2">{error}</p>}
         <button disabled={maxShares === 0 || loading} onClick={handleBuy}

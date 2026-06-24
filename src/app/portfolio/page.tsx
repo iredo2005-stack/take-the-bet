@@ -36,6 +36,13 @@ export default async function PortfolioPage() {
     chartData.push({ time: new Date().toISOString(), invested: Math.round(totalInvested * 100) / 100 })
   }
 
+  // Fetch total fees paid per offering
+  const { data: feeData } = await supabase.from('transactions').select('offering_id, commission_amount').eq('buyer_id', user.id).eq('status', 'completed')
+  const feesMap: Record<string, number> = {}
+  for (const tx of (feeData || []) as any[]) {
+    feesMap[tx.offering_id] = (feesMap[tx.offering_id] || 0) + Number(tx.commission_amount)
+  }
+
   // Sort holdings by value descending
   const sortedHoldings = [...holdings].sort((a: any, b: any) =>
     (b.shares_owned * Number(b.offerings.current_price)) - (a.shares_owned * Number(a.offerings.current_price))
@@ -106,35 +113,44 @@ export default async function PortfolioPage() {
               {sortedHoldings.map((h: any) => {
                 const cv = h.shares_owned * Number(h.offerings.current_price)
                 const inv = Number(h.total_invested)
-                const pnl = cv - inv
-                const pct = inv > 0 ? (pnl / inv) * 100 : 0
-                const up = pnl >= 0
+                const feesPaid = Math.round((feesMap[h.offerings.id] || 0) * 100) / 100
+                const totalPnl = cv - inv
+                const marketChange = cv - inv + feesPaid
+                const pct = inv > 0 ? (totalPnl / inv) * 100 : 0
+                const up = totalPnl >= 0
+                const marketUp = marketChange >= 0
                 const c = h.offerings.creators
+                const isFeeLoss = totalPnl < 0 && marketChange >= -0.01
 
                 return (
-                  <Link key={h.id} href={`/c/${c.slug}`}
-                    className="flex items-center gap-3 bg-card border border-edge rounded-xl p-3.5 hover:border-edge/80 transition-all">
-                    {/* Avatar */}
-                    {c.photo_url ? (
-                      <img src={c.photo_url} alt="" className="w-10 h-10 rounded-xl object-cover flex-shrink-0" />
-                    ) : (
-                      <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-sm font-bold flex-shrink-0">{c.display_name[0]}</div>
+                  <div key={h.id} className="bg-card border border-edge rounded-xl overflow-hidden hover:border-edge/80 transition-all">
+                    <Link href={`/c/${c.slug}`} className="flex items-center gap-3 p-3.5">
+                      {c.photo_url ? (
+                        <img src={c.photo_url} alt="" className="w-10 h-10 rounded-xl object-cover flex-shrink-0" />
+                      ) : (
+                        <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-sm font-bold flex-shrink-0">{c.display_name[0]}</div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[#F5F5F0] text-sm font-semibold truncate">{c.display_name}</p>
+                        <p className="text-[#8A8A82] text-[10px]">{formatNumber(h.shares_owned)} shares · avg {formatCurrency(Number(h.avg_buy_price))}</p>
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <p className="text-[#F5F5F0] text-sm font-bold">{formatCurrency(cv)}</p>
+                        {isFeeLoss ? (
+                          <p className="text-[#8A8A82] text-[10px] font-medium">fee: -{formatCurrency(feesPaid)}</p>
+                        ) : (
+                          <p className={`text-[10px] font-semibold ${up ? 'text-up' : 'text-down'}`}>
+                            {up ? '+' : ''}{formatCurrency(totalPnl)} ({up ? '+' : ''}{pct.toFixed(1)}%)
+                          </p>
+                        )}
+                      </div>
+                    </Link>
+                    {feesPaid > 0 && !isFeeLoss && (
+                      <div className="border-t border-edge/50 px-3.5 py-1.5 flex items-center justify-between">
+                        <span className="text-[#8A8A82] text-[9px]">Market {marketUp ? '+' : ''}{formatCurrency(marketChange)} · Fee paid {formatCurrency(feesPaid)}</span>
+                      </div>
                     )}
-
-                    {/* Name + shares */}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[#F5F5F0] text-sm font-semibold truncate">{c.display_name}</p>
-                      <p className="text-[#8A8A82] text-[10px]">{formatNumber(h.shares_owned)} shares · avg {formatCurrency(Number(h.avg_buy_price))}</p>
-                    </div>
-
-                    {/* Value + P&L */}
-                    <div className="text-right flex-shrink-0">
-                      <p className="text-[#F5F5F0] text-sm font-bold">{formatCurrency(cv)}</p>
-                      <p className={`text-[10px] font-semibold ${up ? 'text-up' : 'text-down'}`}>
-                        {up ? '+' : ''}{formatCurrency(pnl)} ({up ? '+' : ''}{pct.toFixed(1)}%)
-                      </p>
-                    </div>
-                  </Link>
+                  </div>
                 )
               })}
             </div>

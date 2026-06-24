@@ -2,12 +2,12 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, BarChart3, Dice5, Trophy, User } from 'lucide-react'
+import { Home, BarChart3, Wallet, Trophy, User } from 'lucide-react'
 
 const TABS = [
   { href: '/', icon: Home, label: 'Home' },
   { href: '/dashboard', icon: BarChart3, label: 'Markets' },
-  { href: '/dashboard?tab=bets', icon: Dice5, label: 'Bets' },
+  { href: '/portfolio', icon: Wallet, label: 'Portfolio' },
   { href: '/leaderboard', icon: Trophy, label: 'Board' },
   { href: '/profile', icon: User, label: 'Profile' },
 ]
@@ -17,7 +17,6 @@ export default function MobileNav() {
 
   function isActive(href: string) {
     if (href === '/') return pathname === '/'
-    if (href === '/dashboard?tab=bets') return false
     if (href === '/profile') return pathname.startsWith('/profile') || pathname.startsWith('/trader')
     return pathname.startsWith(href)
   }

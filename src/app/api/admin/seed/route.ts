@@ -57,15 +57,16 @@ export async function POST(req: Request) {
       const fm: Record<string, number> = { regular: 1, rare: 0.8, inactive: 0.6 }
       const gm = c.growth >= 20 ? 1.5 : c.growth >= 5 ? 1.2 : c.growth >= 0 ? 1.0 : 0.7
       const baseValue = rawBase * (fm[c.freq] ?? 1) * gm
-      const initialPrice = Math.max(0.01, Math.round((baseValue / 1000) * 100) / 100)
-      const treasury = 200
+      const totalShares = 100_000
+      const initialPrice = Math.max(0.01, Math.round((baseValue / totalShares) * 100) / 100)
+      const treasury = Math.floor(totalShares * 0.20)
 
       const { data: offering } = await supabase.from('offerings').insert({
         creator_id: creator.id,
         title: `${c.name} Shares`,
         description: `Invest in ${c.name}. Price tracks real growth.`,
-        total_shares: 1000,
-        shares_available: 800,
+        total_shares: totalShares,
+        shares_available: totalShares - treasury,
         initial_price: initialPrice,
         current_price: initialPrice,
         status: 'active',

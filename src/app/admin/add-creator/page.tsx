@@ -34,7 +34,7 @@ export default function AddCreatorPage() {
   const gm = gp >= 20 ? 1.5 : gp >= 5 ? 1.2 : gp >= 0 ? 1.0 : 0.7
   const rawBase = (subs * 0.01) + (views * 0.001) + (eng * 100)
   const baseValue = rawBase * (fm[form.postFrequency] ?? 1) * gm
-  const previewPrice = subs > 0 ? Math.max(0.01, Math.round((baseValue / 1000) * 100) / 100) : 0
+  const previewPrice = subs > 0 ? Math.max(0.01, Math.round((baseValue / 100_000) * 100) / 100) : 0
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault(); setLoading(true); setError(''); setSuccess(null)
@@ -158,8 +158,8 @@ export default function AddCreatorPage() {
               <p className="text-accent text-lg font-bold">${previewPrice.toFixed(2)} <span className="text-xs font-semibold text-[#8A8A82]">/ share</span></p>
             </div>
             <div className="text-right">
-              <p className="text-[#8A8A82] text-[9px]">1,000 total shares</p>
-              <p className="text-[#8A8A82] text-[9px]">800 public · 200 treasury</p>
+              <p className="text-[#8A8A82] text-[9px]">100,000 total shares</p>
+              <p className="text-[#8A8A82] text-[9px]">80,000 public · 20,000 treasury</p>
             </div>
           </div>
         )}

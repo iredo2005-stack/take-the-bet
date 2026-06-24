@@ -29,9 +29,8 @@ export async function POST(req: Request) {
       suffix++
     }
 
-    // Create creator (linked to admin's user account as placeholder)
+    // Create creator (no user_id — admin-added public figures aren't registered users)
     const { data: creator, error: createErr } = await supabase.from('creators').insert({
-      user_id: admin.id,
       display_name: displayName.trim(),
       photo_url: photoUrl?.trim() || null,
       bio: null,

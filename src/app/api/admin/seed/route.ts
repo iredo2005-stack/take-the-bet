@@ -38,7 +38,6 @@ export async function POST(req: Request) {
       }
 
       const { data: creator, error: cErr } = await supabase.from('creators').insert({
-        user_id: admin.id,
         display_name: c.name,
         slug,
         status: 'approved',

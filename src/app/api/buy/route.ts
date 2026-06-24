@@ -54,7 +54,7 @@ export async function POST(req: Request) {
       .eq('id', offering.creator_id)
       .single()
 
-    if (offeringCreator && offeringCreator.user_id === user.id) {
+    if (offeringCreator && offeringCreator.user_id && offeringCreator.user_id === user.id) {
       return NextResponse.json(
         { error: 'You cannot buy shares in your own offering' },
         { status: 403 }

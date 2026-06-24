@@ -55,13 +55,10 @@ export default function LiveHome({ initialFeed, initialTicker }: { initialFeed: 
             <p className="text-[#8A8A82] text-sm leading-relaxed max-w-sm mx-auto">
               Invest in creators early. Prices follow real growth — subscribers, views, and momentum. Profit when you spot winners.
             </p>
-            <div className="inline-flex items-center gap-1.5 bg-card border border-edge text-[#8A8A82] text-[10px] font-medium px-2.5 py-1 rounded-full mt-4">
-              🎮 Virtual trading game — no real money involved
-            </div>
           </div>
 
           {/* CTA */}
-          <div className="flex flex-col sm:flex-row gap-2.5 justify-center mb-10">
+          <div className="flex flex-col sm:flex-row gap-2.5 justify-center mb-8">
             <Link href="/sign-up" className="bg-accent hover:bg-accent-hover text-bg font-semibold px-6 py-2.5 rounded-xl text-sm transition-colors text-center">
               Start trading
             </Link>
@@ -69,6 +66,23 @@ export default function LiveHome({ initialFeed, initialTicker }: { initialFeed: 
               I have an account
             </Link>
           </div>
+
+          {/* Early access banner */}
+          <div className="bg-card border border-accent/20 rounded-2xl p-5 mb-8 text-center">
+            <div className="inline-flex items-center gap-1.5 bg-accent/10 text-accent text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-3">
+              <span className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse-gold" />
+              Early Access
+            </div>
+            <p className="text-[#F5F5F0] text-sm font-medium leading-relaxed max-w-md mx-auto mb-1">
+              Trade with virtual Hype Coins, climb the leaderboard, and prove your skills.
+            </p>
+            <p className="text-accent text-xs font-semibold">
+              Real-money trading is coming soon. Get in early and be ready.
+            </p>
+          </div>
+
+          {/* Waitlist */}
+          <WaitlistSignup />
 
           {/* Live stats */}
           <div className="flex items-center justify-center gap-6 mb-10 text-xs">
@@ -140,6 +154,57 @@ export default function LiveHome({ initialFeed, initialTicker }: { initialFeed: 
         </div>
       </div>
     </>
+  )
+}
+
+function WaitlistSignup() {
+  const [email, setEmail] = useState('')
+  const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!email.includes('@')) return
+    setStatus('loading')
+    try {
+      const res = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      if (res.ok) { setStatus('done'); setEmail('') }
+      else setStatus('error')
+    } catch { setStatus('error') }
+  }
+
+  if (status === 'done') {
+    return (
+      <div className="bg-card border border-up/20 rounded-2xl p-5 mb-8 text-center">
+        <p className="text-up text-sm font-semibold mb-1">You&apos;re on the list! 🎉</p>
+        <p className="text-[#8A8A82] text-xs">We&apos;ll notify you when real-money trading goes live.</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="bg-card border border-edge rounded-2xl p-5 mb-8">
+      <p className="text-[#F5F5F0] text-xs font-semibold text-center mb-1">Be the first to know when real money goes live</p>
+      <p className="text-[#8A8A82] text-[10px] text-center mb-3">Join the waitlist — early users get priority access.</p>
+      <form onSubmit={handleSubmit} className="flex gap-2">
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="you@email.com"
+          required
+          className="flex-1 bg-subtle border border-edge rounded-xl px-3.5 py-2.5 text-xs text-[#F5F5F0] placeholder-[#8A8A82] focus:outline-none focus:ring-1 focus:ring-accent/30 transition"
+        />
+        <button type="submit" disabled={status === 'loading' || !email.includes('@')}
+          className="bg-accent hover:bg-accent-hover disabled:opacity-40 text-bg font-semibold text-xs px-5 py-2.5 rounded-xl transition-colors flex-shrink-0">
+          {status === 'loading' ? '...' : 'Notify me'}
+        </button>
+      </form>
+      {status === 'error' && <p className="text-down text-[10px] text-center mt-2">Something went wrong. Try again.</p>}
+    </div>
   )
 }
 

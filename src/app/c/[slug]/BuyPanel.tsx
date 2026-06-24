@@ -83,7 +83,7 @@ export default function BuyPanel({ offering, isOwner }: Props) {
           className="w-full bg-up hover:brightness-110 disabled:bg-muted disabled:text-gray-500 text-white font-bold py-3 rounded-xl transition-all text-sm">
           {loading ? 'Processing…' : maxShares > 0 ? `Buy ${shares} share${shares > 1 ? 's' : ''} — ${formatCurrency(total)}` : 'Sold Out'}
         </button>
-        <p className="text-center text-xs text-[#8A8A82]">Price rises with demand · Paid from balance</p>
+        <p className="text-center text-xs text-[#8A8A82]">Virtual trading · Paid with Hype Coins</p>
       </div>
     </div>
   )

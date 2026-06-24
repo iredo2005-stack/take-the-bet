@@ -51,6 +51,7 @@ export async function POST(req: Request) {
         date_of_birth: dateOfBirth,
         age_verified: true,
         role: 'fan',
+        balance: 10000,
       },
       { onConflict: 'clerk_id' }
     )

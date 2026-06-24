@@ -79,7 +79,7 @@ export async function POST(req: Request) {
     const userBalance = Number(user.balance)
     if (userBalance < totalAmount) {
       return NextResponse.json(
-        { error: `Insufficient balance. You have $${userBalance.toFixed(2)} but need $${totalAmount.toFixed(2)}. Deposit funds first.` },
+        { error: `Insufficient Hype Coins. You have ${Math.round(userBalance)} HC but need ${Math.round(totalAmount)} HC.` },
         { status: 400 }
       )
     }

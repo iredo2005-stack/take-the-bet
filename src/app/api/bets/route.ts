@@ -22,7 +22,7 @@ export async function POST(req: Request) {
 
     // Check balance
     const balance = Number(user.balance ?? 0)
-    if (balance < amount) return NextResponse.json({ error: `Insufficient balance. You have $${balance.toFixed(2)}` }, { status: 400 })
+    if (balance < amount) return NextResponse.json({ error: `Insufficient Hype Coins. You have ${Math.round(balance)} HC.` }, { status: 400 })
 
     // Deduct balance
     await supabase.from('users').update({ balance: Math.round((balance - amount) * 100) / 100 }).eq('id', user.id)

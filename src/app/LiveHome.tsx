@@ -55,6 +55,9 @@ export default function LiveHome({ initialFeed, initialTicker }: { initialFeed: 
             <p className="text-[#8A8A82] text-sm leading-relaxed max-w-sm mx-auto">
               Invest in creators early. Prices follow real growth — subscribers, views, and momentum. Profit when you spot winners.
             </p>
+            <div className="inline-flex items-center gap-1.5 bg-card border border-edge text-[#8A8A82] text-[10px] font-medium px-2.5 py-1 rounded-full mt-4">
+              🎮 Virtual trading game — no real money involved
+            </div>
           </div>
 
           {/* CTA */}
@@ -70,8 +73,8 @@ export default function LiveHome({ initialFeed, initialTicker }: { initialFeed: 
           {/* Live stats */}
           <div className="flex items-center justify-center gap-6 mb-10 text-xs">
             <div className="text-center">
-              <div className="text-accent font-bold text-sm">$0 fees</div>
-              <div className="text-[#8A8A82] text-[10px]">to sign up</div>
+              <div className="text-accent font-bold text-sm">10K HC</div>
+              <div className="text-[#8A8A82] text-[10px]">free to start</div>
             </div>
             <div className="w-px h-6 bg-edge" />
             <div className="text-center">

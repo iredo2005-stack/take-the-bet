@@ -50,7 +50,7 @@ export default async function HomePage() {
           </span>
         </div>
         <div className="flex items-center gap-2.5">
-          <Link href="/about" className="text-xs text-[#8A8A82] hover:text-[#F5F5F0] transition-colors px-2 py-1 hidden sm:block">How it works</Link>
+          <Link href="/about" className="text-xs text-[#8A8A82] hover:text-[#F5F5F0] transition-colors px-2 py-1">How it works</Link>
           <Link href="/sign-in" className="text-xs text-[#8A8A82] hover:text-[#F5F5F0] transition-colors px-2 py-1">Log in</Link>
           <Link href="/sign-up" className="text-xs bg-accent hover:bg-accent-hover text-bg font-semibold px-3.5 py-1.5 rounded-md transition-colors">Sign up</Link>
         </div>

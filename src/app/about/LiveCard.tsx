@@ -57,23 +57,23 @@ export default function LiveCard() {
       <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(400px 140px at 80% 0, rgba(244,233,107,0.10), transparent 70%)' }} />
 
       <div className="relative">
-        <div className="text-[10.5px] tracking-[0.2em] uppercase text-[#8A93B0]" style={{ fontFamily: "'Space Mono', monospace" }}>Live price</div>
+        <div className="text-[10.5px] tracking-[0.2em] uppercase text-[#8A93B0]" style={{ fontFamily: 'var(--font-mono-about)' }}>Live price</div>
 
         {/* Creator row */}
         <div className="flex items-center gap-3 my-3.5">
           <div className="w-[46px] h-[46px] rounded-[14px] flex items-center justify-center text-[#0A0D18] text-xl font-bold flex-shrink-0"
-            style={{ background: 'linear-gradient(135deg, #F4E96B, #B98E2E)', fontFamily: "'Space Grotesk', system-ui, sans-serif" }}>
+            style={{ background: 'linear-gradient(135deg, #F4E96B, #B98E2E)', fontFamily: 'var(--font-display)' }}>
             M
           </div>
           <div>
-            <div className="font-semibold text-[17px]" style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}>@MidnightPlays</div>
+            <div className="font-semibold text-[17px]" style={{ fontFamily: 'var(--font-display)' }}>@MidnightPlays</div>
             <div className="text-[12.5px] text-[#8A93B0]">YouTube · Gaming</div>
           </div>
         </div>
 
         {/* Subscribers */}
         <div className="flex justify-between items-baseline text-[13px] text-[#8A93B0] border-t border-dashed border-white/[0.07] pt-3"
-          style={{ fontFamily: "'Space Mono', monospace" }}>
+          style={{ fontFamily: 'var(--font-mono-about)' }}>
           <span>Subscribers</span>
           <span className="text-[#EDEFF7] font-bold">{subs.toLocaleString()}</span>
         </div>
@@ -81,13 +81,13 @@ export default function LiveCard() {
         {/* Price + delta */}
         <div className="flex items-end justify-between mt-1.5">
           <div>
-            <div className="text-[11px] tracking-[0.18em] uppercase text-[#8A93B0]" style={{ fontFamily: "'Space Mono', monospace" }}>Price</div>
-            <div className="font-bold text-[34px] leading-none tracking-tight" style={{ fontFamily: "'Space Mono', monospace" }}>
+            <div className="text-[11px] tracking-[0.18em] uppercase text-[#8A93B0]" style={{ fontFamily: 'var(--font-mono-about)' }}>Price</div>
+            <div className="font-bold text-[34px] leading-none tracking-tight" style={{ fontFamily: 'var(--font-mono-about)' }}>
               {price.toFixed(2)}
             </div>
           </div>
           <div className={`font-bold text-sm px-2.5 py-1 rounded-lg transition-colors ${flash ? (isUp ? 'bg-[rgba(74,222,128,0.34)]' : 'bg-[rgba(248,113,113,0.34)]') : (isUp ? 'bg-[rgba(74,222,128,0.10)]' : 'bg-[rgba(248,113,113,0.10)]')}`}
-            style={{ fontFamily: "'Space Mono', monospace", color: isUp ? '#4ADE80' : '#F87171' }}>
+            style={{ fontFamily: 'var(--font-mono-about)', color: isUp ? '#4ADE80' : '#F87171' }}>
             {isUp ? '▲' : '▼'} {Math.abs(pct).toFixed(1)}%
           </div>
         </div>

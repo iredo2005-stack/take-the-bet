@@ -16,10 +16,10 @@ export default function LiveHome({ initialFeed, initialTicker }: { initialFeed: 
     const interval = setInterval(async () => {
       try {
         const res = await fetch('/api/activity')
-        if (res.ok) {
+        if (res.ok && res.headers.get('content-type')?.includes('json')) {
           const data = await res.json()
-          setFeed(data.feed)
-          setTicker(data.ticker)
+          if (data.feed) setFeed(data.feed)
+          if (data.ticker) setTicker(data.ticker)
         }
       } catch {}
     }, 15000)

@@ -68,10 +68,18 @@ export function calculateBaseValue(metrics: CreatorMetrics): number {
   const platMult = PLATFORM_MULTIPLIER[platform] ?? 1.0
   const normalizedAudience = metrics.subscribers * platMult
 
-  const audienceScore = normalizedAudience * 0.01
-  const viewsRaw = metrics.monthly_views * 0.001
-  const viewsCapped = Math.min(viewsRaw, audienceScore * 0.3)
-  const engBonus = metrics.engagement_rate * 50
+  // Logarithmic scale: compresses 9M vs 122M from 13× gap to ~1.4× gap
+  // log10(9M)=6.95, log10(122M)=8.09 → shifted scores 1.95 to 3.09
+  // Multiplied by 250K → divided by 100K shares → $4.88 to $7.73 range
+  const audienceLog = normalizedAudience > 0 ? Math.log10(normalizedAudience) : 0
+  const audienceScore = Math.max(0, audienceLog - 5) * 250_000
+
+  // Views bonus: log scale, capped at 15% of audience score
+  const viewsLog = metrics.monthly_views > 0 ? Math.log10(metrics.monthly_views) : 0
+  const viewsScore = Math.max(0, viewsLog - 5) * 40_000
+  const viewsCapped = Math.min(viewsScore, audienceScore * 0.15)
+
+  const engBonus = metrics.engagement_rate * 20_000
 
   const rawScore = audienceScore + viewsCapped + engBonus
 
@@ -79,11 +87,11 @@ export function calculateBaseValue(metrics: CreatorMetrics): number {
 
   let growthMultiplier = 1.0
   const g = metrics.monthly_growth_percent
-  if (g >= 20) growthMultiplier = 1.4
-  else if (g >= 10) growthMultiplier = 1.2
-  else if (g >= 5) growthMultiplier = 1.1
+  if (g >= 20) growthMultiplier = 1.15
+  else if (g >= 10) growthMultiplier = 1.1
+  else if (g >= 5) growthMultiplier = 1.05
   else if (g >= 0) growthMultiplier = 1.0
-  else growthMultiplier = 0.75
+  else growthMultiplier = 0.9
 
   return round2(rawScore * freqMultiplier * growthMultiplier)
 }

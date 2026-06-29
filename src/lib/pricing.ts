@@ -1,9 +1,4 @@
 // ── Bonding Curve (market price driven by supply/demand) ─────────────────────
-//
-// price(s) = initialPrice × (1 + 4 × s / totalShares)
-//
-// At s = 0: price = 1× initial
-// At s = totalShares: price = 5× initial (ceiling)
 
 const CURVE_MULTIPLIER = 4
 
@@ -32,13 +27,20 @@ function capPrice(initialPrice: number, price: number): number {
   return Math.max(initialPrice, Math.min(price, ceiling))
 }
 
-// ── Base Value (metric-driven fair value anchor) ─────────────────────────────
+// ── Growth-Based Pricing ─────────────────────────────────────────────────────
 //
-// Unified formula — same rule for every creator, normalized across platforms:
-// 1. Normalize audience: platform multiplier makes Twitch/YouTube/etc comparable
-// 2. Score = audience (primary) + views (capped at 30% of audience) + engagement
-// 3. Apply frequency + growth multipliers
-// 4. Price = score / total_shares, floor $0.25
+// Price = base_floor + momentum_score
+//
+// base_floor: small, from log(audience). Gives bigger creators a slight edge
+//   but NOT the main driver. Range: ~$1–$3.
+//
+// momentum_score: the MAIN driver. Based on growth_percent between updates.
+//   - Growing fast (>5%): price rises sharply
+//   - Flat (0-2%): price stays near base
+//   - Stalling/shrinking (<0%): price FALLS below base
+//   Range: -$2 to +$6
+//
+// This means prices go UP and DOWN — creating real risk and a real game.
 
 const PLATFORM_MULTIPLIER: Record<string, number> = {
   youtube: 1.0,
@@ -50,8 +52,8 @@ const PLATFORM_MULTIPLIER: Record<string, number> = {
 
 const FREQUENCY_MULTIPLIERS: Record<string, number> = {
   regular: 1.0,
-  rare: 0.8,
-  inactive: 0.6,
+  rare: 0.85,
+  inactive: 0.65,
 }
 
 export type CreatorMetrics = {
@@ -68,32 +70,39 @@ export function calculateBaseValue(metrics: CreatorMetrics): number {
   const platMult = PLATFORM_MULTIPLIER[platform] ?? 1.0
   const normalizedAudience = metrics.subscribers * platMult
 
-  // Logarithmic scale: compresses 9M vs 122M from 13× gap to ~1.4× gap
-  // log10(9M)=6.95, log10(122M)=8.09 → shifted scores 1.95 to 3.09
-  // Multiplied by 250K → divided by 100K shares → $4.88 to $7.73 range
+  // ── Base floor: log scale of audience ──
+  // Gives bigger creators a slight premium ($1–$3 range)
   const audienceLog = normalizedAudience > 0 ? Math.log10(normalizedAudience) : 0
-  const audienceScore = Math.max(0, audienceLog - 5) * 250_000
+  const baseFloor = Math.max(0, audienceLog - 5) * 80_000 // ~$1.3 to $2.5
 
-  // Views bonus: log scale, capped at 15% of audience score
-  const viewsLog = metrics.monthly_views > 0 ? Math.log10(metrics.monthly_views) : 0
-  const viewsScore = Math.max(0, viewsLog - 5) * 40_000
-  const viewsCapped = Math.min(viewsScore, audienceScore * 0.15)
-
-  const engBonus = metrics.engagement_rate * 20_000
-
-  const rawScore = audienceScore + viewsCapped + engBonus
-
-  const freqMultiplier = FREQUENCY_MULTIPLIERS[metrics.post_frequency] ?? 1.0
-
-  let growthMultiplier = 1.0
+  // ── Momentum score: growth rate is the main price driver ──
   const g = metrics.monthly_growth_percent
-  if (g >= 20) growthMultiplier = 1.15
-  else if (g >= 10) growthMultiplier = 1.1
-  else if (g >= 5) growthMultiplier = 1.05
-  else if (g >= 0) growthMultiplier = 1.0
-  else growthMultiplier = 0.9
 
-  return round2(rawScore * freqMultiplier * growthMultiplier)
+  // Map growth % to a momentum multiplier:
+  // -5% or worse → 0.4 (price crashes)
+  // 0% → 0.7 (slightly below neutral)
+  // +2% → 1.0 (neutral)
+  // +5% → 1.5 (heating up)
+  // +10% → 2.0 (on fire)
+  // +20%+ → 2.5 (explosive — capped)
+  // Smooth monotonic curve: always higher growth = higher momentum
+  // -5% → 0.3, 0% → 0.7, +2% → 1.0, +5% → 1.5, +10% → 2.0, +20% → 2.5
+  let momentum: number
+  if (g <= -5) momentum = 0.3
+  else if (g <= 0) momentum = 0.3 + (g + 5) * 0.08 // 0.3 → 0.7
+  else if (g <= 2) momentum = 0.7 + g * 0.15 // 0.7 → 1.0
+  else if (g <= 5) momentum = 1.0 + (g - 2) * 0.167 // 1.0 → 1.5
+  else if (g <= 10) momentum = 1.5 + (g - 5) * 0.1 // 1.5 → 2.0
+  else if (g <= 20) momentum = 2.0 + (g - 10) * 0.05 // 2.0 → 2.5
+  else momentum = 2.5
+
+  const momentumScore = baseFloor * momentum
+
+  // ── Small bonuses ──
+  const engBonus = metrics.engagement_rate * 5_000
+  const freqMult = FREQUENCY_MULTIPLIERS[metrics.post_frequency] ?? 1.0
+
+  return round2((momentumScore + engBonus) * freqMult)
 }
 
 export const DEFAULT_TOTAL_SHARES = 100_000

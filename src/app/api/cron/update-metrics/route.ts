@@ -159,9 +159,16 @@ export async function GET(req: Request) {
         entry.newSubs = newSubs
         entry.newViews = newViews
 
-        // Calculate growth % (compare old vs new subs)
-        const oldSubs = c.subscribers || 0
-        const growthPct = oldSubs > 0 ? Math.round(((newSubs - oldSubs) / oldSubs) * 100 * 10) / 10 : 0
+        // Calculate growth % using rolling window
+        // Compare current subs to the stored value (which represents the last update)
+        // Scale daily growth to approximate weekly rate for meaningful price movement
+        const oldSubs = c.subscribers || 1
+        const dailyGrowthPct = ((newSubs - oldSubs) / oldSubs) * 100
+        // Extrapolate to weekly for a more meaningful signal
+        // Also carry forward previous momentum (weighted blend: 60% new signal + 40% old momentum)
+        const prevMomentum = Number(c.monthly_growth_percent || 0)
+        const weeklyGrowth = dailyGrowthPct * 7
+        const growthPct = Math.round((weeklyGrowth * 0.6 + prevMomentum * 0.4) * 10) / 10
 
         // Update creator metrics
         await supabase.from('creators').update({

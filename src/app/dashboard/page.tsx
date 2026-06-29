@@ -91,7 +91,7 @@ function FanView({ userName, holdings, creators, bets, statusBanner, hasApplied 
           The stock market for <span className="text-accent">creators</span>
         </h1>
         <p className="text-[#8A8A82] text-sm leading-relaxed max-w-md">
-          Invest in creators early. Prices follow real growth — subscribers, views, and momentum.
+          Prices rise when creators are blowing up, drop when they stall. Catch momentum early.
         </p>
       </div>
 

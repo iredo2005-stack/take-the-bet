@@ -38,7 +38,7 @@ export default function AboutPage() {
               Real growth moves<br />the price.<span className="block text-[#F4E96B]">Spot it first.</span>
             </h1>
             <p className="text-[#8A93B0] text-lg max-w-[30ch] mb-7 leading-relaxed">
-              Hype turns creators into tradable stocks. Their price follows real numbers — subscribers, views, momentum. Back the ones you believe in before the crowd does.
+              Hype turns creators into tradable stocks. Price rises when they&apos;re blowing up, drops when they stall. Catch the momentum before the crowd does.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link href="/sign-up" className="inline-block font-semibold text-[15px] rounded-full px-6 py-3 bg-[#F4E96B] text-[#0A0D18] hover:bg-[#E7CF4A] hover:-translate-y-0.5 transition-all">
@@ -59,9 +59,9 @@ export default function AboutPage() {
           <div className="text-[#F4E96B] text-xs tracking-[0.28em] uppercase mb-6" style={{ fontFamily: 'var(--font-mono-about)' }}>How it works</div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { n: '01', arrow: true, title: 'A creator grows', desc: "Their channel picks up subscribers and views. Real numbers, pulled live from the platform — not guesses." },
-              { n: '02', arrow: true, title: 'Their price moves', desc: "Hype reads that growth and moves their stock to match. Up when they pop off, down when they go quiet." },
-              { n: '03', arrow: false, title: 'You profit if you called it', desc: "Buy in early, hold while they climb, and rise up the leaderboard. The sooner you spot them, the bigger the win." },
+              { n: '01', arrow: true, title: 'A creator picks up speed', desc: "Their channel starts gaining followers faster than before. Hype tracks the growth rate in real time — not just the number, but the acceleration." },
+              { n: '02', arrow: true, title: 'Momentum moves the price', desc: "Growing fast? Price surges. Slowing down? Price drops. It's not about being big — it's about who's heating up right now. Prices go up AND down." },
+              { n: '03', arrow: false, title: 'You profit if you spotted it early', desc: "Buy before the spike, sell before the cooldown. The game is about catching momentum — not holding forever." },
             ].map((s) => (
               <div key={s.n} className="bg-[#0F1424] border border-white/[0.07] rounded-2xl p-5">
                 <div className="text-[#F4E96B] text-[13px] font-bold tracking-wider" style={{ fontFamily: 'var(--font-mono-about)' }}>

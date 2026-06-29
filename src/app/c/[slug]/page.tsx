@@ -136,9 +136,9 @@ function HowItWorks({ commissionRate }: { commissionRate: number }) {
     <div className="bg-card border border-edge rounded-xl p-3 mt-3">
       <p className="text-[#F5F5F0] text-[10px] font-semibold uppercase tracking-wider mb-2">How pricing works</p>
       <div className="space-y-1.5 text-[11px] text-[#8A8A82] leading-relaxed">
-        <p>Prices move with <span className="text-[#F5F5F0]">supply and demand</span>. More buyers push the price up.</p>
+        <p>Prices follow <span className="text-[#F5F5F0]">growth momentum</span>. Growing fast → price rises. Slowing down → price drops. Prices go both ways.</p>
         <p><span className="text-[#F5F5F0]">{pct}% fee</span> on the initial offering only. 20% treasury held for liquidity.</p>
-        <p>Metrics are <span className="text-[#F5F5F0]">bot-filtered</span> to reflect real engagement.</p>
+        <p>Growth rates are tracked live and <span className="text-[#F5F5F0]">updated daily</span> from real platform data.</p>
       </div>
     </div>
   )

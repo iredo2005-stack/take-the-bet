@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/update-metrics?secret=test",
+      "schedule": "0 0 * * *"
+    }
+  ]
+}

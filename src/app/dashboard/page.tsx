@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { requireUser } from '@/lib/auth'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { formatCurrency, formatNumber } from '@/lib/utils'
+import { basePricePerShare } from '@/lib/pricing'
 import type { CreatorRow, OfferingRow } from '@/types/database'
 import CreatorGrid from './CreatorGrid'
 
@@ -43,12 +44,7 @@ export default async function DashboardPage() {
 
   const listings: CreatorListing[] = ((rawListings || []) as any[]).map((o) => {
     const c = o.creators
-    const metrics = { subscribers: c.subscribers ?? 0, monthly_views: c.monthly_views ?? 0, engagement_rate: Number(c.engagement_rate ?? 0), post_frequency: c.post_frequency ?? 'regular', monthly_growth_percent: Number(c.monthly_growth_percent ?? 0) }
-    const bv = (metrics.subscribers * 0.01 + metrics.monthly_views * 0.001 + metrics.engagement_rate * 100)
-    const fm = ({ regular: 1, rare: 0.8, inactive: 0.6 } as Record<string, number>)[metrics.post_frequency] ?? 1
-    const gm = metrics.monthly_growth_percent >= 20 ? 1.5 : metrics.monthly_growth_percent >= 5 ? 1.2 : metrics.monthly_growth_percent >= 0 ? 1.0 : 0.7
-    const baseVal = bv * fm * gm
-    const bp = o.total_shares > 0 ? Math.round((baseVal / o.total_shares) * 100) / 100 : 0
+    const bp = basePricePerShare({ subscribers: c.subscribers ?? 0, monthly_views: c.monthly_views ?? 0, engagement_rate: Number(c.engagement_rate ?? 0), post_frequency: c.post_frequency ?? 'regular', monthly_growth_percent: Number(c.monthly_growth_percent ?? 0), platform: c.platform ?? 'youtube' }, o.total_shares)
     return {
       id: c.id, display_name: c.display_name, slug: c.slug, photo_url: c.photo_url, bio: c.bio,
       subscribers: c.subscribers ?? 0, declared_followers: c.declared_followers,

@@ -34,9 +34,19 @@ function capPrice(initialPrice: number, price: number): number {
 
 // ── Base Value (metric-driven fair value anchor) ─────────────────────────────
 //
-// raw_base = (subscribers × 0.01) + (monthly_views × 0.001) + (engagement_rate × 100)
-// base_value = raw_base × frequency_multiplier × growth_multiplier
-// base_price_per_share = base_value / total_shares
+// Unified formula — same rule for every creator, normalized across platforms:
+// 1. Normalize audience: platform multiplier makes Twitch/YouTube/etc comparable
+// 2. Score = audience (primary) + views (capped at 30% of audience) + engagement
+// 3. Apply frequency + growth multipliers
+// 4. Price = score / total_shares, floor $0.25
+
+const PLATFORM_MULTIPLIER: Record<string, number> = {
+  youtube: 1.0,
+  twitch: 1.8,
+  tiktok: 0.6,
+  instagram: 0.8,
+  twitter: 0.7,
+}
 
 const FREQUENCY_MULTIPLIERS: Record<string, number> = {
   regular: 1.0,
@@ -50,24 +60,32 @@ export type CreatorMetrics = {
   engagement_rate: number
   post_frequency: string
   monthly_growth_percent: number
+  platform?: string
 }
 
 export function calculateBaseValue(metrics: CreatorMetrics): number {
-  const rawBase =
-    (metrics.subscribers * 0.01) +
-    (metrics.monthly_views * 0.001) +
-    (metrics.engagement_rate * 100)
+  const platform = metrics.platform || 'youtube'
+  const platMult = PLATFORM_MULTIPLIER[platform] ?? 1.0
+  const normalizedAudience = metrics.subscribers * platMult
+
+  const audienceScore = normalizedAudience * 0.01
+  const viewsRaw = metrics.monthly_views * 0.001
+  const viewsCapped = Math.min(viewsRaw, audienceScore * 0.3)
+  const engBonus = metrics.engagement_rate * 50
+
+  const rawScore = audienceScore + viewsCapped + engBonus
 
   const freqMultiplier = FREQUENCY_MULTIPLIERS[metrics.post_frequency] ?? 1.0
 
   let growthMultiplier = 1.0
   const g = metrics.monthly_growth_percent
-  if (g >= 20) growthMultiplier = 1.5
-  else if (g >= 5) growthMultiplier = 1.2
+  if (g >= 20) growthMultiplier = 1.4
+  else if (g >= 10) growthMultiplier = 1.2
+  else if (g >= 5) growthMultiplier = 1.1
   else if (g >= 0) growthMultiplier = 1.0
-  else growthMultiplier = 0.7
+  else growthMultiplier = 0.75
 
-  return round2(rawBase * freqMultiplier * growthMultiplier)
+  return round2(rawScore * freqMultiplier * growthMultiplier)
 }
 
 export const DEFAULT_TOTAL_SHARES = 100_000
@@ -81,7 +99,7 @@ export function basePricePerShare(metrics: CreatorMetrics, totalShares: number =
 
 // ── Treasury ─────────────────────────────────────────────────────────────────
 
-export const TREASURY_PERCENT = 0.20 // platform holds 20% of total shares
+export const TREASURY_PERCENT = 0.20
 
 export function treasuryShares(totalShares: number): number {
   return Math.floor(totalShares * TREASURY_PERCENT)

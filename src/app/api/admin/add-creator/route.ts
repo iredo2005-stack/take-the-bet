@@ -47,14 +47,14 @@ export async function POST(req: Request) {
 
     if (createErr) return NextResponse.json({ error: createErr.message }, { status: 500 })
 
-    // Calculate initial price from metrics
-    const rawBase = (subscribers * 0.01) + ((monthlyViews || 0) * 0.001) + ((engagementRate || 0) * 100)
-    const fm: Record<string, number> = { regular: 1, rare: 0.8, inactive: 0.6 }
-    const gp = monthlyGrowthPercent || 0
-    const gm = gp >= 20 ? 1.5 : gp >= 5 ? 1.2 : gp >= 0 ? 1.0 : 0.7
-    const baseValue = rawBase * (fm[postFrequency] ?? 1) * gm
-    const totalShares = 100_000
-    const initialPrice = Math.max(0.25, Math.round((baseValue / totalShares) * 100) / 100)
+    // Calculate initial price using unified formula
+    const { basePricePerShare, DEFAULT_TOTAL_SHARES, MIN_SHARE_PRICE } = await import('@/lib/pricing')
+    const totalShares = DEFAULT_TOTAL_SHARES
+    const initialPrice = basePricePerShare({
+      subscribers, monthly_views: monthlyViews || 0, engagement_rate: engagementRate || 0,
+      post_frequency: postFrequency || 'regular', monthly_growth_percent: monthlyGrowthPercent || 0,
+      platform: platform || 'youtube',
+    }, totalShares)
 
     const commissionRate = parseFloat(process.env.PRIMARY_COMMISSION_RATE || '0.05')
     const treasury = Math.floor(totalShares * 0.20)

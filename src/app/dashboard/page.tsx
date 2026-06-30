@@ -12,7 +12,7 @@ type HoldingWithDetails = {
 }
 type CreatorListing = {
   id: string; display_name: string; slug: string; photo_url: string | null; bio: string | null
-  subscribers: number; declared_followers: number | null
+  subscribers: number; declared_followers: number | null; platform: string; growthPct: number
   offering: { id: string; title: string; image_url: string | null; current_price: number; initial_price: number; shares_sold: number; total_shares: number; shares_available: number; created_at: string }
   priceHistory: number[]
   basePrice: number
@@ -48,6 +48,7 @@ export default async function DashboardPage() {
     return {
       id: c.id, display_name: c.display_name, slug: c.slug, photo_url: c.photo_url, bio: c.bio,
       subscribers: c.subscribers ?? 0, declared_followers: c.declared_followers,
+      platform: c.platform ?? 'youtube', growthPct: Number(c.monthly_growth_percent ?? 0),
       offering: { id: o.id, title: o.title, image_url: o.image_url, current_price: Number(o.current_price), initial_price: Number(o.initial_price), shares_sold: o.shares_sold, total_shares: o.total_shares, shares_available: o.shares_available, created_at: o.created_at },
       priceHistory: priceMap[o.id] || [Number(o.initial_price), Number(o.current_price)],
       basePrice: bp,

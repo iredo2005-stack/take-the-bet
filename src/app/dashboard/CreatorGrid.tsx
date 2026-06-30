@@ -6,10 +6,20 @@ import { formatCurrency, formatNumber } from '@/lib/utils'
 
 type CreatorListing = {
   id: string; display_name: string; slug: string; photo_url: string | null; bio: string | null
-  subscribers: number; declared_followers: number | null
+  subscribers: number; declared_followers: number | null; platform: string; growthPct: number
   offering: { id: string; title: string; image_url: string | null; current_price: number; initial_price: number; shares_sold: number; total_shares: number; shares_available: number; created_at: string }
   priceHistory: number[]
   basePrice: number
+}
+
+function fmtSubs(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
+  if (n >= 1_000) return `${Math.round(n / 1_000)}K`
+  return String(n)
+}
+
+function subsLabel(platform: string): string {
+  return platform === 'twitch' ? 'followers' : 'subscribers'
 }
 
 type BetListing = {
@@ -112,11 +122,18 @@ function CreatorCard({ creator }: { creator: CreatorListing }) {
           <div className="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-sm font-bold flex-shrink-0">{creator.display_name[0]}</div>
         )}
 
-        {/* Name + sparkline */}
+        {/* Name + followers */}
         <div className="flex-1 min-w-0">
           <h3 className="text-[#F5F5F0] text-sm font-semibold truncate">{creator.display_name}</h3>
-          <div className="flex items-center gap-2 mt-0.5">
-            <span className="text-[#8A8A82] text-[10px]">{formatNumber(offering.shares_sold)} sold</span>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            {creator.subscribers > 0 && (
+              <span className="text-[#8A8A82] text-[10px] flex items-center gap-0.5">
+                <span className={`text-[9px] ${creator.growthPct > 0 ? 'text-up' : creator.growthPct < 0 ? 'text-down' : 'text-[#8A8A82]'}`}>
+                  {creator.growthPct > 0 ? '▲' : creator.growthPct < 0 ? '▼' : '—'}
+                </span>
+                {fmtSubs(creator.subscribers)} {subsLabel(creator.platform)}
+              </span>
+            )}
             <Sparkline data={creator.priceHistory} isUp={isUp} />
           </div>
         </div>

@@ -53,12 +53,29 @@ export default async function CreatorPage({ params }: Props) {
           ) : (
             <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent text-sm font-bold flex-shrink-0">{creator.display_name[0]}</div>
           )}
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <h1 className="text-base font-bold text-[#F5F5F0] truncate">{creator.display_name}</h1>
-            {creator.bio && <p className="text-[#8A8A82] text-xs truncate">{creator.bio.slice(0, 80)}</p>}
+            {metrics.subscribers > 0 && (
+              <p className="text-[#8A8A82] text-[10px] flex items-center gap-1 mt-0.5">
+                <span className={`text-[9px] ${metrics.monthly_growth_percent > 0 ? 'text-up' : metrics.monthly_growth_percent < 0 ? 'text-down' : 'text-[#8A8A82]'}`}>
+                  {metrics.monthly_growth_percent > 0 ? '▲' : metrics.monthly_growth_percent < 0 ? '▼' : '—'}
+                </span>
+                {metrics.subscribers >= 1_000_000
+                  ? `${(metrics.subscribers / 1_000_000).toFixed(1)}M`
+                  : metrics.subscribers >= 1_000
+                    ? `${Math.round(metrics.subscribers / 1_000)}K`
+                    : String(metrics.subscribers)
+                } {creator.platform === 'twitch' ? 'followers' : 'subscribers'}
+                {metrics.monthly_growth_percent !== 0 && (
+                  <span className={`ml-1 ${metrics.monthly_growth_percent > 0 ? 'text-up' : 'text-down'}`}>
+                    ({metrics.monthly_growth_percent > 0 ? '+' : ''}{metrics.monthly_growth_percent.toFixed(1)}%)
+                  </span>
+                )}
+              </p>
+            )}
           </div>
           {hasMetrics && basePrice > 0 && (
-            <div className="ml-auto text-right flex-shrink-0">
+            <div className="text-right flex-shrink-0">
               <p className="text-[#8A8A82] text-[10px] uppercase tracking-wide">Fair Value</p>
               <p className="text-[#F5F5F0] text-xs font-semibold">{formatCurrency(basePrice)}</p>
             </div>

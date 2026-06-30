@@ -13,13 +13,24 @@ async function fetchVideoViews(videoId: string): Promise<number> {
   return parseInt(data.items?.[0]?.statistics?.viewCount || '0')
 }
 
+async function fetchLatestVideoId(channelId: string): Promise<{ videoId: string; title: string } | null> {
+  const key = process.env.YOUTUBE_API_KEY
+  if (!key) return null
+  try {
+    const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&type=video&order=date&maxResults=1&key=${key}`)
+    const data = await res.json()
+    if (!data.items?.[0]) return null
+    return { videoId: data.items[0].id.videoId, title: data.items[0].snippet.title }
+  } catch { return null }
+}
+
 async function processVideoBets(supabase: ReturnType<typeof createAdminClient>) {
   const now = new Date()
 
   // Get all open bets with video_id
   const { data: bets } = await supabase
     .from('video_bets')
-    .select('*, bet_outcomes(*)')
+    .select('*, bet_outcomes(*), creators(platform_id, subscribers, declared_followers)')
     .eq('status', 'open')
     .not('video_id', 'is', null)
 
@@ -28,6 +39,57 @@ async function processVideoBets(supabase: ReturnType<typeof createAdminClient>) 
   for (const bet of (bets || []) as any[]) {
     const deadline = new Date(bet.deadline)
     const isPast = deadline < now
+
+    // ── New video detection (only for live bets) ──
+    if (!isPast && bet.creators?.platform_id) {
+      const latest = await fetchLatestVideoId(bet.creators.platform_id)
+      if (latest && latest.videoId !== bet.video_id) {
+        // Creator uploaded a new video! Close current bet based on current views, start fresh.
+        const currentViews = await fetchVideoViews(bet.video_id)
+        // Auto-resolve current bet with current data (settle in place, then create new)
+        const outcomes = (bet.bet_outcomes || []) as any[]
+        const winningId = resolveWinningTier(outcomes, currentViews)
+        const totalPool = Number(bet.total_pool)
+        if (totalPool > 0 && winningId) {
+          const rake = Math.round(totalPool * HOUSE_RAKE * 100) / 100
+          const prizePool = totalPool - rake
+          const winOutcome = outcomes.find((o: any) => o.id === winningId)
+          const winPool = Number(winOutcome?.pool_amount || 0)
+          const { data: winPos } = await supabase.from('bet_positions').select('*').eq('bet_id', bet.id).eq('outcome_id', winningId)
+          for (const p of (winPos || []) as any[]) {
+            const payout = Math.round((Number(p.amount) / winPool) * prizePool * 100) / 100
+            await supabase.from('bet_positions').update({ payout }).eq('id', p.id)
+            const { data: u } = await supabase.from('users').select('balance').eq('id', p.user_id).single()
+            if (u) await supabase.from('users').update({ balance: Math.round((Number(u.balance) + payout) * 100) / 100 }).eq('id', p.user_id)
+          }
+          await supabase.from('bet_positions').update({ payout: 0 }).eq('bet_id', bet.id).neq('outcome_id', winningId)
+        } else if (totalPool > 0) {
+          // Refund if no tier reached
+          const { data: allPos } = await supabase.from('bet_positions').select('*').eq('bet_id', bet.id)
+          for (const p of (allPos || []) as any[]) {
+            const { data: u } = await supabase.from('users').select('balance').eq('id', p.user_id).single()
+            if (u) await supabase.from('users').update({ balance: Math.round((Number(u.balance) + Number(p.amount)) * 100) / 100 }).eq('id', p.user_id)
+          }
+        }
+        await supabase.from('video_bets').update({ status: 'resolved', winning_outcome_id: winningId || null, current_views: currentViews }).eq('id', bet.id)
+
+        // Create new bet on the new video
+        const { generateTiers } = await import('@/lib/videoTiers')
+        const subs = bet.creators?.subscribers || bet.creators?.declared_followers || 0
+        const tiers = generateTiers(subs)
+        const newDeadline = new Date(Date.now() + 48 * 3600000).toISOString()
+        const { data: newBet } = await supabase.from('video_bets').insert({
+          creator_id: bet.creator_id, question: `How many views will "${latest.title.slice(0, 60)}" hit in 48h?`,
+          bet_type: 'tiered', deadline: newDeadline, status: 'open',
+          video_id: latest.videoId, video_title: latest.title, start_views: 0, current_views: 0,
+        }).select().single()
+        if (newBet) {
+          await supabase.from('bet_outcomes').insert(tiers.map((t, i) => ({ bet_id: newBet.id, label: t.label, target_views: t.target, sort_order: i, pool_amount: 0 })))
+        }
+        results.push({ bet: bet.id, status: 'rotated_to_new_video', newVideo: latest.title.slice(0, 50) })
+        continue
+      }
+    }
 
     // Always refresh view count for live bets
     const currentViews = await fetchVideoViews(bet.video_id)
@@ -38,7 +100,7 @@ async function processVideoBets(supabase: ReturnType<typeof createAdminClient>) 
       continue
     }
 
-    // Deadline passed — resolve
+    // Deadline passed — the hourly settle-bets cron handles this, but we catch any missed ones here
     const outcomes = (bet.bet_outcomes || []) as any[]
     const winningId = resolveWinningTier(outcomes, currentViews)
 

@@ -1,6 +1,10 @@
 {
   "crons": [
     {
+      "path": "/api/cron/settle-bets?secret=test",
+      "schedule": "0 * * * *"
+    },
+    {
       "path": "/api/cron/update-metrics?secret=test",
       "schedule": "0 0 * * *"
     }

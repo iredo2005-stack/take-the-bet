@@ -112,15 +112,14 @@ export default async function PortfolioPage() {
             <div className="space-y-2">
               {sortedHoldings.map((h: any) => {
                 const cv = h.shares_owned * Number(h.offerings.current_price)
-                const inv = Number(h.total_invested)
-                const feesPaid = Math.round((feesMap[h.offerings.id] || 0) * 100) / 100
-                const totalPnl = cv - inv
-                const marketChange = cv - inv + feesPaid
-                const pct = inv > 0 ? (totalPnl / inv) * 100 : 0
-                const up = totalPnl >= 0
-                const marketUp = marketChange >= 0
+                const inv = Number(h.total_invested) // includes buy fee
+                const pnl = cv - inv
+                const pct = inv > 0 ? (pnl / inv) * 100 : 0
+                const up = pnl >= 0
                 const c = h.offerings.creators
-                const isFeeLoss = totalPnl < 0 && marketChange >= -0.01
+                // Break-even price = total_invested / shares (includes fee)
+                const breakEven = Math.round((inv / h.shares_owned) * 100) / 100
+                const currentP = Number(h.offerings.current_price)
 
                 return (
                   <div key={h.id} className="bg-card border border-edge rounded-xl overflow-hidden hover:border-edge/80 transition-all">
@@ -132,22 +131,20 @@ export default async function PortfolioPage() {
                       )}
                       <div className="flex-1 min-w-0">
                         <p className="text-[#F5F5F0] text-sm font-semibold truncate">{c.display_name}</p>
-                        <p className="text-[#8A8A82] text-[10px]">{formatNumber(h.shares_owned)} shares · avg {formatCurrency(Number(h.avg_buy_price))}</p>
+                        <p className="text-[#8A8A82] text-[10px]">{formatNumber(h.shares_owned)} shares · break-even {formatCurrency(breakEven)}</p>
                       </div>
                       <div className="text-right flex-shrink-0">
                         <p className="text-[#F5F5F0] text-sm font-bold">{formatCurrency(cv)}</p>
-                        {isFeeLoss ? (
-                          <p className="text-[#8A8A82] text-[10px] font-medium">fee: -{formatCurrency(feesPaid)}</p>
-                        ) : (
-                          <p className={`text-[10px] font-semibold ${up ? 'text-up' : 'text-down'}`}>
-                            {up ? '+' : ''}{formatCurrency(totalPnl)} ({up ? '+' : ''}{pct.toFixed(1)}%)
-                          </p>
-                        )}
+                        <p className={`text-[10px] font-semibold ${up ? 'text-up' : 'text-down'}`}>
+                          {up ? '+' : ''}{formatCurrency(pnl)} ({up ? '+' : ''}{pct.toFixed(1)}%)
+                        </p>
                       </div>
                     </Link>
-                    {feesPaid > 0 && !isFeeLoss && (
-                      <div className="border-t border-edge/50 px-3.5 py-1.5 flex items-center justify-between">
-                        <span className="text-[#8A8A82] text-[9px]">Market {marketUp ? '+' : ''}{formatCurrency(marketChange)} · Fee paid {formatCurrency(feesPaid)}</span>
+                    {!up && (
+                      <div className="border-t border-edge/50 px-3.5 py-1.5">
+                        <span className="text-[#8A8A82] text-[9px]">
+                          Needs {formatCurrency(breakEven)} to break even · currently {formatCurrency(currentP)}
+                        </span>
                       </div>
                     )}
                   </div>

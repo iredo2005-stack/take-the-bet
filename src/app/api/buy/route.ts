@@ -70,9 +70,11 @@ export async function POST(req: Request) {
     const avgPrice = avgPriceForBuy(initPrice, totalShares, sharesSold, shares)
     const newSpotPrice = priceAfterBuy(initPrice, totalShares, sharesSold, shares)
 
-    const commissionRate = parseFloat(process.env.PRIMARY_COMMISSION_RATE || '0.05')
+    const commissionRate = parseFloat(process.env.PRIMARY_COMMISSION_RATE || '0.02')
     const commissionAmount = Math.round(subtotal * commissionRate * 100) / 100
+    // totalAmount = what leaves the user's balance (shares + fee)
     const totalAmount = Math.round((subtotal + commissionAmount) * 100) / 100
+    // netAmount = shares cost only (no fee) — used for total_raised on the offering
     const netAmount = Math.round(subtotal * 100) / 100
 
     // Check virtual balance
@@ -137,9 +139,12 @@ export async function POST(req: Request) {
       .eq('offering_id', offeringId)
       .single()
 
+    // total_invested includes the fee so P&L starts at -fee (honest breakeven)
+    const totalInvestedForHolding = Math.round(totalAmount * 100) / 100
+
     if (existingHolding) {
       const newShares = existingHolding.shares_owned + shares
-      const newInvested = Number(existingHolding.total_invested) + subtotal
+      const newInvested = Number(existingHolding.total_invested) + totalInvestedForHolding
       await supabase
         .from('holdings')
         .update({
@@ -155,8 +160,8 @@ export async function POST(req: Request) {
           user_id: user.id,
           offering_id: offeringId,
           shares_owned: shares,
-          avg_buy_price: avgPrice,
-          total_invested: subtotal,
+          avg_buy_price: Math.round((totalInvestedForHolding / shares) * 100) / 100,
+          total_invested: totalInvestedForHolding,
         })
     }
 

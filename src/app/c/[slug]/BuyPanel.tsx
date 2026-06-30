@@ -85,10 +85,13 @@ export default function BuyPanel({ offering, isOwner }: Props) {
         </div>
         <div className="bg-subtle rounded-xl p-3 space-y-1.5 text-xs">
           <div className="flex justify-between text-[#8A8A82]"><span>{shares} share{shares > 1 ? 's' : ''} × {formatCurrency(avgPrice)}</span><span className="text-[#F5F5F0]">{formatCurrency(subtotal)}</span></div>
-          <div className="flex justify-between text-[#8A8A82]"><span>Trading fee ({(commission * 100).toFixed(0)}%)</span><span className="text-accent">{formatCurrency(fee)}</span></div>
+          <div className="flex justify-between text-[#8A8A82]"><span>Buy fee (2%)</span><span className="text-down">{formatCurrency(fee)}</span></div>
           <div className="border-t border-edge pt-1.5 flex justify-between font-semibold"><span className="text-[#F5F5F0]">You pay</span><span className="text-[#F5F5F0]">{formatCurrency(total)}</span></div>
-          {shares > 1 && <div className="flex justify-between text-[#8A8A82] pt-1"><span>Price after buy</span><span className="text-accent">{formatCurrency(newPrice)}</span></div>}
-          <p className="text-[#8A8A82] text-[9px] pt-1">Fee is a one-time commission. Your shares are valued at market price after purchase.</p>
+          <div className="flex justify-between text-[#8A8A82] border-t border-edge/50 pt-1.5 mt-0.5">
+            <span>Break-even price</span>
+            <span className="text-accent font-medium">{formatCurrency(Math.round((total / shares) * 100) / 100)}/share</span>
+          </div>
+          {shares > 1 && <div className="flex justify-between text-[#8A8A82]"><span>Price after buy</span><span className="text-[#F5F5F0]">{formatCurrency(newPrice)}</span></div>}
         </div>
         {error && <p className="text-down text-sm bg-down/10 border border-down/20 rounded-lg px-3 py-2">{error}</p>}
         <button disabled={maxShares === 0 || loading} onClick={handleBuy}

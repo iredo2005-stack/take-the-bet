@@ -16,7 +16,7 @@ export default function CreateOfferingPage() {
   function update(field: string, value: string) { setForm((p) => ({ ...p, [field]: value })) }
 
   const ts = parseInt(form.totalShares) || 0, ip = parseFloat(form.initialPrice) || 0
-  const tv = ts * ip, comm = tv * 0.05
+  const tv = ts * ip, comm = tv * 0.02
   const valid = form.title.trim() && form.description.trim() && form.imageUrl && ts > 0 && ip > 0
 
   async function handleSubmit(e: React.FormEvent) {

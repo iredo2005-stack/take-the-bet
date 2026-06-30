@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { formatCurrency, formatNumber } from '@/lib/utils'
+import VideoBetCard from '@/components/VideoBetCard'
 
 type CreatorListing = {
   id: string; display_name: string; slug: string; photo_url: string | null; bio: string | null
@@ -25,7 +26,8 @@ function subsLabel(platform: string): string {
 type BetListing = {
   id: string; question: string; bet_type: string; deadline: string; total_pool: number; status: string
   creator_name: string; creator_photo: string | null
-  outcomes: { id: string; label: string; pool_amount: number }[]
+  video_id: string | null; video_title: string | null; start_views: number; current_views: number
+  outcomes: { id: string; label: string; pool_amount: number; target_views: number; sort_order: number }[]
 }
 
 type Tab = 'trending' | 'breaking' | 'new' | 'big' | 'bets'
@@ -78,7 +80,7 @@ export default function CreatorGrid({ creators, bets = [] }: { creators: Creator
           <Empty text="No active video bets right now." />
         ) : (
           <div className="space-y-4">
-            {bets.map((b) => <BetCard key={b.id} bet={b} />)}
+            {bets.map((b) => <VideoBetCard key={b.id} bet={b} />)}
           </div>
         )
       ) : (

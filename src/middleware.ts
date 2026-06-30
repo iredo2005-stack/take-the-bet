@@ -13,6 +13,7 @@ const isPublicRoute = createRouteMatcher([
   '/api/activity',
   '/api/waitlist',
   '/api/cron/(.*)',
+  '/api/admin/video-bets',
 ])
 
 export default clerkMiddleware(async (auth, request) => {

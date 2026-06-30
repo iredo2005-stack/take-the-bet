@@ -1,6 +1,88 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { basePricePerShare, DEFAULT_TOTAL_SHARES } from '@/lib/pricing'
+import { resolveWinningTier } from '@/lib/videoTiers'
+
+const HOUSE_RAKE = 0.05 // 5% from pool
+
+async function fetchVideoViews(videoId: string): Promise<number> {
+  const key = process.env.YOUTUBE_API_KEY
+  if (!key) return 0
+  const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoId}&key=${key}`)
+  const data = await res.json()
+  return parseInt(data.items?.[0]?.statistics?.viewCount || '0')
+}
+
+async function processVideoBets(supabase: ReturnType<typeof createAdminClient>) {
+  const now = new Date()
+
+  // Get all open bets with video_id
+  const { data: bets } = await supabase
+    .from('video_bets')
+    .select('*, bet_outcomes(*)')
+    .eq('status', 'open')
+    .not('video_id', 'is', null)
+
+  const results = []
+
+  for (const bet of (bets || []) as any[]) {
+    const deadline = new Date(bet.deadline)
+    const isPast = deadline < now
+
+    // Always refresh view count for live bets
+    const currentViews = await fetchVideoViews(bet.video_id)
+    await supabase.from('video_bets').update({ current_views: currentViews }).eq('id', bet.id)
+
+    if (!isPast) {
+      results.push({ bet: bet.question?.slice(0, 40), status: 'live', views: currentViews })
+      continue
+    }
+
+    // Deadline passed — resolve
+    const outcomes = (bet.bet_outcomes || []) as any[]
+    const winningId = resolveWinningTier(outcomes, currentViews)
+
+    if (!winningId) {
+      // No tier reached — refund all bettors
+      const { data: positions } = await supabase.from('bet_positions').select('*').eq('bet_id', bet.id)
+      for (const p of (positions || []) as any[]) {
+        const { data: u } = await supabase.from('users').select('*').eq('id', p.user_id).single()
+        if (u) await supabase.from('users').update({ balance: Math.round((Number(u.balance) + Number(p.amount)) * 100) / 100 }).eq('id', u.id)
+        await supabase.from('bet_positions').update({ payout: 0 }).eq('id', p.id)
+      }
+      await supabase.from('video_bets').update({ status: 'resolved', winning_outcome_id: null, current_views: currentViews }).eq('id', bet.id)
+      results.push({ bet: bet.question?.slice(0, 40), status: 'resolved_no_winner', views: currentViews })
+      continue
+    }
+
+    // Distribute winnings
+    const totalPool = Number(bet.total_pool)
+    const rake = Math.round(totalPool * HOUSE_RAKE * 100) / 100
+    const prizePool = Math.round((totalPool - rake) * 100) / 100
+
+    const { data: winPositions } = await supabase.from('bet_positions').select('*').eq('bet_id', bet.id).eq('outcome_id', winningId)
+    const winningOutcome = outcomes.find((o: any) => o.id === winningId)
+    const winPool = Number(winningOutcome?.pool_amount || 0)
+
+    if (winPool > 0 && winPositions) {
+      for (const p of winPositions as any[]) {
+        const share = Number(p.amount) / winPool
+        const payout = Math.round(share * prizePool * 100) / 100
+        await supabase.from('bet_positions').update({ payout }).eq('id', p.id)
+        const { data: u } = await supabase.from('users').select('*').eq('id', p.user_id).single()
+        if (u) await supabase.from('users').update({ balance: Math.round((Number(u.balance) + payout) * 100) / 100 }).eq('id', u.id)
+      }
+    }
+
+    // Mark losers
+    await supabase.from('bet_positions').update({ payout: 0 }).eq('bet_id', bet.id).neq('outcome_id', winningId)
+    await supabase.from('video_bets').update({ status: 'resolved', winning_outcome_id: winningId, current_views: currentViews }).eq('id', bet.id)
+
+    results.push({ bet: bet.question?.slice(0, 40), status: 'resolved', views: currentViews, winTier: winningOutcome?.label, rake })
+  }
+
+  return results
+}
 
 // Twitch: get OAuth token, then fetch user data
 async function getTwitchToken(): Promise<string> {
@@ -213,12 +295,16 @@ export async function GET(req: Request) {
       report.push(entry)
     }
 
+    // ── Process video bets: refresh views + auto-resolve expired ──
+    const betsReport = await processVideoBets(supabase)
+
     return NextResponse.json({
       success: true,
       timestamp: new Date().toISOString(),
       creatorsUpdated: report.filter((r) => r.status === 'fetched').length,
       total: report.length,
       report,
+      betsReport,
     })
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 })

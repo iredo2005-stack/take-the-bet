@@ -60,7 +60,9 @@ export default async function DashboardPage() {
   const bets = ((rawBets || []) as any[]).map((b) => ({
     id: b.id, question: b.question, bet_type: b.bet_type, deadline: b.deadline, total_pool: Number(b.total_pool), status: b.status,
     creator_name: b.creators?.display_name ?? '', creator_photo: b.creators?.photo_url ?? null,
-    outcomes: ((b.bet_outcomes || []) as any[]).sort((a: any, b: any) => a.sort_order - b.sort_order).map((o: any) => ({ id: o.id, label: o.label, pool_amount: Number(o.pool_amount) })),
+    video_id: b.video_id ?? null, video_title: b.video_title ?? null,
+    start_views: Number(b.start_views ?? 0), current_views: Number(b.current_views ?? 0),
+    outcomes: ((b.bet_outcomes || []) as any[]).sort((a: any, bx: any) => a.sort_order - bx.sort_order).map((o: any) => ({ id: o.id, label: o.label, pool_amount: Number(o.pool_amount), target_views: Number(o.target_views ?? 0), sort_order: o.sort_order })),
   }))
 
   const { data: creatorRaw } = await supabase.from('creators').select('*').eq('user_id', user.id).maybeSingle()

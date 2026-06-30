@@ -1,6 +1,7 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import CreateBetForm from './CreateBetForm'
 import ResolveButton from './ResolveButton'
+import CreateVideoBetsButton from './CreateVideoBetsButton'
 import { formatCurrency } from '@/lib/utils'
 
 export default async function AdminBetsPage() {
@@ -25,7 +26,10 @@ export default async function AdminBetsPage() {
 
       {/* Create */}
       <div className="bg-card border border-edge rounded-2xl p-5 mb-8">
-        <h2 className="text-lg font-semibold text-white mb-4">Create New Bet</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-white">Create New Bet</h2>
+          <CreateVideoBetsButton />
+        </div>
         {allBig.length === 0 ? (
           <p className="text-gray-500 text-sm">No eligible creators (need 500K+ subscribers). Update creator metrics in Supabase first.</p>
         ) : (

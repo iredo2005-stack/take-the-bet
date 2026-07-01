@@ -75,26 +75,19 @@ export function calculateBaseValue(metrics: CreatorMetrics): number {
   const audienceLog = normalizedAudience > 0 ? Math.log10(normalizedAudience) : 0
   const baseFloor = Math.max(0, audienceLog - 5) * 80_000 // ~$1.3 to $2.5
 
-  // ── Momentum score: growth rate is the main price driver ──
-  const g = metrics.monthly_growth_percent
+  // ── Momentum score: growth rate modulates the base price ──
+  // Tighter range: 0.7× (stalling) to 1.4× (growing fast)
+  // A creator can only move ±40% from their base via momentum.
+  // With the ±15% daily cron cap, realistic daily swings are ±1-3%.
+  const g = Math.max(-20, Math.min(20, metrics.monthly_growth_percent)) // clamp input
 
-  // Map growth % to a momentum multiplier:
-  // -5% or worse → 0.4 (price crashes)
-  // 0% → 0.7 (slightly below neutral)
-  // +2% → 1.0 (neutral)
-  // +5% → 1.5 (heating up)
-  // +10% → 2.0 (on fire)
-  // +20%+ → 2.5 (explosive — capped)
-  // Smooth monotonic curve: always higher growth = higher momentum
-  // -5% → 0.3, 0% → 0.7, +2% → 1.0, +5% → 1.5, +10% → 2.0, +20% → 2.5
+  // Monotonic: -20% → 0.65, 0% → 0.85, +5% → 1.0, +10% → 1.2, +20% → 1.4
   let momentum: number
-  if (g <= -5) momentum = 0.3
-  else if (g <= 0) momentum = 0.3 + (g + 5) * 0.08 // 0.3 → 0.7
-  else if (g <= 2) momentum = 0.7 + g * 0.15 // 0.7 → 1.0
-  else if (g <= 5) momentum = 1.0 + (g - 2) * 0.167 // 1.0 → 1.5
-  else if (g <= 10) momentum = 1.5 + (g - 5) * 0.1 // 1.5 → 2.0
-  else if (g <= 20) momentum = 2.0 + (g - 10) * 0.05 // 2.0 → 2.5
-  else momentum = 2.5
+  if (g <= -10) momentum = 0.65 + (g + 20) * 0.008 // 0.65 → 0.73
+  else if (g <= 0) momentum = 0.73 + (g + 10) * 0.012 // 0.73 → 0.85
+  else if (g <= 5) momentum = 0.85 + g * 0.03 // 0.85 → 1.0
+  else if (g <= 10) momentum = 1.0 + (g - 5) * 0.04 // 1.0 → 1.2
+  else momentum = 1.2 + (g - 10) * 0.02 // 1.2 → 1.4
 
   const momentumScore = baseFloor * momentum
 
@@ -106,12 +99,14 @@ export function calculateBaseValue(metrics: CreatorMetrics): number {
 }
 
 export const DEFAULT_TOTAL_SHARES = 100_000
-export const MIN_SHARE_PRICE = 0.25
+export const MIN_SHARE_PRICE = 0.50  // raised floor — nothing below $0.50
+export const MAX_SHARE_PRICE = 20.00 // ceiling — nothing above $20
 
 export function basePricePerShare(metrics: CreatorMetrics, totalShares: number = DEFAULT_TOTAL_SHARES): number {
   const bv = calculateBaseValue(metrics)
   if (totalShares <= 0) return MIN_SHARE_PRICE
-  return Math.max(MIN_SHARE_PRICE, round2(bv / totalShares))
+  const raw = round2(bv / totalShares)
+  return Math.max(MIN_SHARE_PRICE, Math.min(MAX_SHARE_PRICE, raw))
 }
 
 // ── Treasury ─────────────────────────────────────────────────────────────────

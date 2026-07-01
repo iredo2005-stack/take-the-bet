@@ -303,16 +303,31 @@ export async function GET(req: Request) {
         entry.newSubs = newSubs
         entry.newViews = newViews
 
-        // Calculate growth % using rolling window
-        // Compare current subs to the stored value (which represents the last update)
-        // Scale daily growth to approximate weekly rate for meaningful price movement
-        const oldSubs = c.subscribers || 1
-        const dailyGrowthPct = ((newSubs - oldSubs) / oldSubs) * 100
-        // Extrapolate to weekly for a more meaningful signal
-        // Also carry forward previous momentum (weighted blend: 60% new signal + 40% old momentum)
+        // ── Growth rate calculation (guarded against bad data) ──
+        const oldSubs = c.subscribers || 0
+
+        // Guard 1: skip growth calc if old value is zero or looks like a data-correction jump
+        // A jump >50% from the previous stored value is likely a correction, not real growth
+        const rawDailyPct = oldSubs > 0 ? ((newSubs - oldSubs) / oldSubs) * 100 : 0
+        const isDataCorrection = Math.abs(rawDailyPct) > 50
+
+        // Guard 2: if it looks like a data correction, don't reward or punish the price —
+        // keep momentum unchanged and just update the stored subscriber count
         const prevMomentum = Number(c.monthly_growth_percent || 0)
-        const weeklyGrowth = dailyGrowthPct * 7
-        const growthPct = Math.round((weeklyGrowth * 0.6 + prevMomentum * 0.4) * 10) / 10
+
+        let growthPct: number
+        if (isDataCorrection) {
+          // Silently absorb the data correction — no momentum signal
+          growthPct = prevMomentum * 0.9 // slowly decay previous momentum
+        } else {
+          // Normal daily signal: keep it small (daily, not weekly)
+          // Do NOT multiply by 7 — daily changes should be small signals
+          const rawSignal = Math.max(-5, Math.min(5, rawDailyPct)) // hard-cap raw daily signal to ±5%
+          // Exponential moving average: 30% new signal, 70% carry-forward
+          growthPct = Math.round((rawSignal * 0.3 + prevMomentum * 0.7) * 10) / 10
+          // Cap the stored momentum at ±20% — no runaway values
+          growthPct = Math.max(-20, Math.min(20, growthPct))
+        }
 
         // Update creator metrics
         await supabase.from('creators').update({
@@ -322,7 +337,7 @@ export async function GET(req: Request) {
         }).eq('id', c.id)
 
         // Recalculate price
-        const newPrice = basePricePerShare({
+        const rawNewPrice = basePricePerShare({
           subscribers: newSubs,
           monthly_views: newViews,
           engagement_rate: Number(c.engagement_rate || 0),
@@ -331,11 +346,20 @@ export async function GET(req: Request) {
           platform: c.platform || 'youtube',
         }, DEFAULT_TOTAL_SHARES)
 
+        // Guard 3: cap daily price movement at ±15% of current price
+        const offerings = c.offerings || []
+        const currentStoredPrice = Number(offerings[0]?.current_price || rawNewPrice)
+        const maxMove = currentStoredPrice * 0.15
+        const newPrice = currentStoredPrice > 0
+          ? Math.max(currentStoredPrice - maxMove, Math.min(currentStoredPrice + maxMove, rawNewPrice))
+          : rawNewPrice
+
         entry.newPrice = newPrice
+        entry.rawNewPrice = rawNewPrice
         entry.growthPct = growthPct
+        entry.isDataCorrection = isDataCorrection
 
         // Update offering price + log to price_history
-        const offerings = c.offerings || []
         for (const o of offerings) {
           const oldPrice = Number(o.current_price)
           entry.oldPrice = oldPrice

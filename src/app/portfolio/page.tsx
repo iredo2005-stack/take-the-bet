@@ -13,13 +13,22 @@ export default async function PortfolioPage() {
   const supabase = createAdminClient()
   const balance = Number(user.balance ?? 0)
 
-  // Holdings with driver labels
-  const { data: rawHoldings } = await supabase
+  // Holdings — try with optional columns, fall back if they don't exist yet
+  const { data: rawHoldings, error: holdingsErr } = await supabase
     .from('holdings')
     .select('*, offerings(id, title, current_price, initial_price, last_change_pct, creators(display_name, slug, photo_url, price_driver))')
     .eq('user_id', user.id)
     .gt('shares_owned', 0)
-  const holdings = (rawHoldings || []) as any[]
+  let finalHoldings: any[] | null = rawHoldings as any[] | null
+  if (holdingsErr) {
+    const { data: fallbackH } = await supabase
+      .from('holdings')
+      .select('*, offerings(id, title, current_price, initial_price, creators(display_name, slug, photo_url))')
+      .eq('user_id', user.id)
+      .gt('shares_owned', 0)
+    finalHoldings = fallbackH
+  }
+  const holdings = (finalHoldings || []).filter((h: any) => h.offerings != null) as any[]
 
   // Open short positions (graceful if table doesn't exist yet)
   const { data: rawShorts } = await supabase
@@ -27,14 +36,14 @@ export default async function PortfolioPage() {
     .select('*, offerings(id, current_price, creators(display_name, slug, photo_url))')
     .eq('user_id', user.id)
     .eq('status', 'open')
-  const shorts = (rawShorts || []) as any[]
+  const shorts = (rawShorts || []).filter((sh: any) => sh.offerings != null) as any[]
 
   const totalInvested = holdings.reduce((s: number, h: any) => s + Number(h.total_invested), 0)
-  const holdingsValue = holdings.reduce((s: number, h: any) => s + h.shares_owned * Number(h.offerings.current_price), 0)
+  const holdingsValue = holdings.reduce((s: number, h: any) => s + h.shares_owned * Number(h.offerings?.current_price ?? 0), 0)
 
   // Shorts current value = collateral + unrealized P&L (max loss = collateral)
   const shortsValue = shorts.reduce((s: number, sh: any) => {
-    const rawPnl = (Number(sh.open_price) - Number(sh.offerings.current_price)) * sh.shares
+    const rawPnl = (Number(sh.open_price) - Number(sh.offerings?.current_price ?? sh.open_price)) * sh.shares
     const finalPnl = Math.max(-Number(sh.collateral), rawPnl)
     return s + Math.max(0, Number(sh.collateral) + finalPnl)
   }, 0)

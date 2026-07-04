@@ -26,10 +26,24 @@ export default async function DashboardPage() {
   const { data: rawHoldings } = await supabase.from('holdings').select(`id, shares_owned, avg_buy_price, total_invested, offerings ( id, title, current_price, initial_price, creators ( display_name, slug, photo_url ) )`).eq('user_id', user.id).gt('shares_owned', 0)
   const holdings = (rawHoldings || []) as unknown as HoldingWithDetails[]
 
-  const { data: rawListings } = await supabase.from('offerings').select(`id, title, current_price, initial_price, shares_sold, total_shares, shares_available, image_url, created_at, last_change_pct, creators ( id, display_name, slug, photo_url, bio, subscribers, monthly_views, engagement_rate, post_frequency, monthly_growth_percent, declared_followers, price_driver )`).eq('status', 'active').order('shares_sold', { ascending: false })
+  // Try full query (with optional columns); fall back if columns don't exist yet
+  const { data: rawListings, error: listingsErr } = await supabase
+    .from('offerings')
+    .select(`id, title, current_price, initial_price, shares_sold, total_shares, shares_available, image_url, created_at, last_change_pct, creators ( id, display_name, slug, photo_url, bio, subscribers, monthly_views, engagement_rate, post_frequency, monthly_growth_percent, declared_followers, price_driver )`)
+    .eq('status', 'active')
+    .order('shares_sold', { ascending: false })
+  let finalListings: any[] | null = rawListings as any[] | null
+  if (listingsErr) {
+    const { data: fallback } = await supabase
+      .from('offerings')
+      .select(`id, title, current_price, initial_price, shares_sold, total_shares, shares_available, image_url, created_at, creators ( id, display_name, slug, photo_url, bio, subscribers, monthly_views, engagement_rate, post_frequency, monthly_growth_percent, declared_followers )`)
+      .eq('status', 'active')
+      .order('shares_sold', { ascending: false })
+    finalListings = fallback
+  }
 
   // Fetch recent price history for sparklines (last 10 points per offering)
-  const offeringIds = (rawListings || []).map((o: any) => o.id)
+  const offeringIds = (finalListings || []).map((o: any) => o.id)
   let priceMap: Record<string, number[]> = {}
   if (offeringIds.length > 0) {
     const { data: prices } = await supabase.from('price_history').select('offering_id, price').in('offering_id', offeringIds).order('recorded_at', { ascending: true })
@@ -43,7 +57,7 @@ export default async function DashboardPage() {
     }
   }
 
-  const listings: CreatorListing[] = ((rawListings || []) as any[]).map((o) => {
+  const listings: CreatorListing[] = ((finalListings || []) as any[]).filter((o) => o.creators != null).map((o) => {
     const c = o.creators
     const bp = basePricePerShare({ subscribers: c.subscribers ?? 0, monthly_views: c.monthly_views ?? 0, engagement_rate: Number(c.engagement_rate ?? 0), post_frequency: c.post_frequency ?? 'regular', monthly_growth_percent: Number(c.monthly_growth_percent ?? 0), platform: c.platform ?? 'youtube' }, o.total_shares)
     return {

@@ -70,7 +70,7 @@ export async function POST(req: Request) {
         initial_price: initialPrice,
         current_price: initialPrice,
         status: 'active',
-        primary_commission_rate: 0.05,
+        primary_commission_rate: 0.02,
         treasury_shares: treasury,
       }).select().single()
 

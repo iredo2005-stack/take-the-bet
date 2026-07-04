@@ -5,48 +5,62 @@ import { formatCurrency, formatNumber } from '@/lib/utils'
 import { UserButton } from '@clerk/nextjs'
 import { Logo } from '@/components/Logo'
 import PortfolioChart from './PortfolioChart'
+import PortfolioHoldings from './PortfolioHoldings'
+import PortfolioShorts from './PortfolioShorts'
 
 export default async function PortfolioPage() {
   const user = await requireUser()
   const supabase = createAdminClient()
   const balance = Number(user.balance ?? 0)
 
-  // Holdings
-  const { data: rawHoldings } = await supabase.from('holdings').select('*, offerings(id, title, current_price, initial_price, creators(display_name, slug, photo_url))').eq('user_id', user.id).gt('shares_owned', 0)
+  // Holdings with driver labels
+  const { data: rawHoldings } = await supabase
+    .from('holdings')
+    .select('*, offerings(id, title, current_price, initial_price, last_change_pct, creators(display_name, slug, photo_url, price_driver))')
+    .eq('user_id', user.id)
+    .gt('shares_owned', 0)
   const holdings = (rawHoldings || []) as any[]
+
+  // Open short positions (graceful if table doesn't exist yet)
+  const { data: rawShorts } = await supabase
+    .from('shorts')
+    .select('*, offerings(id, current_price, creators(display_name, slug, photo_url))')
+    .eq('user_id', user.id)
+    .eq('status', 'open')
+  const shorts = (rawShorts || []) as any[]
 
   const totalInvested = holdings.reduce((s: number, h: any) => s + Number(h.total_invested), 0)
   const holdingsValue = holdings.reduce((s: number, h: any) => s + h.shares_owned * Number(h.offerings.current_price), 0)
-  const totalValue = holdingsValue + balance
+
+  // Shorts current value = collateral + unrealized P&L (max loss = collateral)
+  const shortsValue = shorts.reduce((s: number, sh: any) => {
+    const rawPnl = (Number(sh.open_price) - Number(sh.offerings.current_price)) * sh.shares
+    const finalPnl = Math.max(-Number(sh.collateral), rawPnl)
+    return s + Math.max(0, Number(sh.collateral) + finalPnl)
+  }, 0)
+
+  const totalValue = holdingsValue + balance + shortsValue
   const totalPnl = holdingsValue - totalInvested
   const pnlPct = totalInvested > 0 ? (totalPnl / totalInvested) * 100 : 0
   const isUp = totalPnl >= 0
 
-  // Transaction history for portfolio chart (last 30 entries)
-  const { data: txHistory } = await supabase.from('transactions').select('total_amount, created_at').eq('buyer_id', user.id).eq('status', 'completed').order('created_at', { ascending: true }).limit(50)
+  // Transaction history for portfolio chart
+  const { data: txHistory } = await supabase
+    .from('transactions')
+    .select('total_amount, created_at')
+    .eq('buyer_id', user.id)
+    .eq('status', 'completed')
+    .order('created_at', { ascending: true })
+    .limit(50)
 
-  // Build portfolio value over time (cumulative invested vs current value)
   let cumInvested = 0
   const chartData = (txHistory || []).map((tx: any) => {
     cumInvested += Number(tx.total_amount)
     return { time: tx.created_at, invested: Math.round(cumInvested * 100) / 100 }
   })
-  // Add current state as final point
   if (chartData.length > 0) {
     chartData.push({ time: new Date().toISOString(), invested: Math.round(totalInvested * 100) / 100 })
   }
-
-  // Fetch total fees paid per offering
-  const { data: feeData } = await supabase.from('transactions').select('offering_id, commission_amount').eq('buyer_id', user.id).eq('status', 'completed')
-  const feesMap: Record<string, number> = {}
-  for (const tx of (feeData || []) as any[]) {
-    feesMap[tx.offering_id] = (feesMap[tx.offering_id] || 0) + Number(tx.commission_amount)
-  }
-
-  // Sort holdings by value descending
-  const sortedHoldings = [...holdings].sort((a: any, b: any) =>
-    (b.shares_owned * Number(b.offerings.current_price)) - (a.shares_owned * Number(a.offerings.current_price))
-  )
 
   return (
     <div className="min-h-screen bg-bg pb-20 sm:pb-0">
@@ -81,7 +95,7 @@ export default async function PortfolioPage() {
           </div>
         )}
 
-        {/* Balance + Holdings value */}
+        {/* Stats bar */}
         <div className="grid grid-cols-3 gap-2 mb-5">
           <div className="bg-card border border-edge rounded-xl p-3 text-center">
             <p className="text-[#8A8A82] text-[9px] uppercase tracking-widest mb-0.5">Holdings</p>
@@ -97,60 +111,21 @@ export default async function PortfolioPage() {
           </div>
         </div>
 
-        {/* Holdings */}
+        {/* Short positions (client component, handles close action) */}
+        <PortfolioShorts shorts={shorts} />
+
+        {/* Long holdings (client component, handles share card) */}
         <div className="mb-4">
           <p className="text-[#8A8A82] text-[10px] uppercase tracking-widest font-semibold mb-3">
             Your Holdings ({holdings.length})
           </p>
-
           {holdings.length === 0 ? (
             <div className="bg-card border border-edge rounded-2xl p-8 text-center">
               <p className="text-[#8A8A82] text-xs mb-3">No holdings yet</p>
               <Link href="/dashboard" className="text-accent text-xs font-semibold hover:underline">Browse creators →</Link>
             </div>
           ) : (
-            <div className="space-y-2">
-              {sortedHoldings.map((h: any) => {
-                const cv = h.shares_owned * Number(h.offerings.current_price)
-                const inv = Number(h.total_invested) // includes buy fee
-                const pnl = cv - inv
-                const pct = inv > 0 ? (pnl / inv) * 100 : 0
-                const up = pnl >= 0
-                const c = h.offerings.creators
-                // Break-even price = total_invested / shares (includes fee)
-                const breakEven = Math.round((inv / h.shares_owned) * 100) / 100
-                const currentP = Number(h.offerings.current_price)
-
-                return (
-                  <div key={h.id} className="bg-card border border-edge rounded-xl overflow-hidden hover:border-edge/80 transition-all">
-                    <Link href={`/c/${c.slug}`} className="flex items-center gap-3 p-3.5">
-                      {c.photo_url ? (
-                        <img src={c.photo_url} alt="" className="w-10 h-10 rounded-xl object-cover flex-shrink-0" />
-                      ) : (
-                        <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-sm font-bold flex-shrink-0">{c.display_name[0]}</div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[#F5F5F0] text-sm font-semibold truncate">{c.display_name}</p>
-                        <p className="text-[#8A8A82] text-[10px]">{formatNumber(h.shares_owned)} shares · break-even {formatCurrency(breakEven)}</p>
-                      </div>
-                      <div className="text-right flex-shrink-0">
-                        <p className="text-[#F5F5F0] text-sm font-bold">{formatCurrency(cv)}</p>
-                        <p className={`text-[10px] font-semibold ${up ? 'text-up' : 'text-down'}`}>
-                          {up ? '+' : ''}{formatCurrency(pnl)} ({up ? '+' : ''}{pct.toFixed(1)}%)
-                        </p>
-                      </div>
-                    </Link>
-                    {!up && (
-                      <div className="border-t border-edge/50 px-3.5 py-1.5">
-                        <span className="text-[#8A8A82] text-[9px]">
-                          Needs {formatCurrency(breakEven)} to break even · currently {formatCurrency(currentP)}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
+            <PortfolioHoldings holdings={holdings} />
           )}
         </div>
       </main>

@@ -329,11 +329,29 @@ export async function GET(req: Request) {
           growthPct = Math.max(-20, Math.min(20, growthPct))
         }
 
+        // ── Compute "Why" driver label ──
+        const subsChangePct = oldSubs > 0 ? ((newSubs - oldSubs) / oldSubs) * 100 : 0
+        const oldViews = c.monthly_views || 0
+        const viewsChangePct = oldViews > 0 ? ((newViews - oldViews) / oldViews) * 100 : 0
+        let priceDriver = ''
+        if (isDataCorrection) {
+          priceDriver = 'metrics updated'
+        } else if (Math.abs(subsChangePct) >= Math.abs(viewsChangePct)) {
+          if (subsChangePct > 0.1) priceDriver = `subscribers +${subsChangePct.toFixed(1)}%`
+          else if (subsChangePct < -0.1) priceDriver = `subscribers ${subsChangePct.toFixed(1)}%`
+          else priceDriver = 'stable audience'
+        } else {
+          if (viewsChangePct > 1) priceDriver = `views +${viewsChangePct.toFixed(0)}%`
+          else if (viewsChangePct < -1) priceDriver = `views ${viewsChangePct.toFixed(0)}%`
+          else priceDriver = 'stable views'
+        }
+
         // Update creator metrics
         await supabase.from('creators').update({
           subscribers: newSubs,
           monthly_views: newViews,
           monthly_growth_percent: growthPct,
+          price_driver: priceDriver,
         }).eq('id', c.id)
 
         // Recalculate price
@@ -354,24 +372,45 @@ export async function GET(req: Request) {
           ? Math.max(currentStoredPrice - maxMove, Math.min(currentStoredPrice + maxMove, rawNewPrice))
           : rawNewPrice
 
+        const changePct = currentStoredPrice > 0
+          ? Math.round(((newPrice - currentStoredPrice) / currentStoredPrice) * 100 * 10) / 10
+          : 0
+
         entry.newPrice = newPrice
         entry.rawNewPrice = rawNewPrice
         entry.growthPct = growthPct
         entry.isDataCorrection = isDataCorrection
+        entry.priceDriver = priceDriver
+        entry.changePct = changePct
 
-        // Update offering price + log to price_history
+        // Update offering price + log to price_history + check short liquidations
         for (const o of offerings) {
           const oldPrice = Number(o.current_price)
           entry.oldPrice = oldPrice
 
           await supabase.from('offerings').update({
             current_price: newPrice,
+            last_change_pct: changePct,
           }).eq('id', o.id)
 
-          await supabase.from('price_history').insert({
-            offering_id: o.id,
-            price: newPrice,
-          })
+          await supabase.from('price_history').insert({ offering_id: o.id, price: newPrice })
+
+          // Auto-liquidate shorts if price rose past their liquidation price
+          const { data: openShorts } = await supabase
+            .from('shorts')
+            .select('*')
+            .eq('offering_id', o.id)
+            .eq('status', 'open')
+          for (const short of (openShorts || []) as any[]) {
+            if (newPrice >= short.liquidation_price) {
+              const lossAmt = short.collateral // max loss = collateral
+              await supabase.from('shorts').update({
+                status: 'liquidated', close_price: newPrice,
+                pnl: -lossAmt, closed_at: new Date().toISOString(),
+              }).eq('id', short.id)
+              // Collateral already deducted at open — nothing more to deduct
+            }
+          }
         }
       } catch (err: any) {
         entry.status = 'error'

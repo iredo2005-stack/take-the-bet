@@ -44,15 +44,15 @@ export default function CreateOfferingPage() {
             <p className="text-[#8A8A82] text-xs mt-1 text-right">{form.description.length}/500</p></div>
           <div className="grid grid-cols-2 gap-3">
             <div><label className="block text-sm font-medium text-gray-300 mb-1.5">Price per share <span className="text-down">*</span></label>
-              <div className="relative"><span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
-              <input type="number" value={form.initialPrice} onChange={(e) => update('initialPrice', e.target.value)} placeholder="1.00" min="0.01" step="0.01" required className={inputCls + ' pl-7'} /></div></div>
+              <div className="relative"><span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs font-semibold">HC</span>
+              <input type="number" value={form.initialPrice} onChange={(e) => update('initialPrice', e.target.value)} placeholder="1.00" min="0.01" step="0.01" required className={inputCls + ' pl-9'} /></div></div>
             <div><label className="block text-sm font-medium text-gray-300 mb-1.5">Total shares <span className="text-down">*</span></label>
               <input type="number" value={form.totalShares} onChange={(e) => update('totalShares', e.target.value)} placeholder="10,000" min="1" step="1" required className={inputCls} /></div>
           </div>
           {ts > 0 && ip > 0 && (
             <div className="bg-subtle rounded-xl p-4 space-y-2 text-sm">
               <div className="flex justify-between text-gray-400"><span>Total offering value</span><span className="text-white font-semibold">{formatCurrency(tv)}</span></div>
-              <div className="flex justify-between text-gray-400"><span>Platform commission (5% on initial)</span><span className="text-down">{formatCurrency(comm)}</span></div>
+              <div className="flex justify-between text-gray-400"><span>Buy fee (2% per trade)</span><span className="text-down">{formatCurrency(comm)}</span></div>
               <div className="border-t border-edge pt-2 flex justify-between text-gray-400"><span>You receive</span><span className="text-up font-semibold">{formatCurrency(tv - comm)}</span></div>
             </div>
           )}

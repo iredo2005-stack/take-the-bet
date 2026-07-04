@@ -8,7 +8,8 @@ import VideoBetCard from '@/components/VideoBetCard'
 type CreatorListing = {
   id: string; display_name: string; slug: string; photo_url: string | null; bio: string | null
   subscribers: number; declared_followers: number | null; platform: string; growthPct: number
-  offering: { id: string; title: string; image_url: string | null; current_price: number; initial_price: number; shares_sold: number; total_shares: number; shares_available: number; created_at: string }
+  priceDriver: string | null
+  offering: { id: string; title: string; image_url: string | null; current_price: number; initial_price: number; shares_sold: number; total_shares: number; shares_available: number; created_at: string; lastChangePct: number | null }
   priceHistory: number[]
   basePrice: number
 }
@@ -146,13 +147,24 @@ function CreatorCard({ creator }: { creator: CreatorListing }) {
           <span className={`text-[10px] font-bold ${isUp ? 'text-up' : pct === 0 ? 'text-[#8A8A82]' : 'text-down'}`}>
             {isUp ? '+' : ''}{pct.toFixed(1)}%
           </span>
+          {creator.priceDriver && offering.lastChangePct != null && (
+            <p className={`text-[8px] mt-0.5 ${offering.lastChangePct >= 0 ? 'text-up/70' : 'text-down/70'}`}>
+              {creator.priceDriver}
+            </p>
+          )}
         </div>
 
-        {/* Buy button */}
-        <Link href={`/c/${creator.slug}`}
-          className="bg-up hover:brightness-110 text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all flex-shrink-0">
-          Buy
-        </Link>
+        {/* Buy / Short buttons */}
+        <div className="flex flex-col gap-1.5 flex-shrink-0">
+          <Link href={`/c/${creator.slug}`}
+            className="bg-up hover:brightness-110 text-white text-[11px] font-bold px-4 py-2 rounded-lg transition-all text-center whitespace-nowrap">
+            ▲ Buy
+          </Link>
+          <Link href={`/c/${creator.slug}?tab=short`}
+            className="bg-down hover:brightness-110 text-white text-[11px] font-bold px-4 py-2 rounded-lg transition-all text-center whitespace-nowrap">
+            ▼ Short
+          </Link>
+        </div>
       </div>
     </div>
   )

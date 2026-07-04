@@ -92,8 +92,8 @@ export default function LiveHome({ initialFeed, initialTicker }: { initialFeed: 
             </div>
             <div className="w-px h-6 bg-edge" />
             <div className="text-center">
-              <div className="text-accent font-bold text-sm">5%</div>
-              <div className="text-[#8A8A82] text-[10px]">commission</div>
+              <div className="text-accent font-bold text-sm">2%</div>
+              <div className="text-[#8A8A82] text-[10px]">buy fee</div>
             </div>
             <div className="w-px h-6 bg-edge" />
             <div className="text-center">

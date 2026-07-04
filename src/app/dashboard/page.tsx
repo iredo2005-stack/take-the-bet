@@ -13,7 +13,8 @@ type HoldingWithDetails = {
 type CreatorListing = {
   id: string; display_name: string; slug: string; photo_url: string | null; bio: string | null
   subscribers: number; declared_followers: number | null; platform: string; growthPct: number
-  offering: { id: string; title: string; image_url: string | null; current_price: number; initial_price: number; shares_sold: number; total_shares: number; shares_available: number; created_at: string }
+  priceDriver: string | null
+  offering: { id: string; title: string; image_url: string | null; current_price: number; initial_price: number; shares_sold: number; total_shares: number; shares_available: number; created_at: string; lastChangePct: number | null }
   priceHistory: number[]
   basePrice: number
 }
@@ -25,7 +26,7 @@ export default async function DashboardPage() {
   const { data: rawHoldings } = await supabase.from('holdings').select(`id, shares_owned, avg_buy_price, total_invested, offerings ( id, title, current_price, initial_price, creators ( display_name, slug, photo_url ) )`).eq('user_id', user.id).gt('shares_owned', 0)
   const holdings = (rawHoldings || []) as unknown as HoldingWithDetails[]
 
-  const { data: rawListings } = await supabase.from('offerings').select(`id, title, current_price, initial_price, shares_sold, total_shares, shares_available, image_url, created_at, creators ( id, display_name, slug, photo_url, bio, subscribers, monthly_views, engagement_rate, post_frequency, monthly_growth_percent, declared_followers )`).eq('status', 'active').order('shares_sold', { ascending: false })
+  const { data: rawListings } = await supabase.from('offerings').select(`id, title, current_price, initial_price, shares_sold, total_shares, shares_available, image_url, created_at, last_change_pct, creators ( id, display_name, slug, photo_url, bio, subscribers, monthly_views, engagement_rate, post_frequency, monthly_growth_percent, declared_followers, price_driver )`).eq('status', 'active').order('shares_sold', { ascending: false })
 
   // Fetch recent price history for sparklines (last 10 points per offering)
   const offeringIds = (rawListings || []).map((o: any) => o.id)
@@ -49,7 +50,8 @@ export default async function DashboardPage() {
       id: c.id, display_name: c.display_name, slug: c.slug, photo_url: c.photo_url, bio: c.bio,
       subscribers: c.subscribers ?? 0, declared_followers: c.declared_followers,
       platform: c.platform ?? 'youtube', growthPct: Number(c.monthly_growth_percent ?? 0),
-      offering: { id: o.id, title: o.title, image_url: o.image_url, current_price: Number(o.current_price), initial_price: Number(o.initial_price), shares_sold: o.shares_sold, total_shares: o.total_shares, shares_available: o.shares_available, created_at: o.created_at },
+      priceDriver: c.price_driver ?? null,
+      offering: { id: o.id, title: o.title, image_url: o.image_url, current_price: Number(o.current_price), initial_price: Number(o.initial_price), shares_sold: o.shares_sold, total_shares: o.total_shares, shares_available: o.shares_available, created_at: o.created_at, lastChangePct: o.last_change_pct != null ? Number(o.last_change_pct) : null },
       priceHistory: priceMap[o.id] || [Number(o.initial_price), Number(o.current_price)],
       basePrice: bp,
     }

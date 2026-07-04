@@ -20,7 +20,7 @@ function daysInMonth(month: string, year: string): number {
   return new Date(parseInt(year), parseInt(month), 0).getDate()
 }
 
-const selectCls = "flex-1 bg-subtle border border-edge rounded-xl px-3 py-3 text-[#F5F5F0] focus:outline-none focus:ring-2 focus:ring-accent/30 transition appearance-none"
+const selectCls = "flex-1 bg-subtle border border-edge rounded-xl px-3 py-3 text-[#1E2329] focus:outline-none focus:ring-2 focus:ring-accent/30 transition appearance-none"
 
 export default function OnboardingPage() {
   const [year, setYear] = useState('')
@@ -59,14 +59,14 @@ export default function OnboardingPage() {
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-accent/10 border border-accent/20 mb-4">
               <span className="text-2xl">🔐</span>
             </div>
-            <h1 className="text-2xl font-bold text-[#F5F5F0] mb-2">Age Verification</h1>
-            <p className="text-[#8A8A82] text-sm leading-relaxed">
-              Hype is a real-money financial platform. You must be <strong className="text-[#F5F5F0]">18 or older</strong>.
+            <h1 className="text-2xl font-bold text-[#1E2329] mb-2">Age Verification</h1>
+            <p className="text-[#707A8A] text-sm leading-relaxed">
+              Hype is a real-money financial platform. You must be <strong className="text-[#1E2329]">18 or older</strong>.
             </p>
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-[#F5F5F0] mb-2">Date of birth</label>
+              <label className="block text-sm font-medium text-[#1E2329] mb-2">Date of birth</label>
               <div className="flex gap-2">
                 <select value={month} onChange={(e) => setMonth(e.target.value)} className={selectCls}>
                   <option value="" disabled>Month</option>
@@ -88,7 +88,7 @@ export default function OnboardingPage() {
               {loading ? 'Verifying…' : 'Continue →'}
             </button>
           </form>
-          <p className="text-center text-xs text-[#8A8A82] mt-5">Your date of birth is used only for age verification and is never shown publicly.</p>
+          <p className="text-center text-xs text-[#707A8A] mt-5">Your date of birth is used only for age verification and is never shown publicly.</p>
         </div>
       </div>
     </main>

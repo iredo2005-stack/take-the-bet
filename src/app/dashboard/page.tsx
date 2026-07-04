@@ -106,10 +106,10 @@ function FanView({ userName, holdings, creators, bets, statusBanner, hasApplied 
     <div>
       {/* Hero */}
       <div className="mb-6 pt-2">
-        <h1 className="text-2xl sm:text-3xl font-bold text-[#F5F5F0] leading-tight tracking-tight mb-1.5">
+        <h1 className="text-2xl sm:text-3xl font-bold text-[#1E2329] leading-tight tracking-tight mb-1.5">
           The stock market for <span className="text-accent">creators</span>
         </h1>
-        <p className="text-[#8A8A82] text-sm leading-relaxed max-w-md">
+        <p className="text-[#707A8A] text-sm leading-relaxed max-w-md">
           Prices rise when creators are blowing up, drop when they stall. Catch momentum early.
         </p>
       </div>
@@ -134,7 +134,7 @@ function FanView({ userName, holdings, creators, bets, statusBanner, hasApplied 
 
       {!hasApplied && (
         <div className="mt-10 pt-6 border-t border-edge text-center">
-          <p className="text-[#8A8A82] text-sm mb-2">Are you a content creator?</p>
+          <p className="text-[#707A8A] text-sm mb-2">Are you a content creator?</p>
           <Link href="/dashboard/become-creator" className="text-gray-500 hover:text-accent text-sm font-medium transition-colors">Apply to be a creator →</Link>
         </div>
       )}
@@ -155,7 +155,7 @@ function CreatorView({ creator, offerings, holdings }: { creator: CreatorRow; of
         <div className="flex items-center gap-4">
           {creator.photo_url ? <img src={creator.photo_url} alt={creator.display_name} className="w-14 h-14 rounded-full object-cover border border-edge" />
           : <div className="w-14 h-14 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center text-accent text-xl font-bold">{creator.display_name[0]}</div>}
-          <div><h1 className="text-base font-bold text-[#F5F5F0]">{creator.display_name}</h1><p className="text-gray-500 text-sm">/c/{creator.slug}</p></div>
+          <div><h1 className="text-base font-bold text-[#1E2329]">{creator.display_name}</h1><p className="text-gray-500 text-sm">/c/{creator.slug}</p></div>
         </div>
         {!hasActive && <Link href="/dashboard/create-offering" className="bg-accent hover:bg-accent-hover text-bg font-semibold px-5 py-2.5 rounded-xl transition-colors text-center text-sm">+ New Offering</Link>}
       </div>
@@ -164,7 +164,7 @@ function CreatorView({ creator, offerings, holdings }: { creator: CreatorRow; of
         <StatCard label="Total Raised" value={formatCurrency(totalRaised)} />
         <StatCard label="Shares Sold" value={formatNumber(totalSold)} />
       </div>
-      <h2 className="text-sm font-bold text-[#F5F5F0] mb-3">Your Offerings</h2>
+      <h2 className="text-sm font-bold text-[#1E2329] mb-3">Your Offerings</h2>
       {offerings.length === 0 ? (
         <div className="bg-card border border-edge rounded-2xl p-6 text-center mb-8"><p className="text-gray-500 mb-4">No offerings yet.</p><Link href="/dashboard/create-offering" className="text-accent font-semibold text-sm">Create your first offering →</Link></div>
       ) : (
@@ -180,7 +180,7 @@ function CreatorView({ creator, offerings, holdings }: { creator: CreatorRow; of
 function Portfolio({ holdings }: { holdings: HoldingWithDetails[] }) {
   if (holdings.length === 0) return (
     <div className="bg-card border border-edge rounded-2xl p-6">
-      <h2 className="text-sm font-bold text-[#F5F5F0] mb-3">Your Portfolio</h2>
+      <h2 className="text-sm font-bold text-[#1E2329] mb-3">Your Portfolio</h2>
       <p className="text-gray-500 text-sm">You don&apos;t own any shares yet.</p>
     </div>
   )
@@ -192,7 +192,7 @@ function Portfolio({ holdings }: { holdings: HoldingWithDetails[] }) {
 
   return (
     <div>
-      <h2 className="text-sm font-bold text-[#F5F5F0] mb-3">Your Portfolio</h2>
+      <h2 className="text-sm font-bold text-[#1E2329] mb-3">Your Portfolio</h2>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
         <StatCard label="Invested" value={formatCurrency(totalInvested)} />
         <StatCard label="Current Value" value={formatCurrency(currentValue)} />
@@ -238,7 +238,7 @@ function HoldingCard({ holding }: { holding: HoldingWithDetails }) {
 // ─── Shared ──────────────────────────────────────────────────────────────────
 
 function StatCard({ label, value }: { label: string; value: string }) {
-  return <div className="bg-card border border-edge rounded-xl p-4"><div className="text-gray-500 text-xs uppercase tracking-wide mb-1">{label}</div><div className="text-[#F5F5F0] text-sm font-bold truncate">{value}</div></div>
+  return <div className="bg-card border border-edge rounded-xl p-4"><div className="text-gray-500 text-xs uppercase tracking-wide mb-1">{label}</div><div className="text-[#1E2329] text-sm font-bold truncate">{value}</div></div>
 }
 
 function OfferingCard({ offering, slug }: { offering: OfferingRow; slug: string }) {

@@ -42,7 +42,7 @@ export default function PortfolioShorts({ shorts }: { shorts: Short[] }) {
 
   return (
     <div className="mb-4">
-      <p className="text-[#8A8A82] text-[10px] uppercase tracking-widest font-semibold mb-3">
+      <p className="text-[#707A8A] text-[10px] uppercase tracking-widest font-semibold mb-3">
         Short Positions ({shorts.length})
       </p>
       <div className="space-y-2">
@@ -76,10 +76,10 @@ export default function PortfolioShorts({ shorts }: { shorts: Short[] }) {
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <Link href={`/c/${c.slug}`} className="text-[#F5F5F0] text-sm font-semibold truncate hover:text-accent transition-colors block">
+                  <Link href={`/c/${c.slug}`} className="text-[#1E2329] text-sm font-semibold truncate hover:text-accent transition-colors block">
                     {c.display_name}
                   </Link>
-                  <p className="text-[#8A8A82] text-[10px]">
+                  <p className="text-[#707A8A] text-[10px]">
                     {formatNumber(s.shares)} shares short @ {formatCurrency(openPrice)}
                   </p>
                   <p className="text-[9px] text-down/70 mt-0.5">
@@ -87,7 +87,7 @@ export default function PortfolioShorts({ shorts }: { shorts: Short[] }) {
                   </p>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <p className="text-[#F5F5F0] text-sm font-bold">{formatCurrency(collateral)}</p>
+                  <p className="text-[#1E2329] text-sm font-bold">{formatCurrency(collateral)}</p>
                   <p className={`text-[10px] font-semibold ${isProfit ? 'text-up' : 'text-down'}`}>
                     {isProfit ? '+' : ''}{formatCurrency(finalPnl)} P&L
                   </p>
@@ -98,7 +98,7 @@ export default function PortfolioShorts({ shorts }: { shorts: Short[] }) {
               <div className="border-t border-edge/50 px-3.5 py-2 flex items-center justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-[#8A8A82] text-[9px]">
+                    <span className="text-[#707A8A] text-[9px]">
                       Price {pctFromOpen >= 0 ? '+' : ''}{pctFromOpen.toFixed(1)}% since open · {formatCurrency(currentPrice)}
                     </span>
                   </div>

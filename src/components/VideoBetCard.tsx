@@ -90,15 +90,15 @@ export default function VideoBetCard({ bet }: Props) {
         {/* Header */}
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="min-w-0">
-            <p className="text-[#F5F5F0] text-sm font-semibold leading-snug">
+            <p className="text-[#1E2329] text-sm font-semibold leading-snug">
               {bet.video_title ? bet.video_title.slice(0, 70) + (bet.video_title.length > 70 ? '…' : '') : bet.question}
             </p>
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-[#8A8A82] text-[10px]">{bet.creator_name}</span>
-              <span className="text-[#8A8A82] text-[10px]">·</span>
-              <span className={`text-[10px] font-semibold ${isLive ? 'text-accent' : 'text-[#8A8A82]'}`}>{countdown}</span>
-              <span className="text-[#8A8A82] text-[10px]">·</span>
-              <span className="text-[#8A8A82] text-[10px]">{formatCurrency(total)} pool</span>
+              <span className="text-[#707A8A] text-[10px]">{bet.creator_name}</span>
+              <span className="text-[#707A8A] text-[10px]">·</span>
+              <span className={`text-[10px] font-semibold ${isLive ? 'text-accent' : 'text-[#707A8A]'}`}>{countdown}</span>
+              <span className="text-[#707A8A] text-[10px]">·</span>
+              <span className="text-[#707A8A] text-[10px]">{formatCurrency(total)} pool</span>
             </div>
           </div>
         </div>
@@ -107,8 +107,8 @@ export default function VideoBetCard({ bet }: Props) {
         {bet.current_views > 0 && (
           <div className="mb-3">
             <div className="flex justify-between items-center mb-1">
-              <span className="text-[#8A8A82] text-[10px]">Current views</span>
-              <span className="text-[#F5F5F0] text-[10px] font-bold">{fmtViews(bet.current_views)}</span>
+              <span className="text-[#707A8A] text-[10px]">Current views</span>
+              <span className="text-[#1E2329] text-[10px] font-bold">{fmtViews(bet.current_views)}</span>
             </div>
             <div className="h-1.5 bg-subtle rounded-full overflow-hidden">
               <div
@@ -140,10 +140,10 @@ export default function VideoBetCard({ bet }: Props) {
                       : 'border-edge bg-subtle hover:bg-muted'
                 } ${(!isLive || done) ? 'opacity-60 cursor-default' : 'cursor-pointer'}`}
               >
-                <div className={`text-xs font-bold mb-0.5 ${reached ? 'text-up' : isSelected ? 'text-accent' : 'text-[#F5F5F0]'}`}>
+                <div className={`text-xs font-bold mb-0.5 ${reached ? 'text-up' : isSelected ? 'text-accent' : 'text-[#1E2329]'}`}>
                   {reached ? '✓ ' : ''}{o.label}
                 </div>
-                <div className="text-[#8A8A82] text-[10px]">{pct}% of pool</div>
+                <div className="text-[#707A8A] text-[10px]">{pct}% of pool</div>
               </button>
             )
           })}
@@ -156,12 +156,12 @@ export default function VideoBetCard({ bet }: Props) {
               <>
                 <div className="flex gap-2">
                   <div className="relative flex-1">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8A8A82] text-xs">HC</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#707A8A] text-xs">HC</span>
                     <input
                       type="number"
                       value={amount}
                       onChange={(e) => setAmount(Math.max(1, parseInt(e.target.value) || 1))}
-                      className="w-full bg-subtle border border-edge rounded-lg pl-9 pr-3 py-2 text-[#F5F5F0] text-xs focus:outline-none focus:ring-1 focus:ring-accent/30"
+                      className="w-full bg-subtle border border-edge rounded-lg pl-9 pr-3 py-2 text-[#1E2329] text-xs focus:outline-none focus:ring-1 focus:ring-accent/30"
                       min="1"
                     />
                   </div>
@@ -182,7 +182,7 @@ export default function VideoBetCard({ bet }: Props) {
         {done && (
           <div className="bg-up/10 border border-up/20 rounded-lg px-3 py-2 text-center">
             <p className="text-up text-xs font-semibold">Bet placed! 🎯</p>
-            <p className="text-[#8A8A82] text-[10px] mt-0.5">Resolves when deadline passes.</p>
+            <p className="text-[#707A8A] text-[10px] mt-0.5">Resolves when deadline passes.</p>
           </div>
         )}
       </div>

@@ -61,7 +61,7 @@ export default async function CreatorPage({ params, searchParams }: Props) {
     <div className="min-h-screen bg-bg pb-20 sm:pb-0">
       <nav className="bg-card border-b border-edge px-4 sm:px-6 py-2.5 flex items-center justify-between">
         <Link href="/dashboard"><Logo size="sm" /></Link>
-        <Link href="/sign-up" className="text-xs text-[#8A8A82] hover:text-[#F5F5F0] transition-colors">Sign up</Link>
+        <Link href="/sign-up" className="text-xs text-[#707A8A] hover:text-[#1E2329] transition-colors">Sign up</Link>
       </nav>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-5">
@@ -76,10 +76,10 @@ export default async function CreatorPage({ params, searchParams }: Props) {
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <h1 className="text-base font-bold text-[#F5F5F0] truncate">{creator.display_name}</h1>
+            <h1 className="text-base font-bold text-[#1E2329] truncate">{creator.display_name}</h1>
             {metrics.subscribers > 0 && (
-              <p className="text-[#8A8A82] text-[10px] flex items-center gap-1 mt-0.5">
-                <span className={`text-[9px] ${metrics.monthly_growth_percent > 0 ? 'text-up' : metrics.monthly_growth_percent < 0 ? 'text-down' : 'text-[#8A8A82]'}`}>
+              <p className="text-[#707A8A] text-[10px] flex items-center gap-1 mt-0.5">
+                <span className={`text-[9px] ${metrics.monthly_growth_percent > 0 ? 'text-up' : metrics.monthly_growth_percent < 0 ? 'text-down' : 'text-[#707A8A]'}`}>
                   {metrics.monthly_growth_percent > 0 ? '▲' : metrics.monthly_growth_percent < 0 ? '▼' : '—'}
                 </span>
                 {metrics.subscribers >= 1_000_000
@@ -98,8 +98,8 @@ export default async function CreatorPage({ params, searchParams }: Props) {
           </div>
           {hasMetrics && basePrice > 0 && (
             <div className="text-right flex-shrink-0">
-              <p className="text-[#8A8A82] text-[10px] uppercase tracking-wide">Fair Value</p>
-              <p className="text-[#F5F5F0] text-xs font-semibold">{formatCurrency(basePrice)}</p>
+              <p className="text-[#707A8A] text-[10px] uppercase tracking-wide">Fair Value</p>
+              <p className="text-[#1E2329] text-xs font-semibold">{formatCurrency(basePrice)}</p>
             </div>
           )}
         </div>
@@ -115,7 +115,7 @@ export default async function CreatorPage({ params, searchParams }: Props) {
                 <span className={`text-[10px] font-semibold ${Number((offering as any).last_change_pct) >= 0 ? 'text-up' : 'text-down'}`}>
                   {Number((offering as any).last_change_pct) >= 0 ? '▲' : '▼'} {Math.abs(Number((offering as any).last_change_pct)).toFixed(1)}%
                 </span>
-                <span className="text-[#8A8A82] text-[10px]">— {(creator as any).price_driver}</span>
+                <span className="text-[#707A8A] text-[10px]">— {(creator as any).price_driver}</span>
               </div>
             )}
 
@@ -140,7 +140,7 @@ export default async function CreatorPage({ params, searchParams }: Props) {
           </>
         ) : (
           <div className="bg-card border border-edge rounded-xl p-6 text-center">
-            <p className="text-[#8A8A82] text-xs">No active offering yet.</p>
+            <p className="text-[#707A8A] text-xs">No active offering yet.</p>
           </div>
         )}
       </main>
@@ -151,8 +151,8 @@ export default async function CreatorPage({ params, searchParams }: Props) {
 function MiniStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-card border border-edge rounded-lg p-2.5 text-center">
-      <p className="text-[#8A8A82] text-[9px] uppercase tracking-wider mb-0.5">{label}</p>
-      <p className="text-[#F5F5F0] text-xs font-bold truncate">{value}</p>
+      <p className="text-[#707A8A] text-[9px] uppercase tracking-wider mb-0.5">{label}</p>
+      <p className="text-[#1E2329] text-xs font-bold truncate">{value}</p>
     </div>
   )
 }
@@ -160,8 +160,8 @@ function MiniStat({ label, value }: { label: string; value: string }) {
 function OfferingInfo({ offering }: { offering: OfferingRow }) {
   return offering.description ? (
     <div className="bg-card border border-edge rounded-xl p-3 mb-2">
-      <h2 className="text-[#F5F5F0] text-xs font-semibold mb-1">{offering.title}</h2>
-      <p className="text-[#8A8A82] text-xs leading-relaxed whitespace-pre-line">{offering.description}</p>
+      <h2 className="text-[#1E2329] text-xs font-semibold mb-1">{offering.title}</h2>
+      <p className="text-[#707A8A] text-xs leading-relaxed whitespace-pre-line">{offering.description}</p>
     </div>
   ) : null
 }
@@ -169,13 +169,13 @@ function OfferingInfo({ offering }: { offering: OfferingRow }) {
 function TrustBadges() {
   return (
     <div className="bg-card border border-edge rounded-xl p-3 space-y-2">
-      <p className="text-[#F5F5F0] text-[10px] font-semibold uppercase tracking-wider">Trust & Transparency</p>
+      <p className="text-[#1E2329] text-[10px] font-semibold uppercase tracking-wider">Trust & Transparency</p>
       <div className="flex flex-wrap gap-1.5">
         <span className="text-[10px] font-medium px-2 py-1 rounded-md bg-up/10 text-up border border-up/10">✓ Verified</span>
         <span className="text-[10px] font-medium px-2 py-1 rounded-md bg-accent/10 text-accent border border-accent/10">2% buy / 1% sell</span>
         <span className="text-[10px] font-medium px-2 py-1 rounded-md bg-accent/10 text-accent border border-accent/10">◈ Bot-Filtered</span>
-        <span className="text-[10px] font-medium px-2 py-1 rounded-md bg-subtle text-[#8A8A82] border border-edge">20% Treasury</span>
-        <span className="text-[10px] font-medium px-2 py-1 rounded-md bg-subtle text-[#8A8A82] border border-edge">🎮 Play Money</span>
+        <span className="text-[10px] font-medium px-2 py-1 rounded-md bg-subtle text-[#707A8A] border border-edge">20% Treasury</span>
+        <span className="text-[10px] font-medium px-2 py-1 rounded-md bg-subtle text-[#707A8A] border border-edge">🎮 Play Money</span>
       </div>
     </div>
   )
@@ -184,12 +184,12 @@ function TrustBadges() {
 function HowItWorks() {
   return (
     <div className="bg-card border border-edge rounded-xl p-3 mt-3">
-      <p className="text-[#F5F5F0] text-[10px] font-semibold uppercase tracking-wider mb-2">How it works</p>
-      <div className="space-y-1.5 text-[11px] text-[#8A8A82] leading-relaxed">
-        <p>Prices follow <span className="text-[#F5F5F0]">growth momentum</span>. Blowing up → price rises. Stalling → price drops.</p>
-        <p><span className="text-[#F5F5F0]">2% fee on every buy</span>, <span className="text-[#F5F5F0]">1% fee on every sell or short close</span>. 20% treasury held for liquidity.</p>
-        <p>Growth is tracked live and <span className="text-[#F5F5F0]">updated daily</span> from real platform data. Price moves are capped at ±15%/day.</p>
-        <p className="text-[9px] text-[#8A8A82]/70 border-t border-edge pt-1.5 mt-1">
+      <p className="text-[#1E2329] text-[10px] font-semibold uppercase tracking-wider mb-2">How it works</p>
+      <div className="space-y-1.5 text-[11px] text-[#707A8A] leading-relaxed">
+        <p>Prices follow <span className="text-[#1E2329]">growth momentum</span>. Blowing up → price rises. Stalling → price drops.</p>
+        <p><span className="text-[#1E2329]">2% fee on every buy</span>, <span className="text-[#1E2329]">1% fee on every sell or short close</span>. 20% treasury held for liquidity.</p>
+        <p>Growth is tracked live and <span className="text-[#1E2329]">updated daily</span> from real platform data. Price moves are capped at ±15%/day.</p>
+        <p className="text-[9px] text-[#707A8A]/70 border-t border-edge pt-1.5 mt-1">
           Hype Coins (HC) are virtual play currency with no real-world cash value. This is a game.
         </p>
       </div>

@@ -76,8 +76,8 @@ export default async function PortfolioPage() {
       <nav className="bg-card border-b border-edge px-4 sm:px-6 py-2.5 flex items-center justify-between">
         <Link href="/dashboard"><Logo size="sm" /></Link>
         <div className="flex items-center gap-3">
-          <Link href="/dashboard" className="text-[#8A8A82] hover:text-[#F5F5F0] text-xs transition-colors hidden sm:block">Markets</Link>
-          <Link href="/leaderboard" className="text-[#8A8A82] hover:text-[#F5F5F0] text-xs transition-colors hidden sm:block">Leaderboard</Link>
+          <Link href="/dashboard" className="text-[#707A8A] hover:text-[#1E2329] text-xs transition-colors hidden sm:block">Markets</Link>
+          <Link href="/leaderboard" className="text-[#707A8A] hover:text-[#1E2329] text-xs transition-colors hidden sm:block">Leaderboard</Link>
           <UserButton afterSignOutUrl="/" />
         </div>
       </nav>
@@ -85,8 +85,8 @@ export default async function PortfolioPage() {
       <main className="max-w-2xl mx-auto px-4 sm:px-6 py-6">
         {/* Total value hero */}
         <div className="text-center mb-6">
-          <p className="text-[#8A8A82] text-[10px] uppercase tracking-widest mb-1">Total Portfolio Value</p>
-          <p className="text-[#F5F5F0] text-3xl sm:text-4xl font-bold tracking-tight">{formatCurrency(totalValue)}</p>
+          <p className="text-[#707A8A] text-[10px] uppercase tracking-widest mb-1">Total Portfolio Value</p>
+          <p className="text-[#1E2329] text-3xl sm:text-4xl font-bold tracking-tight">{formatCurrency(totalValue)}</p>
           <div className="flex items-center justify-center gap-3 mt-2">
             <span className={`text-sm font-bold ${isUp ? 'text-up' : 'text-down'}`}>
               {isUp ? '▲' : '▼'} {isUp ? '+' : ''}{formatCurrency(totalPnl)}
@@ -107,16 +107,16 @@ export default async function PortfolioPage() {
         {/* Stats bar */}
         <div className="grid grid-cols-3 gap-2 mb-5">
           <div className="bg-card border border-edge rounded-xl p-3 text-center">
-            <p className="text-[#8A8A82] text-[9px] uppercase tracking-widest mb-0.5">Holdings</p>
-            <p className="text-[#F5F5F0] text-sm font-bold">{formatCurrency(holdingsValue)}</p>
+            <p className="text-[#707A8A] text-[9px] uppercase tracking-widest mb-0.5">Holdings</p>
+            <p className="text-[#1E2329] text-sm font-bold">{formatCurrency(holdingsValue)}</p>
           </div>
           <div className="bg-card border border-edge rounded-xl p-3 text-center">
-            <p className="text-[#8A8A82] text-[9px] uppercase tracking-widest mb-0.5">Available</p>
+            <p className="text-[#707A8A] text-[9px] uppercase tracking-widest mb-0.5">Available</p>
             <p className="text-accent text-sm font-bold">{formatNumber(Math.round(balance))} HC</p>
           </div>
           <div className="bg-card border border-edge rounded-xl p-3 text-center">
-            <p className="text-[#8A8A82] text-[9px] uppercase tracking-widest mb-0.5">Invested</p>
-            <p className="text-[#F5F5F0] text-sm font-bold">{formatCurrency(totalInvested)}</p>
+            <p className="text-[#707A8A] text-[9px] uppercase tracking-widest mb-0.5">Invested</p>
+            <p className="text-[#1E2329] text-sm font-bold">{formatCurrency(totalInvested)}</p>
           </div>
         </div>
 
@@ -125,12 +125,12 @@ export default async function PortfolioPage() {
 
         {/* Long holdings (client component, handles share card) */}
         <div className="mb-4">
-          <p className="text-[#8A8A82] text-[10px] uppercase tracking-widest font-semibold mb-3">
+          <p className="text-[#707A8A] text-[10px] uppercase tracking-widest font-semibold mb-3">
             Your Holdings ({holdings.length})
           </p>
           {holdings.length === 0 ? (
             <div className="bg-card border border-edge rounded-2xl p-8 text-center">
-              <p className="text-[#8A8A82] text-xs mb-3">No holdings yet</p>
+              <p className="text-[#707A8A] text-xs mb-3">No holdings yet</p>
               <Link href="/dashboard" className="text-accent text-xs font-semibold hover:underline">Browse creators →</Link>
             </div>
           ) : (

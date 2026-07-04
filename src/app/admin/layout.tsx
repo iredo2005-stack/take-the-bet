@@ -16,10 +16,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <span className="text-[10px] bg-accent/10 text-accent border border-accent/20 px-2 py-0.5 rounded-full font-medium">Admin</span>
         </div>
         <div className="flex items-center gap-3">
-          <Link href="/admin" className="text-[#8A8A82] hover:text-[#F5F5F0] text-xs transition-colors">Creators</Link>
-          <Link href="/admin/add-creator" className="text-[#8A8A82] hover:text-[#F5F5F0] text-xs transition-colors">+ Add</Link>
-          <Link href="/admin/bets" className="text-[#8A8A82] hover:text-[#F5F5F0] text-xs transition-colors">Bets</Link>
-          <Link href="/dashboard" className="text-[#8A8A82] hover:text-[#F5F5F0] text-xs transition-colors">Dashboard</Link>
+          <Link href="/admin" className="text-[#707A8A] hover:text-[#1E2329] text-xs transition-colors">Creators</Link>
+          <Link href="/admin/add-creator" className="text-[#707A8A] hover:text-[#1E2329] text-xs transition-colors">+ Add</Link>
+          <Link href="/admin/bets" className="text-[#707A8A] hover:text-[#1E2329] text-xs transition-colors">Bets</Link>
+          <Link href="/dashboard" className="text-[#707A8A] hover:text-[#1E2329] text-xs transition-colors">Dashboard</Link>
           <UserButton afterSignOutUrl="/" />
         </div>
       </nav>

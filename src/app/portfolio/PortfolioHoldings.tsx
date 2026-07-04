@@ -55,8 +55,8 @@ export default function PortfolioHoldings({ holdings }: { holdings: Holding[] })
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <p className="text-[#F5F5F0] text-sm font-semibold truncate">{c.display_name}</p>
-                <p className="text-[#8A8A82] text-[10px]">
+                <p className="text-[#1E2329] text-sm font-semibold truncate">{c.display_name}</p>
+                <p className="text-[#707A8A] text-[10px]">
                   {formatNumber(h.shares_owned)} shares · break-even {formatCurrency(breakEven)}
                 </p>
                 {driver && lastChange !== null && (
@@ -66,7 +66,7 @@ export default function PortfolioHoldings({ holdings }: { holdings: Holding[] })
                 )}
               </div>
               <div className="text-right flex-shrink-0">
-                <p className="text-[#F5F5F0] text-sm font-bold">{formatCurrency(cv)}</p>
+                <p className="text-[#1E2329] text-sm font-bold">{formatCurrency(cv)}</p>
                 <p className={`text-[10px] font-semibold ${up ? 'text-up' : 'text-down'}`}>
                   {up ? '+' : ''}{formatCurrency(pnl)} ({up ? '+' : ''}{pct.toFixed(1)}%)
                 </p>
@@ -81,7 +81,7 @@ export default function PortfolioHoldings({ holdings }: { holdings: Holding[] })
                 </p>
                 <button
                   onClick={() => setShareCardId(shareCardId === h.id ? null : h.id)}
-                  className="text-[9px] text-[#8A8A82] hover:text-accent border border-edge hover:border-accent/40 px-2 py-1 rounded-lg transition-colors"
+                  className="text-[9px] text-[#707A8A] hover:text-accent border border-edge hover:border-accent/40 px-2 py-1 rounded-lg transition-colors"
                 >
                   {shareCardId === h.id ? 'Close' : 'Share →'}
                 </button>
@@ -91,7 +91,7 @@ export default function PortfolioHoldings({ holdings }: { holdings: Holding[] })
             {/* Break-even hint (negative P&L) */}
             {!up && (
               <div className="border-t border-edge/50 px-3.5 py-1.5">
-                <span className="text-[#8A8A82] text-[9px]">
+                <span className="text-[#707A8A] text-[9px]">
                   Needs {formatCurrency(breakEven)} to break even · currently {formatCurrency(Number(h.offerings.current_price))}
                 </span>
               </div>

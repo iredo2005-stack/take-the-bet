@@ -30,7 +30,7 @@ export default function MobileNav() {
           return (
             <Link key={tab.href} href={tab.href}
               className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg min-w-[3.5rem] transition-colors ${
-                active ? 'text-accent' : 'text-[#8A8A82]'
+                active ? 'text-accent' : 'text-[#707A8A]'
               }`}>
               <Icon size={20} strokeWidth={active ? 2.2 : 1.5} />
               <span className="text-[9px] font-medium leading-none">{tab.label}</span>

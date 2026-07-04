@@ -105,29 +105,29 @@ function BuyForm({ offering }: { offering: OfferingRow }) {
       <div>
         <div className="text-center mb-4">
           <div className="text-3xl mb-2">🎉</div>
-          <h3 className="text-[#F5F5F0] font-bold text-base mb-1">You backed them!</h3>
+          <h3 className="text-[#1E2329] font-bold text-base mb-1">You backed them!</h3>
           <p className="text-up text-xs font-medium">Price now {formatCurrency(result.newPrice)}</p>
         </div>
         <div className="bg-subtle rounded-xl p-3 space-y-1.5 text-xs mb-4">
-          <div className="flex justify-between text-[#8A8A82]">
+          <div className="flex justify-between text-[#707A8A]">
             <span>{result.shares} share{result.shares > 1 ? 's' : ''}</span>
-            <span className="text-[#F5F5F0]">{formatCurrency(sharesAmt)}</span>
+            <span className="text-[#1E2329]">{formatCurrency(sharesAmt)}</span>
           </div>
-          <div className="flex justify-between text-[#8A8A82]">
+          <div className="flex justify-between text-[#707A8A]">
             <span>Buy fee (2%)</span>
             <span className="text-down">{formatCurrency(feeAmt)}</span>
           </div>
           <div className="border-t border-edge pt-1.5 flex justify-between font-semibold">
-            <span className="text-[#F5F5F0]">Total paid</span>
-            <span className="text-[#F5F5F0]">{formatCurrency(result.totalAmount)}</span>
+            <span className="text-[#1E2329]">Total paid</span>
+            <span className="text-[#1E2329]">{formatCurrency(result.totalAmount)}</span>
           </div>
         </div>
-        <p className="text-[#8A8A82] text-[10px] text-center mb-4">
+        <p className="text-[#707A8A] text-[10px] text-center mb-4">
           Hype Coins are virtual play currency with no cash value.
         </p>
         <div className="flex flex-col gap-2">
           <button onClick={() => { setResult(null); setShares(1) }}
-            className="w-full bg-subtle hover:bg-muted border border-edge text-[#F5F5F0] font-semibold py-2.5 rounded-xl transition-colors text-sm">
+            className="w-full bg-subtle hover:bg-muted border border-edge text-[#1E2329] font-semibold py-2.5 rounded-xl transition-colors text-sm">
             Back More
           </button>
           <a href="/portfolio"
@@ -154,30 +154,30 @@ function BuyForm({ offering }: { offering: OfferingRow }) {
           <button onClick={() => setShares((s) => Math.min(maxShares, s + 1))} disabled={shares >= maxShares}
             className="w-9 h-9 rounded-lg bg-subtle border border-edge text-white font-bold hover:bg-muted disabled:opacity-30 transition">+</button>
         </div>
-        <p className="text-[#8A8A82] text-xs mt-1 text-right">{maxShares.toLocaleString()} available</p>
+        <p className="text-[#707A8A] text-xs mt-1 text-right">{maxShares.toLocaleString()} available</p>
       </div>
 
       <div className="bg-subtle rounded-xl p-3 space-y-1.5 text-xs">
-        <div className="flex justify-between text-[#8A8A82]">
+        <div className="flex justify-between text-[#707A8A]">
           <span>{shares} share{shares > 1 ? 's' : ''} × {formatCurrency(avgPrice)}</span>
-          <span className="text-[#F5F5F0]">{formatCurrency(subtotal)}</span>
+          <span className="text-[#1E2329]">{formatCurrency(subtotal)}</span>
         </div>
-        <div className="flex justify-between text-[#8A8A82]">
+        <div className="flex justify-between text-[#707A8A]">
           <span>Buy fee (2%)</span>
           <span className="text-down">{formatCurrency(fee)}</span>
         </div>
         <div className="border-t border-edge pt-1.5 flex justify-between font-semibold">
-          <span className="text-[#F5F5F0]">You pay</span>
-          <span className="text-[#F5F5F0]">{formatCurrency(total)}</span>
+          <span className="text-[#1E2329]">You pay</span>
+          <span className="text-[#1E2329]">{formatCurrency(total)}</span>
         </div>
-        <div className="flex justify-between text-[#8A8A82] border-t border-edge/50 pt-1.5">
+        <div className="flex justify-between text-[#707A8A] border-t border-edge/50 pt-1.5">
           <span>Break-even price</span>
           <span className="text-accent font-medium">{formatCurrency(breakEven)}/share</span>
         </div>
         {shares > 1 && (
-          <div className="flex justify-between text-[#8A8A82]">
+          <div className="flex justify-between text-[#707A8A]">
             <span>Price after buy</span>
-            <span className="text-[#F5F5F0]">{formatCurrency(newSpotPrice)}</span>
+            <span className="text-[#1E2329]">{formatCurrency(newSpotPrice)}</span>
           </div>
         )}
       </div>
@@ -188,7 +188,7 @@ function BuyForm({ offering }: { offering: OfferingRow }) {
         className="w-full bg-up hover:brightness-110 disabled:bg-muted disabled:text-gray-500 text-white font-bold py-3 rounded-xl transition-all text-sm">
         {loading ? 'Processing…' : maxShares > 0 ? `▲ Back ${shares} share${shares > 1 ? 's' : ''} — ${formatCurrency(total)}` : 'Sold Out'}
       </button>
-      <p className="text-center text-[10px] text-[#8A8A82]">
+      <p className="text-center text-[10px] text-[#707A8A]">
         Hype Coins are virtual play currency with no cash value.
       </p>
     </div>
@@ -233,29 +233,29 @@ function ShortForm({ offering }: { offering: OfferingRow }) {
       <div>
         <div className="text-center mb-4">
           <div className="text-3xl mb-2">📉</div>
-          <h3 className="text-[#F5F5F0] font-bold text-base mb-1">Short Opened!</h3>
+          <h3 className="text-[#1E2329] font-bold text-base mb-1">Short Opened!</h3>
           <p className="text-down text-xs font-medium">You profit if price falls below {formatCurrency(result.openPrice)}</p>
         </div>
         <div className="bg-subtle rounded-xl p-3 space-y-1.5 text-xs mb-4">
-          <div className="flex justify-between text-[#8A8A82]">
+          <div className="flex justify-between text-[#707A8A]">
             <span>Opened at</span>
-            <span className="text-[#F5F5F0]">{formatCurrency(result.openPrice)}</span>
+            <span className="text-[#1E2329]">{formatCurrency(result.openPrice)}</span>
           </div>
-          <div className="flex justify-between text-[#8A8A82]">
+          <div className="flex justify-between text-[#707A8A]">
             <span>Liquidation at</span>
             <span className="text-down font-semibold">{formatCurrency(result.liquidationPrice)}</span>
           </div>
-          <div className="flex justify-between text-[#8A8A82]">
+          <div className="flex justify-between text-[#707A8A]">
             <span>Max loss (your collateral)</span>
             <span className="text-down">{formatCurrency(collateral)}</span>
           </div>
         </div>
-        <p className="text-[#8A8A82] text-[10px] text-center mb-4">
+        <p className="text-[#707A8A] text-[10px] text-center mb-4">
           Hype Coins are virtual play currency with no cash value.
         </p>
         <div className="flex flex-col gap-2">
           <button onClick={() => setResult(null)}
-            className="w-full bg-subtle hover:bg-muted border border-edge text-[#F5F5F0] font-semibold py-2.5 rounded-xl transition-colors text-sm">
+            className="w-full bg-subtle hover:bg-muted border border-edge text-[#1E2329] font-semibold py-2.5 rounded-xl transition-colors text-sm">
             Short Again
           </button>
           <a href="/portfolio"
@@ -271,7 +271,7 @@ function ShortForm({ offering }: { offering: OfferingRow }) {
     <div className="space-y-4">
       <div>
         <h3 className="text-white font-semibold text-sm mb-0.5">Short this creator</h3>
-        <p className="text-[#8A8A82] text-[10px]">
+        <p className="text-[#707A8A] text-[10px]">
           Profit when the price <span className="text-down font-semibold">falls</span>. Your collateral is your max possible loss.
         </p>
       </div>
@@ -298,27 +298,27 @@ function ShortForm({ offering }: { offering: OfferingRow }) {
           min={1} step={10}
           className="w-full bg-subtle border border-edge rounded-lg px-3 py-2 text-white text-center font-semibold focus:outline-none focus:ring-2 focus:ring-down/30 transition [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
         />
-        <p className="text-[#8A8A82] text-[10px] mt-1">Maximum you can lose — balance never goes negative.</p>
+        <p className="text-[#707A8A] text-[10px] mt-1">Maximum you can lose — balance never goes negative.</p>
       </div>
 
       <div className="bg-subtle rounded-xl p-3 space-y-1.5 text-xs">
-        <div className="flex justify-between text-[#8A8A82]">
+        <div className="flex justify-between text-[#707A8A]">
           <span>Current price</span>
-          <span className="text-[#F5F5F0]">{formatCurrency(openPrice)}</span>
+          <span className="text-[#1E2329]">{formatCurrency(openPrice)}</span>
         </div>
-        <div className="flex justify-between text-[#8A8A82]">
+        <div className="flex justify-between text-[#707A8A]">
           <span>Liquidation price</span>
           <span className="text-down font-semibold">
             {formatCurrency(liquidationPrice)} (+{liqPct.toFixed(1)}%)
           </span>
         </div>
-        <div className="border-t border-edge pt-1.5 flex justify-between text-[#8A8A82]">
+        <div className="border-t border-edge pt-1.5 flex justify-between text-[#707A8A]">
           <span>Open fee (2%)</span>
           <span className="text-down">{formatCurrency(openFee)}</span>
         </div>
         <div className="flex justify-between font-semibold">
-          <span className="text-[#F5F5F0]">Total locked</span>
-          <span className="text-[#F5F5F0]">{formatCurrency(totalLocked)}</span>
+          <span className="text-[#1E2329]">Total locked</span>
+          <span className="text-[#1E2329]">{formatCurrency(totalLocked)}</span>
         </div>
       </div>
 
@@ -331,7 +331,7 @@ function ShortForm({ offering }: { offering: OfferingRow }) {
       >
         {loading ? 'Opening…' : `▼ Short ${shortShares} shares — lock ${formatCurrency(totalLocked)}`}
       </button>
-      <p className="text-center text-[10px] text-[#8A8A82]">
+      <p className="text-center text-[10px] text-[#707A8A]">
         Liquidated if price rises above {formatCurrency(liquidationPrice)}
       </p>
     </div>

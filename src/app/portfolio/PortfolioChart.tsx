@@ -25,7 +25,7 @@ export default function PortfolioChart({ data, currentValue }: Props) {
   const max = Math.max(...values)
   const pad = (max - min) * 0.15 || 10
   const isUp = chartData.length >= 2 && chartData[chartData.length - 1].value >= chartData[0].value
-  const stroke = isUp ? '#22C55E' : '#EF4444'
+  const stroke = isUp ? '#0ECB81' : '#F6465D'
 
   return (
     <div className="h-[180px] w-full select-none">
@@ -37,23 +37,23 @@ export default function PortfolioChart({ data, currentValue }: Props) {
               <stop offset="100%" stopColor={stroke} stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid horizontal vertical={false} stroke="#1C1C20" />
+          <CartesianGrid horizontal vertical={false} stroke="#EAECEF" />
           <XAxis dataKey="idx" hide />
           <YAxis
             domain={[min - pad, max + pad]}
             axisLine={false}
             tickLine={false}
-            tick={{ fill: '#8A8A82', fontSize: 10, fontFamily: 'SF Mono, Menlo, monospace' }}
-            tickFormatter={(v: number) => `$${Math.round(v)}`}
-            width={40}
+            tick={{ fill: '#707A8A', fontSize: 10, fontFamily: 'SF Mono, Menlo, monospace' }}
+            tickFormatter={(v: number) => `${Math.round(v)} HC`}
+            width={52}
             mirror
           />
           <Tooltip
-            cursor={{ stroke: '#2A2A2E', strokeWidth: 1 }}
-            contentStyle={{ background: '#16161A', border: '1px solid #2A2A2E', borderRadius: '8px', padding: '6px 10px', boxShadow: '0 8px 24px rgba(0,0,0,0.5)' }}
+            cursor={{ stroke: '#D1D5DB', strokeWidth: 1 }}
+            contentStyle={{ background: '#FFFFFF', border: '1px solid #EAECEF', borderRadius: '8px', padding: '6px 10px', boxShadow: '0 4px 16px rgba(30,35,41,0.12)' }}
             formatter={(value: number) => [formatCurrency(value), 'Value']}
             labelFormatter={() => ''}
-            itemStyle={{ color: '#F5F5F0', fontWeight: 600, fontSize: 12 }}
+            itemStyle={{ color: '#1E2329', fontWeight: 600, fontSize: 12 }}
           />
           <Area
             type="monotone"
@@ -62,7 +62,7 @@ export default function PortfolioChart({ data, currentValue }: Props) {
             strokeWidth={2}
             fill="url(#portfolioGrad)"
             dot={false}
-            activeDot={{ r: 4, fill: stroke, stroke: '#16161A', strokeWidth: 2 }}
+            activeDot={{ r: 4, fill: stroke, stroke: '#FFFFFF', strokeWidth: 2 }}
             animationDuration={500}
           />
         </AreaChart>

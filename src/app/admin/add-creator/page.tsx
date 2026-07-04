@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import ImageUpload from '@/components/ImageUpload'
 
-const inputCls = "w-full bg-subtle border border-edge rounded-xl px-4 py-3 text-[#F5F5F0] placeholder-[#8A8A82] focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition text-xs"
+const inputCls = "w-full bg-subtle border border-edge rounded-xl px-4 py-3 text-[#1E2329] placeholder-[#707A8A] focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition text-xs"
 
 export default function AddCreatorPage() {
   const router = useRouter()
@@ -85,14 +85,14 @@ export default function AddCreatorPage() {
   return (
     <div className="max-w-lg mx-auto">
       <div className="flex items-center justify-between mb-5">
-        <h1 className="text-lg font-bold text-[#F5F5F0]">Add Creator</h1>
+        <h1 className="text-lg font-bold text-[#1E2329]">Add Creator</h1>
         <div className="flex gap-2">
           <button onClick={handleRecalculate} disabled={recalculating}
-            className="bg-subtle border border-edge text-[#8A8A82] hover:text-accent text-[10px] font-semibold px-3 py-1.5 rounded-lg transition-colors disabled:opacity-40">
+            className="bg-subtle border border-edge text-[#707A8A] hover:text-accent text-[10px] font-semibold px-3 py-1.5 rounded-lg transition-colors disabled:opacity-40">
             {recalculating ? 'Recalculating…' : '🔄 Recalculate All'}
           </button>
           <button onClick={handleSeed} disabled={seeding}
-            className="bg-subtle border border-edge text-[#8A8A82] hover:text-accent text-[10px] font-semibold px-3 py-1.5 rounded-lg transition-colors disabled:opacity-40">
+            className="bg-subtle border border-edge text-[#707A8A] hover:text-accent text-[10px] font-semibold px-3 py-1.5 rounded-lg transition-colors disabled:opacity-40">
             {seeding ? 'Seeding…' : '🎮 Seed'}
           </button>
         </div>
@@ -103,7 +103,7 @@ export default function AddCreatorPage() {
           <p className="text-accent text-xs font-semibold mb-2">✓ Recalculated {recalcResult.length} creators:</p>
           {recalcResult.map((r: any) => (
             <div key={r.name} className="flex items-center justify-between text-xs">
-              <span className="text-[#F5F5F0]">{r.name}</span>
+              <span className="text-[#1E2329]">{r.name}</span>
               <span className="text-accent font-mono font-bold">${r.price.toFixed(2)}</span>
             </div>
           ))}
@@ -113,14 +113,14 @@ export default function AddCreatorPage() {
       {success && (
         <div className="bg-up/10 border border-up/20 rounded-xl p-4 mb-5">
           <p className="text-up text-xs font-semibold mb-1">✓ {success.name} added!</p>
-          <p className="text-[#8A8A82] text-xs">Share price: ${success.price.toFixed(2)} · <Link href={`/c/${success.slug}`} className="text-accent hover:underline">View page →</Link></p>
+          <p className="text-[#707A8A] text-xs">Share price: ${success.price.toFixed(2)} · <Link href={`/c/${success.slug}`} className="text-accent hover:underline">View page →</Link></p>
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="bg-card border border-edge rounded-2xl p-5 space-y-4">
         {/* Name */}
         <div>
-          <label className="block text-[10px] text-[#8A8A82] uppercase tracking-widest mb-1.5">Creator Name *</label>
+          <label className="block text-[10px] text-[#707A8A] uppercase tracking-widest mb-1.5">Creator Name *</label>
           <input type="text" value={form.displayName} onChange={(e) => update('displayName', e.target.value)}
             placeholder="e.g. Ninja" required className={inputCls} />
         </div>
@@ -130,7 +130,7 @@ export default function AddCreatorPage() {
 
         {/* Platform */}
         <div>
-          <label className="block text-[10px] text-[#8A8A82] uppercase tracking-widest mb-1.5">Platform</label>
+          <label className="block text-[10px] text-[#707A8A] uppercase tracking-widest mb-1.5">Platform</label>
           <select value={form.platform} onChange={(e) => update('platform', e.target.value)} className={inputCls + ' appearance-none'}>
             <option value="youtube">YouTube</option>
             <option value="tiktok">TikTok</option>
@@ -143,23 +143,23 @@ export default function AddCreatorPage() {
         {/* Metrics grid */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-[10px] text-[#8A8A82] uppercase tracking-widest mb-1.5">Subscribers *</label>
+            <label className="block text-[10px] text-[#707A8A] uppercase tracking-widest mb-1.5">Subscribers *</label>
             <input type="number" value={form.subscribers} onChange={(e) => update('subscribers', e.target.value)}
               placeholder="500000" min="1" required className={inputCls} />
           </div>
           <div>
-            <label className="block text-[10px] text-[#8A8A82] uppercase tracking-widest mb-1.5">Monthly Views</label>
+            <label className="block text-[10px] text-[#707A8A] uppercase tracking-widest mb-1.5">Monthly Views</label>
             <input type="number" value={form.monthlyViews} onChange={(e) => update('monthlyViews', e.target.value)}
               placeholder="2000000" min="0" className={inputCls} />
           </div>
           <div>
-            <label className="block text-[10px] text-[#8A8A82] uppercase tracking-widest mb-1.5">Engagement Rate</label>
+            <label className="block text-[10px] text-[#707A8A] uppercase tracking-widest mb-1.5">Engagement Rate</label>
             <input type="number" value={form.engagementRate} onChange={(e) => update('engagementRate', e.target.value)}
               placeholder="0.045" min="0" step="0.001" className={inputCls} />
-            <p className="text-[#8A8A82] text-[9px] mt-0.5">Decimal, e.g. 0.045 = 4.5%</p>
+            <p className="text-[#707A8A] text-[9px] mt-0.5">Decimal, e.g. 0.045 = 4.5%</p>
           </div>
           <div>
-            <label className="block text-[10px] text-[#8A8A82] uppercase tracking-widest mb-1.5">Growth %/month</label>
+            <label className="block text-[10px] text-[#707A8A] uppercase tracking-widest mb-1.5">Growth %/month</label>
             <input type="number" value={form.monthlyGrowthPercent} onChange={(e) => update('monthlyGrowthPercent', e.target.value)}
               placeholder="8" step="0.1" className={inputCls} />
           </div>
@@ -167,12 +167,12 @@ export default function AddCreatorPage() {
 
         {/* Frequency */}
         <div>
-          <label className="block text-[10px] text-[#8A8A82] uppercase tracking-widest mb-1.5">Post Frequency</label>
+          <label className="block text-[10px] text-[#707A8A] uppercase tracking-widest mb-1.5">Post Frequency</label>
           <div className="flex gap-2">
             {(['regular', 'rare', 'inactive'] as const).map((f) => (
               <button key={f} type="button" onClick={() => update('postFrequency', f)}
                 className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${
-                  form.postFrequency === f ? 'bg-accent/15 text-accent border border-accent/25' : 'bg-subtle border border-edge text-[#8A8A82]'
+                  form.postFrequency === f ? 'bg-accent/15 text-accent border border-accent/25' : 'bg-subtle border border-edge text-[#707A8A]'
                 }`}>
                 {f === 'regular' ? '1+/week' : f === 'rare' ? 'Rarely' : '30d+ ago'}
               </button>
@@ -184,12 +184,12 @@ export default function AddCreatorPage() {
         {previewPrice > 0 && (
           <div className="bg-subtle border border-edge rounded-xl p-3 flex items-center justify-between">
             <div>
-              <p className="text-[#8A8A82] text-[9px] uppercase tracking-widest">Calculated share price</p>
-              <p className="text-accent text-lg font-bold">${previewPrice.toFixed(2)} <span className="text-xs font-semibold text-[#8A8A82]">/ share</span></p>
+              <p className="text-[#707A8A] text-[9px] uppercase tracking-widest">Calculated share price</p>
+              <p className="text-accent text-lg font-bold">${previewPrice.toFixed(2)} <span className="text-xs font-semibold text-[#707A8A]">/ share</span></p>
             </div>
             <div className="text-right">
-              <p className="text-[#8A8A82] text-[9px]">100,000 total shares</p>
-              <p className="text-[#8A8A82] text-[9px]">80,000 public · 20,000 treasury</p>
+              <p className="text-[#707A8A] text-[9px]">100,000 total shares</p>
+              <p className="text-[#707A8A] text-[9px]">80,000 public · 20,000 treasury</p>
             </div>
           </div>
         )}

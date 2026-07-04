@@ -113,23 +113,23 @@ export default function PriceChart({ history, currentPrice, initialPrice }: Prop
       chart = createChart(containerRef.current, {
         layout: {
           background: { color: 'transparent' },
-          textColor: '#8A8A82',
+          textColor: '#707A8A',
           fontSize: 11,
           fontFamily: 'SF Mono, Menlo, Consolas, monospace',
         },
         grid: {
-          vertLines: { color: '#1A1D23' },
-          horzLines: { color: '#1A1D23' },
+          vertLines: { color: '#EAECEF' },
+          horzLines: { color: '#EAECEF' },
         },
         crosshair: {
-          vertLine: { color: '#2A2A2E', labelBackgroundColor: '#16161A' },
-          horzLine: { color: '#2A2A2E', labelBackgroundColor: '#16161A' },
+          vertLine: { color: '#D1D5DB', labelBackgroundColor: '#FFFFFF' },
+          horzLine: { color: '#D1D5DB', labelBackgroundColor: '#FFFFFF' },
         },
         rightPriceScale: {
-          borderColor: '#22262E',
+          borderColor: '#EAECEF',
         },
         timeScale: {
-          borderColor: '#22262E',
+          borderColor: '#EAECEF',
           timeVisible: true,
           secondsVisible: false,
         },
@@ -138,12 +138,12 @@ export default function PriceChart({ history, currentPrice, initialPrice }: Prop
       })
 
       series = chart.addSeries(CandlestickSeries, {
-        upColor: '#22C55E',
-        downColor: '#EF4444',
-        borderUpColor: '#22C55E',
-        borderDownColor: '#EF4444',
-        wickUpColor: '#22C55E',
-        wickDownColor: '#EF4444',
+        upColor: '#0ECB81',
+        downColor: '#F6465D',
+        borderUpColor: '#0ECB81',
+        borderDownColor: '#F6465D',
+        wickUpColor: '#0ECB81',
+        wickDownColor: '#F6465D',
       })
 
       chartRef.current = chart
@@ -194,7 +194,7 @@ export default function PriceChart({ history, currentPrice, initialPrice }: Prop
     <div className="mb-4">
       {/* Price header */}
       <div className="flex items-end gap-3 mb-3 px-1">
-        <span className="text-2xl font-bold text-[#F5F5F0]">{formatCurrency(currentPrice)}</span>
+        <span className="text-2xl font-bold text-[#1E2329]">{formatCurrency(currentPrice)}</span>
         <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${isUp ? 'bg-up/10 text-up' : 'bg-down/10 text-down'}`}>
           {isUp ? '▲' : '▼'} {isUp ? '+' : ''}{pctChange.toFixed(2)}%
         </span>
@@ -214,7 +214,7 @@ export default function PriceChart({ history, currentPrice, initialPrice }: Prop
             key={r}
             onClick={() => setRange(r)}
             className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-colors ${
-              range === r ? 'bg-accent/15 text-accent' : 'text-[#8A8A82] hover:text-[#F5F5F0] hover:bg-subtle'
+              range === r ? 'bg-accent/15 text-accent' : 'text-[#707A8A] hover:text-[#1E2329] hover:bg-subtle'
             }`}
           >
             {r}

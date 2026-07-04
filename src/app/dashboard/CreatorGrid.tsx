@@ -68,7 +68,7 @@ export default function CreatorGrid({ creators, bets = [] }: { creators: Creator
             className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
               tab === t.key
                 ? 'bg-accent/15 text-accent border border-accent/25'
-                : 'text-[#8A8A82] hover:text-[#F5F5F0] border border-transparent hover:border-edge'
+                : 'text-[#707A8A] hover:text-[#1E2329] border border-transparent hover:border-edge'
             }`}>
             <span>{t.icon}</span>{t.label}
             {t.key === 'bets' && bets.length > 0 && <span className="bg-accent/20 text-accent text-[9px] px-1.5 py-0.5 rounded-full ml-0.5">{bets.length}</span>}
@@ -87,9 +87,9 @@ export default function CreatorGrid({ creators, bets = [] }: { creators: Creator
       ) : (
         <>
           <div className="relative mb-5">
-            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8A8A82] text-xs">🔍</span>
+            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#707A8A] text-xs">🔍</span>
             <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search creators..."
-              className="w-full bg-card border border-edge rounded-xl pl-9 pr-4 py-2.5 text-xs text-[#F5F5F0] placeholder-[#8A8A82] focus:outline-none focus:ring-1 focus:ring-accent/30 transition" />
+              className="w-full bg-card border border-edge rounded-xl pl-9 pr-4 py-2.5 text-xs text-[#1E2329] placeholder-[#707A8A] focus:outline-none focus:ring-1 focus:ring-accent/30 transition" />
           </div>
           {filtered.length === 0 ? (
             <Empty text={search ? 'No creators match your search.' : tab === 'big' ? 'No creators above 500K yet.' : 'No creators in this category.'} />
@@ -105,7 +105,7 @@ export default function CreatorGrid({ creators, bets = [] }: { creators: Creator
 }
 
 function Empty({ text }: { text: string }) {
-  return <div className="bg-card border border-edge rounded-2xl p-10 text-center"><p className="text-[#8A8A82] text-xs">{text}</p></div>
+  return <div className="bg-card border border-edge rounded-2xl p-10 text-center"><p className="text-[#707A8A] text-xs">{text}</p></div>
 }
 
 // ── Creator Card: one row, bold price, clear Buy button ──────────────────────
@@ -127,11 +127,11 @@ function CreatorCard({ creator }: { creator: CreatorListing }) {
 
         {/* Name + followers */}
         <div className="flex-1 min-w-0">
-          <h3 className="text-[#F5F5F0] text-sm font-semibold truncate">{creator.display_name}</h3>
+          <h3 className="text-[#1E2329] text-sm font-semibold truncate">{creator.display_name}</h3>
           <div className="flex items-center gap-1.5 mt-0.5">
             {creator.subscribers > 0 && (
-              <span className="text-[#8A8A82] text-[10px] flex items-center gap-0.5">
-                <span className={`text-[9px] ${creator.growthPct > 0 ? 'text-up' : creator.growthPct < 0 ? 'text-down' : 'text-[#8A8A82]'}`}>
+              <span className="text-[#707A8A] text-[10px] flex items-center gap-0.5">
+                <span className={`text-[9px] ${creator.growthPct > 0 ? 'text-up' : creator.growthPct < 0 ? 'text-down' : 'text-[#707A8A]'}`}>
                   {creator.growthPct > 0 ? '▲' : creator.growthPct < 0 ? '▼' : '—'}
                 </span>
                 {fmtSubs(creator.subscribers)} {subsLabel(creator.platform)}
@@ -143,8 +143,8 @@ function CreatorCard({ creator }: { creator: CreatorListing }) {
 
         {/* Price + change */}
         <div className="text-right mr-3 flex-shrink-0">
-          <p className="text-[#F5F5F0] text-lg font-bold leading-none">{formatCurrency(offering.current_price)}</p>
-          <span className={`text-[10px] font-bold ${isUp ? 'text-up' : pct === 0 ? 'text-[#8A8A82]' : 'text-down'}`}>
+          <p className="text-[#1E2329] text-lg font-bold leading-none">{formatCurrency(offering.current_price)}</p>
+          <span className={`text-[10px] font-bold ${isUp ? 'text-up' : pct === 0 ? 'text-[#707A8A]' : 'text-down'}`}>
             {isUp ? '+' : ''}{pct.toFixed(1)}%
           </span>
           {creator.priceDriver && offering.lastChangePct != null && (
@@ -189,13 +189,13 @@ function BetCard({ bet }: { bet: BetListing }) {
           <div className="w-9 h-9 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-xs font-bold flex-shrink-0">{bet.creator_name[0]}</div>
         )}
         <div className="flex-1 min-w-0">
-          <p className="text-[#F5F5F0] text-sm font-semibold leading-snug mb-1">{bet.question}</p>
+          <p className="text-[#1E2329] text-sm font-semibold leading-snug mb-1">{bet.question}</p>
           <div className="flex items-center gap-2">
-            <span className="text-[#8A8A82] text-[10px]">{bet.creator_name}</span>
-            <span className="text-[#8A8A82] text-[10px]">·</span>
-            <span className={`text-[10px] font-semibold ${hoursLeft > 0 ? 'text-accent' : 'text-[#8A8A82]'}`}>{timeLabel}</span>
-            <span className="text-[#8A8A82] text-[10px]">·</span>
-            <span className="text-[#8A8A82] text-[10px] font-medium">${total.toFixed(0)} pool</span>
+            <span className="text-[#707A8A] text-[10px]">{bet.creator_name}</span>
+            <span className="text-[#707A8A] text-[10px]">·</span>
+            <span className={`text-[10px] font-semibold ${hoursLeft > 0 ? 'text-accent' : 'text-[#707A8A]'}`}>{timeLabel}</span>
+            <span className="text-[#707A8A] text-[10px]">·</span>
+            <span className="text-[#707A8A] text-[10px] font-medium">${total.toFixed(0)} pool</span>
           </div>
         </div>
       </div>
@@ -237,7 +237,7 @@ function MultiButtons({ outcomes, total }: { outcomes: BetListing['outcomes']; t
         const isLeading = pct === Math.max(...outcomes.map((x) => total > 0 ? Math.round((x.pool_amount / total) * 100) : Math.round(100 / outcomes.length)))
         return (
           <button key={o.id} className="w-full flex items-center justify-between bg-subtle hover:bg-muted border border-edge rounded-xl px-4 py-3 transition-all group">
-            <span className="text-[#F5F5F0] text-xs font-medium">{o.label}</span>
+            <span className="text-[#1E2329] text-xs font-medium">{o.label}</span>
             <span className={`text-sm font-bold ${isLeading ? 'text-up' : 'text-accent'}`}>{pct}%</span>
           </button>
         )
@@ -253,7 +253,7 @@ function Sparkline({ data, isUp }: { data: number[]; isUp: boolean }) {
   const points = data.map((v, i) => `${(i / (data.length - 1)) * w},${h - ((v - min) / range) * h}`).join(' ')
   return (
     <svg width={w} height={h} className="flex-shrink-0" viewBox={`0 0 ${w} ${h}`}>
-      <polyline points={points} fill="none" stroke={isUp ? '#22C55E' : '#EF4444'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <polyline points={points} fill="none" stroke={isUp ? '#0ECB81' : '#F6465D'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }

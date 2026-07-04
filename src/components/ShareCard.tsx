@@ -17,7 +17,7 @@ export default function ShareCard({ creatorName, gainPct, photoUrl }: Props) {
     setSaving(true)
     try {
       const { toPng } = await import('html-to-image')
-      const dataUrl = await toPng(cardRef.current, { pixelRatio: 2, backgroundColor: '#0A0A0B' })
+      const dataUrl = await toPng(cardRef.current, { pixelRatio: 2, backgroundColor: '#FFFFFF' })
       const link = document.createElement('a')
       link.download = `hype-${creatorName.toLowerCase().replace(/\s/g, '-')}.png`
       link.href = dataUrl
@@ -36,43 +36,43 @@ export default function ShareCard({ creatorName, gainPct, photoUrl }: Props) {
       {/* The card to capture */}
       <div
         ref={cardRef}
-        className="w-[340px] bg-[#0A0A0B] border border-[#D4AF37]/30 rounded-2xl p-6 select-none"
+        className="w-[340px] bg-[#FFFFFF] border border-[#F0B90B]/40 rounded-2xl p-6 select-none"
         style={{ fontFamily: 'system-ui, sans-serif' }}
       >
         {/* Logo */}
         <div className="flex items-center justify-between mb-5">
-          <span className="text-[#D4AF37] font-bold text-sm tracking-tight">H<span className="text-white">ype</span></span>
-          <span className="text-[#8A8A82] text-[10px] tracking-widest uppercase">Virtual Trading</span>
+          <span className="text-[#F0B90B] font-bold text-sm tracking-tight">H<span className="text-[#1E2329]">ype</span></span>
+          <span className="text-[#98A1B0] text-[10px] tracking-widest uppercase">Virtual Trading</span>
         </div>
 
         {/* Creator */}
         <div className="flex items-center gap-3 mb-5">
           {photoUrl ? (
-            <img src={photoUrl} alt="" className="w-12 h-12 rounded-xl object-cover" style={{ border: '2px solid #D4AF37' }} />
+            <img src={photoUrl} alt="" className="w-12 h-12 rounded-xl object-cover" style={{ border: '2px solid #F0B90B' }} />
           ) : (
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg text-[#0A0A0B]"
-              style={{ background: 'linear-gradient(135deg, #D4AF37, #A68B2A)' }}>
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg text-[#3a2e00]"
+              style={{ background: 'linear-gradient(135deg, #F0B90B, #D4A200)' }}>
               {creatorName[0]}
             </div>
           )}
           <div>
-            <p className="text-white font-bold text-base">{creatorName}</p>
-            <p className="text-[#8A8A82] text-xs">Creator shares</p>
+            <p className="text-[#1E2329] font-bold text-base">{creatorName}</p>
+            <p className="text-[#707A8A] text-xs">Creator shares</p>
           </div>
         </div>
 
         {/* The flex line */}
-        <div className="bg-[#16161A] rounded-xl p-4 mb-4">
-          <p className="text-[#8A8A82] text-[10px] uppercase tracking-widest mb-1">I bought before</p>
-          <p className={`text-3xl font-bold ${isUp ? 'text-[#22C55E]' : 'text-[#EF4444]'}`}>
+        <div className="bg-[#F5F7FA] rounded-xl p-4 mb-4">
+          <p className="text-[#98A1B0] text-[10px] uppercase tracking-widest mb-1">I backed before</p>
+          <p className={`text-3xl font-bold ${isUp ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
             {isUp ? '+' : ''}{gainPct.toFixed(1)}%
           </p>
         </div>
 
         {/* Footer */}
         <div className="flex items-center justify-between">
-          <p className="text-[#8A8A82] text-[10px]">hype.vercel.app</p>
-          <p className="text-[#D4AF37] text-[10px] font-semibold">@Hype</p>
+          <p className="text-[#98A1B0] text-[10px]">hype.vercel.app</p>
+          <p className="text-[#F0B90B] text-[10px] font-semibold">@Hype</p>
         </div>
       </div>
 

@@ -34,8 +34,8 @@ export default function LiveHome({ initialFeed, initialTicker }: { initialFeed: 
           <div className="animate-ticker flex whitespace-nowrap py-2">
             {[...ticker, ...ticker].map((t, i) => (
               <Link key={`${t.slug}-${i}`} href={`/c/${t.slug}`} className="inline-flex items-center gap-2 px-4 text-[11px] hover:text-accent transition-colors">
-                <span className="text-[#F5F5F0] font-semibold">{t.name}</span>
-                <span className="text-[#F5F5F0] font-mono">{formatCurrency(t.price)}</span>
+                <span className="text-[#1E2329] font-semibold">{t.name}</span>
+                <span className="text-[#1E2329] font-mono">{formatCurrency(t.price)}</span>
                 <span className={`font-bold ${t.change >= 0 ? 'text-up' : 'text-down'}`}>
                   {t.change >= 0 ? '▲' : '▼'}{Math.abs(t.change).toFixed(1)}%
                 </span>
@@ -49,10 +49,10 @@ export default function LiveHome({ initialFeed, initialTicker }: { initialFeed: 
         <div className="max-w-lg w-full">
           {/* Hero */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl sm:text-4xl font-bold text-[#F5F5F0] leading-[1.1] mb-3 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl font-bold text-[#1E2329] leading-[1.1] mb-3 tracking-tight">
               The stock market<br /><span className="text-accent">for creators.</span>
             </h1>
-            <p className="text-[#8A8A82] text-sm leading-relaxed max-w-sm mx-auto">
+            <p className="text-[#707A8A] text-sm leading-relaxed max-w-sm mx-auto">
               Prices rise when creators are blowing up, drop when they stall. Catch the momentum before the crowd does.
             </p>
           </div>
@@ -62,7 +62,7 @@ export default function LiveHome({ initialFeed, initialTicker }: { initialFeed: 
             <Link href="/sign-up" className="bg-accent hover:bg-accent-hover text-bg font-semibold px-6 py-2.5 rounded-xl text-sm transition-colors text-center">
               Start trading
             </Link>
-            <Link href="/sign-in" className="bg-card hover:bg-subtle border border-edge text-[#F5F5F0] font-semibold px-6 py-2.5 rounded-xl text-sm transition-colors text-center">
+            <Link href="/sign-in" className="bg-card hover:bg-subtle border border-edge text-[#1E2329] font-semibold px-6 py-2.5 rounded-xl text-sm transition-colors text-center">
               I have an account
             </Link>
           </div>
@@ -73,7 +73,7 @@ export default function LiveHome({ initialFeed, initialTicker }: { initialFeed: 
               <span className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse-gold" />
               Early Access
             </div>
-            <p className="text-[#F5F5F0] text-sm font-medium leading-relaxed max-w-md mx-auto mb-1">
+            <p className="text-[#1E2329] text-sm font-medium leading-relaxed max-w-md mx-auto mb-1">
               Trade with virtual Hype Coins, climb the leaderboard, and prove your skills.
             </p>
             <p className="text-accent text-xs font-semibold">
@@ -88,17 +88,17 @@ export default function LiveHome({ initialFeed, initialTicker }: { initialFeed: 
           <div className="flex items-center justify-center gap-6 mb-10 text-xs">
             <div className="text-center">
               <div className="text-accent font-bold text-sm">10K HC</div>
-              <div className="text-[#8A8A82] text-[10px]">free to start</div>
+              <div className="text-[#707A8A] text-[10px]">free to start</div>
             </div>
             <div className="w-px h-6 bg-edge" />
             <div className="text-center">
               <div className="text-accent font-bold text-sm">2%</div>
-              <div className="text-[#8A8A82] text-[10px]">buy fee</div>
+              <div className="text-[#707A8A] text-[10px]">buy fee</div>
             </div>
             <div className="w-px h-6 bg-edge" />
             <div className="text-center">
               <div className="text-accent font-bold text-sm">18+</div>
-              <div className="text-[#8A8A82] text-[10px]">verified</div>
+              <div className="text-[#707A8A] text-[10px]">verified</div>
             </div>
           </div>
 
@@ -107,7 +107,7 @@ export default function LiveHome({ initialFeed, initialTicker }: { initialFeed: 
             <div className="mb-8">
               <div className="flex items-center gap-2 mb-3">
                 <span className="w-1.5 h-1.5 bg-up rounded-full animate-pulse-gold" />
-                <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#8A8A82]">Live Activity</h2>
+                <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#707A8A]">Live Activity</h2>
               </div>
               <div className="bg-card border border-edge rounded-xl overflow-hidden divide-y divide-edge/50">
                 {feed.slice(0, 6).map((item, i) => (
@@ -115,8 +115,8 @@ export default function LiveHome({ initialFeed, initialTicker }: { initialFeed: 
                     <span className="text-xs flex-shrink-0">
                       {item.type === 'buy' ? '🟢' : '🎲'}
                     </span>
-                    <p className="text-[11px] text-[#F5F5F0] truncate flex-1">{item.text}</p>
-                    <span className="text-[9px] text-[#8A8A82] flex-shrink-0">{timeAgo(item.time)}</span>
+                    <p className="text-[11px] text-[#1E2329] truncate flex-1">{item.text}</p>
+                    <span className="text-[9px] text-[#707A8A] flex-shrink-0">{timeAgo(item.time)}</span>
                   </div>
                 ))}
               </div>
@@ -126,14 +126,14 @@ export default function LiveHome({ initialFeed, initialTicker }: { initialFeed: 
           {/* Trending creators */}
           {ticker.length > 0 && (
             <div className="mb-8">
-              <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#8A8A82] mb-3">Trending Now</h2>
+              <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#707A8A] mb-3">Trending Now</h2>
               <div className="grid grid-cols-2 gap-2">
                 {ticker.slice(0, 4).map((t) => (
                   <Link key={t.slug} href={`/c/${t.slug}`}
                     className="bg-card border border-edge rounded-xl p-3 hover:border-accent/30 transition-all animate-breathe group">
-                    <p className="text-[#F5F5F0] text-xs font-semibold truncate group-hover:text-accent transition-colors">{t.name}</p>
+                    <p className="text-[#1E2329] text-xs font-semibold truncate group-hover:text-accent transition-colors">{t.name}</p>
                     <div className="flex items-center justify-between mt-1.5">
-                      <span className="text-[#F5F5F0] text-sm font-bold font-mono">{formatCurrency(t.price)}</span>
+                      <span className="text-[#1E2329] text-sm font-bold font-mono">{formatCurrency(t.price)}</span>
                       <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${t.change >= 0 ? 'bg-up/10 text-up' : 'bg-down/10 text-down'}`}>
                         {t.change >= 0 ? '+' : ''}{t.change.toFixed(1)}%
                       </span>
@@ -147,7 +147,7 @@ export default function LiveHome({ initialFeed, initialTicker }: { initialFeed: 
           {/* Empty state when no activity */}
           {feed.length === 0 && ticker.length === 0 && (
             <div className="bg-card border border-edge rounded-xl p-6 text-center animate-breathe">
-              <p className="text-[#8A8A82] text-xs mb-2">No activity yet — be the first to trade</p>
+              <p className="text-[#707A8A] text-xs mb-2">No activity yet — be the first to trade</p>
               <Link href="/sign-up" className="text-accent text-xs font-semibold hover:underline">Create an account →</Link>
             </div>
           )}
@@ -180,15 +180,15 @@ function WaitlistSignup() {
     return (
       <div className="bg-card border border-up/20 rounded-2xl p-5 mb-8 text-center">
         <p className="text-up text-sm font-semibold mb-1">You&apos;re on the list! 🎉</p>
-        <p className="text-[#8A8A82] text-xs">We&apos;ll notify you when real-money trading goes live.</p>
+        <p className="text-[#707A8A] text-xs">We&apos;ll notify you when real-money trading goes live.</p>
       </div>
     )
   }
 
   return (
     <div className="bg-card border border-edge rounded-2xl p-5 mb-8">
-      <p className="text-[#F5F5F0] text-xs font-semibold text-center mb-1">Be the first to know when real money goes live</p>
-      <p className="text-[#8A8A82] text-[10px] text-center mb-3">Join the waitlist — early users get priority access.</p>
+      <p className="text-[#1E2329] text-xs font-semibold text-center mb-1">Be the first to know when real money goes live</p>
+      <p className="text-[#707A8A] text-[10px] text-center mb-3">Join the waitlist — early users get priority access.</p>
       <form onSubmit={handleSubmit} className="flex gap-2">
         <input
           type="email"
@@ -196,7 +196,7 @@ function WaitlistSignup() {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@email.com"
           required
-          className="flex-1 bg-subtle border border-edge rounded-xl px-3.5 py-2.5 text-xs text-[#F5F5F0] placeholder-[#8A8A82] focus:outline-none focus:ring-1 focus:ring-accent/30 transition"
+          className="flex-1 bg-subtle border border-edge rounded-xl px-3.5 py-2.5 text-xs text-[#1E2329] placeholder-[#707A8A] focus:outline-none focus:ring-1 focus:ring-accent/30 transition"
         />
         <button type="submit" disabled={status === 'loading' || !email.includes('@')}
           className="bg-accent hover:bg-accent-hover disabled:opacity-40 text-bg font-semibold text-xs px-5 py-2.5 rounded-xl transition-colors flex-shrink-0">

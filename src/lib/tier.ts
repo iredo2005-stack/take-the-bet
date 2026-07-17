@@ -1,15 +1,8 @@
 import { createHmac, timingSafeEqual } from 'crypto'
 import { createAdminClient } from '@/lib/supabase/admin'
+import type { Tier } from '@/lib/roomTiers'
 
-export type Tier = 'bronze' | 'silver' | 'gold' | 'alpha'
-
-// Trailing 30-day ROI thresholds gating access to each chatroom tier.
-const TIER_THRESHOLDS: { tier: Tier; minRoi: number }[] = [
-  { tier: 'alpha', minRoi: 0.5 },
-  { tier: 'gold', minRoi: 0.25 },
-  { tier: 'silver', minRoi: 0.1 },
-  { tier: 'bronze', minRoi: -Infinity },
-]
+export type { Tier }
 
 const TOKEN_TTL_SECONDS = 15 * 60
 
@@ -87,12 +80,4 @@ export async function computeRoi30d(supabase: ReturnType<typeof createAdminClien
   return { roi, realizedPnlCents, capitalDeployedCents }
 }
 
-export function tierForRoi(roi: number): Tier {
-  return TIER_THRESHOLDS.find((t) => roi >= t.minRoi)!.tier
-}
-
-// Does `tier` meet or exceed the room's required tier?
-const TIER_RANK: Record<Tier, number> = { bronze: 0, silver: 1, gold: 2, alpha: 3 }
-export function meetsTier(userTier: Tier, requiredTier: Tier): boolean {
-  return TIER_RANK[userTier] >= TIER_RANK[requiredTier]
-}
+export { tierForRoi, meetsTier } from '@/lib/roomTiers'

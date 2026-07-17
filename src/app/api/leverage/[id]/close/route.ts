@@ -44,7 +44,7 @@ export async function POST(req: Request, { params }: Props) {
     const { data: closed, error: finalizeError } = await supabase.rpc('finalize_close_leveraged_position', {
       p_position_id: id,
       p_spread_bps: SPREAD_BPS,
-      p_force_liquidate: false,
+      p_close_kind: 'user_close',
     })
     if (finalizeError) return NextResponse.json({ error: finalizeError.message }, { status: 500 })
 

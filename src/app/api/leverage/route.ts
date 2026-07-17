@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     if (!user?.age_verified) return NextResponse.json({ error: 'Age verification required' }, { status: 403 })
 
     const body = await req.json()
-    const { creatorId, side, leverage, collateralCents, clientRequestId } = body
+    const { creatorId, side, leverage, collateralCents, clientRequestId, takeProfitPrice, stopLossPrice } = body
 
     if (!creatorId || (side !== 'long' && side !== 'short')) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
@@ -36,6 +36,15 @@ export async function POST(req: Request) {
     }
     if (!Number.isInteger(collateralCents) || collateralCents <= 0) {
       return NextResponse.json({ error: 'collateralCents must be a positive integer' }, { status: 400 })
+    }
+    if (takeProfitPrice != null && (typeof takeProfitPrice !== 'number' || takeProfitPrice <= 0)) {
+      return NextResponse.json({ error: 'takeProfitPrice must be a positive number' }, { status: 400 })
+    }
+    if (stopLossPrice != null && (typeof stopLossPrice !== 'number' || stopLossPrice <= 0)) {
+      return NextResponse.json({ error: 'stopLossPrice must be a positive number' }, { status: 400 })
+    }
+    if (takeProfitPrice != null && stopLossPrice != null && takeProfitPrice === stopLossPrice) {
+      return NextResponse.json({ error: 'takeProfitPrice and stopLossPrice cannot be equal' }, { status: 400 })
     }
 
     const { data: creator } = await supabase.from('creators').select('id').eq('id', creatorId).single()
@@ -65,6 +74,8 @@ export async function POST(req: Request) {
         p_maintenance_ratio_bps: MAINTENANCE_MARGIN_BPS,
         p_execute_at: executeAt,
         p_client_request_id: clientRequestId ?? randomUUID(),
+        p_take_profit_price: takeProfitPrice ?? null,
+        p_stop_loss_price: stopLossPrice ?? null,
       })
       if (error) throw error
       pending = data

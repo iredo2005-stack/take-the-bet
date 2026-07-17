@@ -26,6 +26,7 @@ export async function GET(req: Request) {
     .eq('status', 'open')
 
   const liquidations = []
+  const tpSlTriggers = []
   for (const p of openPositions || []) {
     try {
       const { data: didLiquidate, error } = await supabase.rpc('check_liquidation', {
@@ -33,7 +34,17 @@ export async function GET(req: Request) {
         p_spread_bps: SPREAD_BPS,
       })
       if (error) throw error
-      if (didLiquidate) liquidations.push(p.id)
+      if (didLiquidate) {
+        liquidations.push(p.id)
+        continue // already closed — skip the TP/SL check below
+      }
+
+      const { data: triggered, error: tpSlError } = await supabase.rpc('check_tp_sl', {
+        p_position_id: p.id,
+        p_spread_bps: SPREAD_BPS,
+      })
+      if (tpSlError) throw tpSlError
+      if (triggered) tpSlTriggers.push({ id: p.id, triggered })
     } catch (err: any) {
       liquidations.push({ id: p.id, error: err.message })
     }
@@ -64,7 +75,7 @@ export async function GET(req: Request) {
     const { error } = await supabase.rpc('finalize_close_leveraged_position', {
       p_position_id: p.id,
       p_spread_bps: SPREAD_BPS,
-      p_force_liquidate: false,
+      p_close_kind: 'user_close',
     })
     healedCloses.push(error ? { id: p.id, error: error.message } : p.id)
   }
@@ -74,6 +85,7 @@ export async function GET(req: Request) {
     timestamp: new Date().toISOString(),
     checked: (openPositions || []).length,
     liquidations,
+    tpSlTriggers,
     healedOpens,
     healedCloses,
   })

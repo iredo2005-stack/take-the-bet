@@ -2,6 +2,7 @@ import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { issueChatAccessToken } from '@/lib/clout/chatAccess'
+import { centsToDollars } from '@/lib/money'
 
 // GET /api/clout/chat/verify-access?chatId=... — audits the caller's trailing
 // 30-day ROI/volume against one specific Alpha Chat's bar. On success, grants
@@ -54,8 +55,8 @@ export async function GET(req: Request) {
         {
           error: grantError.message,
           message: mapped.message,
-          stats: { roiBps: stats.roi_bps, volumeCents: stats.volume_cents },
-          required: { minRoiBps: chat.min_roi_bps, minVolumeCents: chat.min_volume_cents },
+          stats: { roiBps: stats.roi_bps, volumeUsdc: centsToDollars(stats.volume_cents) },
+          required: { minRoiBps: chat.min_roi_bps, minVolumeUsdc: centsToDollars(chat.min_volume_cents) },
         },
         { status: mapped.status }
       )
@@ -66,7 +67,7 @@ export async function GET(req: Request) {
     return NextResponse.json({
       success: true,
       member,
-      stats: { roiBps: stats.roi_bps, volumeCents: stats.volume_cents },
+      stats: { roiBps: stats.roi_bps, volumeUsdc: centsToDollars(stats.volume_cents) },
       token,
       expiresAt,
     })

@@ -1,6 +1,7 @@
 import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { centsToDollars } from '@/lib/money'
 
 const EMBED_PLATFORMS = ['youtube', 'twitch'] as const
 const METRIC_TYPES = ['views', 'likes', 'concurrent_viewers', 'streams'] as const
@@ -17,6 +18,12 @@ const DEFAULT_WAR_CREATOR_SHARE_BPS = 250 // 2.5% each side
 const DEFAULT_PLATFORM_SHARE_BPS = 500 // 5%
 
 // GET /api/clout/pools?status=open — public listing.
+//
+// $CLOUT is displayed 1:1 against USDC ("1 $CLOUT = $1"), so every money
+// field crossing this API boundary is converted from the DB's integer cents
+// to a dollar-denominated *Usdc field here — the only place that division
+// happens. Storage and every settlement/liquidation calculation stay in
+// integer cents; this route never feeds a converted value back into math.
 export async function GET(req: Request) {
   const status = new URL(req.url).searchParams.get('status') ?? 'open'
   const supabase = createAdminClient()
@@ -29,7 +36,25 @@ export async function GET(req: Request) {
     .limit(100)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json({ pools: data })
+
+  const pools = (data || []).map((pool: any) => ({
+    id: pool.id,
+    poolType: pool.pool_type,
+    platform: pool.platform,
+    metricType: pool.metric_type,
+    windowLabel: pool.window_label,
+    status: pool.status,
+    baselineMetric: pool.baseline_metric,
+    upPoolUsdc: centsToDollars(pool.up_pool_cents),
+    downPoolUsdc: centsToDollars(pool.down_pool_cents),
+    opensAt: pool.opens_at,
+    expiresAt: pool.expires_at,
+    resolvedAt: pool.resolved_at,
+    creatorA: pool.creator_a,
+    creatorB: pool.creator_b,
+  }))
+
+  return NextResponse.json({ pools })
 }
 
 // POST /api/clout/pools — admin-only. Creates either a single-creator pool

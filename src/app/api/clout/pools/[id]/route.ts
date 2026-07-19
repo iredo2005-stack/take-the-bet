@@ -1,6 +1,7 @@
 import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { centsToDollars } from '@/lib/money'
 
 type Props = { params: Promise<{ id: string }> }
 
@@ -8,6 +9,11 @@ type Props = { params: Promise<{ id: string }> }
 // clean embed{} object per creator so the client can render the right
 // iframe (YouTube or Twitch) without knowing the raw column layout. War
 // Pools carry both; single pools only ever populate creatorA.
+//
+// $CLOUT is displayed 1:1 against USDC ("1 $CLOUT = $1"), so pool cash
+// values are converted from integer cents to dollar-denominated *Usdc
+// fields right here at the API boundary — the DB and every settlement/
+// liquidation calculation stay in integer cents throughout.
 export async function GET(req: Request, { params }: Props) {
   try {
     const { userId } = await auth()
@@ -36,8 +42,8 @@ export async function GET(req: Request, { params }: Props) {
         windowLabel: pool.window_label,
         status: pool.status,
         baselineMetric: pool.baseline_metric,
-        upPoolCents: pool.up_pool_cents,
-        downPoolCents: pool.down_pool_cents,
+        upPoolUsdc: centsToDollars(pool.up_pool_cents),
+        downPoolUsdc: centsToDollars(pool.down_pool_cents),
         opensAt: pool.opens_at,
         expiresAt: pool.expires_at,
         resolvedAt: pool.resolved_at,

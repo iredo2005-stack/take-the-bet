@@ -43,10 +43,16 @@ function StreamTile({ creator, parentHost }: { creator: CloutEmbedCreator; paren
   const src = creator ? embedSrc(creator.embed, parentHost) : null
 
   return (
-    <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-black">
+    <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-black ring-1 ring-white/10">
       {creator?.display_name && (
-        <div className="absolute left-2 top-2 z-10 rounded-md bg-black/70 px-2 py-1 text-xs font-semibold text-white">
+        <div className="absolute left-2 top-2 z-10 rounded-md bg-black/70 px-2 py-1 text-xs font-semibold text-white backdrop-blur-sm">
           {creator.display_name}
+        </div>
+      )}
+      {src && (
+        <div className="absolute right-2 top-2 z-10 flex items-center gap-1.5 rounded-md bg-black/70 px-2 py-1 backdrop-blur-sm">
+          <span className="h-1.5 w-1.5 animate-clout-flicker rounded-full bg-[#FF3B5C] shadow-[0_0_6px_2px_rgba(255,59,92,0.8)]" />
+          <span className="animate-clout-flicker text-[10px] font-bold tracking-widest text-[#FF3B5C]">LIVE</span>
         </div>
       )}
       {src ? (

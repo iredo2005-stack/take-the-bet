@@ -1,0 +1,145 @@
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
+
+type WarMeterProps = {
+  poolType: 'war'
+  creatorAName: string
+  creatorBName: string
+  /** Creator A's current share of the combined metric, 0-100. */
+  shareAPercent: number
+  /** The share ratio at pool-open — defaults to 50 (50/50) if the pool didn't override it. */
+  baselineSharePercent?: number
+}
+
+type SingleMeterProps = {
+  poolType: 'single'
+  metricLabel?: string
+  currentMetric: number
+  baselineMetric: number
+  /** Matches clout_pool_positions.liquidation_trigger_ratio's default — shades the danger zone. */
+  triggerRatio?: number
+}
+
+type Props = WarMeterProps | SingleMeterProps
+
+const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n))
+
+// The "CLOUT Meter" — a live-updating tug-of-war / momentum gauge that maps
+// straight onto the same numbers clout_check_liquidations and
+// clout_settle_pool actually decide on: share_a vs baseline_share_a for War
+// Pools, current_metric vs baseline_metric for single pools. Pulses briefly
+// whenever the tracked value moves, so a shift in the underlying metric
+// reads as an event, not just a number changing.
+export default function CloutMeter(props: Props) {
+  const trackedValue = props.poolType === 'war' ? props.shareAPercent : (props.currentMetric / Math.max(props.baselineMetric, 1)) * 100
+
+  const prevRef = useRef<number | null>(null)
+  const [pulsing, setPulsing] = useState(false)
+
+  useEffect(() => {
+    if (prevRef.current !== null && Math.abs(trackedValue - prevRef.current) > 0.25) {
+      setPulsing(true)
+      const t = setTimeout(() => setPulsing(false), 900)
+      prevRef.current = trackedValue
+      return () => clearTimeout(t)
+    }
+    prevRef.current = trackedValue
+  }, [trackedValue])
+
+  if (props.poolType === 'war') {
+    return <WarMeter {...props} pulsing={pulsing} />
+  }
+  return <SingleMeter {...props} pulsing={pulsing} />
+}
+
+function WarMeter({ creatorAName, creatorBName, shareAPercent, baselineSharePercent = 50, pulsing }: WarMeterProps & { pulsing: boolean }) {
+  const shareA = clamp(shareAPercent, 0, 100)
+  const shareB = 100 - shareA
+
+  return (
+    <div className="w-full rounded-2xl border border-white/10 bg-[#0A0E14]/80 p-4 shadow-[0_0_40px_rgba(0,0,0,0.5)]">
+      <div className="mb-2 flex items-center justify-between text-xs font-bold uppercase tracking-wider">
+        <span className="text-[#39FF88]">{creatorAName} · HYPE</span>
+        <span className="text-[#FF3B5C]">{creatorBName} · FADE</span>
+      </div>
+
+      <div
+        className={`relative h-7 w-full overflow-hidden rounded-full bg-black ring-1 ring-white/10 ${
+          pulsing ? 'text-[#39FF88] animate-clout-meter-pulse' : ''
+        }`}
+      >
+        <div
+          className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#0FBE63] to-[#39FF88] transition-all duration-700 ease-out"
+          style={{ width: `${shareA}%` }}
+        />
+        <div
+          className="absolute inset-y-0 right-0 bg-gradient-to-l from-[#C21F3E] to-[#FF3B5C] transition-all duration-700 ease-out"
+          style={{ width: `${shareB}%` }}
+        />
+        {/* Opening baseline tick */}
+        <div
+          className="absolute top-0 h-full w-0.5 bg-white/60"
+          style={{ left: `${clamp(baselineSharePercent, 0, 100)}%` }}
+          title={`Opening ratio: ${baselineSharePercent.toFixed(1)}%`}
+        />
+      </div>
+
+      <div className="mt-2 flex justify-between font-mono text-sm font-bold">
+        <span className="text-[#39FF88]">{shareA.toFixed(1)}%</span>
+        <span className="text-[#FF3B5C]">{shareB.toFixed(1)}%</span>
+      </div>
+    </div>
+  )
+}
+
+function SingleMeter({ metricLabel = 'Metric', currentMetric, baselineMetric, triggerRatio = 0.2, pulsing }: SingleMeterProps & { pulsing: boolean }) {
+  // Scaled to a 0-200%-of-baseline track: 0% = left edge, 100% (baseline) = center, 200% = right edge.
+  const pctOfBaseline = baselineMetric > 0 ? (currentMetric / baselineMetric) * 100 : 100
+  const position = clamp(pctOfBaseline / 2, 0, 100) // position along the 0-200 track, expressed as 0-100% width
+  const isUp = pctOfBaseline >= 100
+
+  const dangerLowPct = 100 * (1 - triggerRatio) // e.g. 80% of baseline -> UP liquidation line
+  const dangerHighPct = 100 * (1 + triggerRatio) // e.g. 120% of baseline -> DOWN liquidation line
+  const dangerLowPos = clamp(dangerLowPct / 2, 0, 100)
+  const dangerHighPos = clamp(dangerHighPct / 2, 0, 100)
+
+  return (
+    <div className="w-full rounded-2xl border border-white/10 bg-[#0A0E14]/80 p-4 shadow-[0_0_40px_rgba(0,0,0,0.5)]">
+      <div className="mb-2 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-gray-400">
+        <span>{metricLabel} vs 4-Week Baseline</span>
+        <span className={isUp ? 'text-[#39FF88]' : 'text-[#FF3B5C]'}>{isUp ? '▲ HYPE' : '▼ FADE'}</span>
+      </div>
+
+      <div
+        className={`relative h-7 w-full overflow-hidden rounded-full bg-black ring-1 ring-white/10 ${
+          pulsing ? `animate-clout-meter-pulse ${isUp ? 'text-[#39FF88]' : 'text-[#FF3B5C]'}` : ''
+        }`}
+      >
+        {/* Liquidation danger zones */}
+        <div className="absolute inset-y-0 left-0 bg-[#FF3B5C]/10" style={{ width: `${dangerLowPos}%` }} />
+        <div className="absolute inset-y-0 right-0 bg-[#39FF88]/10" style={{ width: `${100 - dangerHighPos}%` }} />
+
+        {/* Fill up to the current position */}
+        <div
+          className={`absolute inset-y-0 left-0 transition-all duration-700 ease-out ${
+            isUp ? 'bg-gradient-to-r from-[#0FBE63] to-[#39FF88]' : 'bg-gradient-to-r from-[#39FF88] via-[#FFD23B] to-[#FF3B5C]'
+          }`}
+          style={{ width: `${position}%` }}
+        />
+
+        {/* Baseline center tick (100%) */}
+        <div className="absolute top-0 h-full w-0.5 bg-white/60" style={{ left: '50%' }} title="Baseline" />
+        {/* Liquidation trigger ticks */}
+        <div className="absolute top-0 h-full w-px bg-[#FF3B5C]/70" style={{ left: `${dangerLowPos}%` }} title="UP liquidation line" />
+        <div className="absolute top-0 h-full w-px bg-[#39FF88]/70" style={{ left: `${dangerHighPos}%` }} title="DOWN liquidation line" />
+      </div>
+
+      <div className="mt-2 flex justify-between font-mono text-sm font-bold">
+        <span className="text-gray-500">0%</span>
+        <span className={isUp ? 'text-[#39FF88]' : 'text-[#FF3B5C]'}>{pctOfBaseline.toFixed(1)}% of baseline</span>
+        <span className="text-gray-500">200%</span>
+      </div>
+    </div>
+  )
+}

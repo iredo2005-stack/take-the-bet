@@ -54,3 +54,39 @@ export function impliedMultiplier(liveMarginCents: number, payoutCents: number):
   if (liveMarginCents <= 0) return 0
   return payoutCents / liveMarginCents
 }
+
+// A pool snapshot that also carries each side's current aggregate notional —
+// cheaper for a UI to fetch/hold than every individual open position, and
+// all previewLivePayoutCents needs (it only ever sums that field).
+export type PoolSnapshot = PoolVolume & {
+  upSideNotionalCents: number
+  downSideNotionalCents: number
+}
+
+// Pre-trade estimate: "if I placed this position right now, what would my
+// live payout show?" Simulates the position actually landing — adds its
+// margin to the pool's cash (same side clout_place_position credits) and its
+// notional to that side's aggregate — before running the exact same
+// prize-pool math as clout_calculate_live_payout / calculateLivePayoutCents.
+// Still read-only display math; only clout_place_position may ever touch a
+// balance for real.
+export function previewLivePayoutCents(
+  pool: PoolSnapshot,
+  side: PoolSide,
+  marginCents: number,
+  leverage: number
+): number {
+  const notionalCents = marginCents * leverage
+
+  const upPoolCents = pool.upPoolCents + (side === 'up' ? marginCents : 0)
+  const downPoolCents = pool.downPoolCents + (side === 'down' ? marginCents : 0)
+  const totalCash = upPoolCents + downPoolCents
+  const prizePool = Math.floor((totalCash * (10000 - pool.rakeBps)) / 10000)
+
+  const existingSideNotional = side === 'up' ? pool.upSideNotionalCents : pool.downSideNotionalCents
+  const sideNotional = existingSideNotional + notionalCents
+  if (sideNotional <= 0) return 0
+
+  // Multiply first, divide once — same reason as calculateLivePayoutCents above.
+  return Math.floor((prizePool * notionalCents) / sideNotional)
+}

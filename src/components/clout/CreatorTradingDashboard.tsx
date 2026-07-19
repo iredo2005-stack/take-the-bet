@@ -1,35 +1,19 @@
 'use client'
 
-import LiveStreamEmbed, { type CloutEmbedCreator } from './LiveStreamEmbed'
+import LiveStreamEmbed from './LiveStreamEmbed'
 import CloutMeter from './CloutMeter'
 import TradeModule, { type TradeModulePool } from './TradeModule'
 import AlphaChatWidget, { type AlphaChatMessage, type WinTickerEntry } from './AlphaChatWidget'
 import type { PoolSide } from '@/lib/clout/payout'
+import type { CloutPoolDetailData } from '@/lib/clout/poolDetail'
 
-// Matches GET /api/clout/pools/[id]'s response shape (see
-// src/app/api/clout/pools/[id]/route.ts) — money already converted to
-// dollar-denominated $CLOUT (1:1 with USDC), metrics/shares left as raw
-// numbers for the CLOUT Meter.
-export type CloutPoolDetail = {
-  id: string
-  poolType: 'single' | 'war'
-  windowLabel: string
-  metricType: string
-  status: string
-  baselineMetric: number
-  currentMetric: number | null
-  currentMetricA: number | null
-  currentMetricB: number | null
-  baselineShareA: number | null
-  rakeBps: number
-  upPoolUsdc: number
-  downPoolUsdc: number
-  upSideNotionalUsdc: number
-  downSideNotionalUsdc: number
-  expiresAt: string
-  creatorA: (CloutEmbedCreator & { display_name: string }) | null
-  creatorB: (CloutEmbedCreator & { display_name: string }) | null
-}
+// Re-exported so callers (the pool page, its client wrapper) can import one
+// type from here instead of reaching into lib/clout/poolDetail directly.
+// This is the exact shape fetchCloutPoolDetail() produces — the same helper
+// both GET /api/clout/pools/[id] and the server-rendered pool page use — so
+// this component, the API, and the page can never drift on what a "pool"
+// looks like.
+export type CloutPoolDetail = CloutPoolDetailData
 
 type Props = {
   pool: CloutPoolDetail
@@ -117,7 +101,9 @@ export default function CreatorTradingDashboard({
           )}
 
           {/* 3. Quick-Action Trade Module */}
-          <TradeModule pool={tradeModulePool} balanceUsdc={balanceUsdc} onSubmit={onTrade} />
+          <div id="clout-trade-module">
+            <TradeModule pool={tradeModulePool} balanceUsdc={balanceUsdc} onSubmit={onTrade} />
+          </div>
         </div>
 
         {/* 4. Gated Alpha Chat sidebar */}

@@ -7,11 +7,12 @@ import { createAdminClient } from '@/lib/supabase/admin'
 // newly-locked pool.
 //
 // TODO before this is accurate for real settlement: fetch the real final
-// metric from the platform's API (YouTube/Twitch/Twitter/Spotify) per pool,
-// the same way Hype's platformMetrics.ts does for prediction pools, and pass
-// it as the second argument to clout_settle_pool. Right now this falls back
-// to whatever clout_pools.current_metric was last recorded — correct once an
-// oracle poller keeps that fresh, but not yet wired up for CLOUT.
+// metric(s) from the platform's API (YouTube/Twitch/Twitter/Spotify) per
+// pool, the same way Hype's platformMetrics.ts does for prediction pools,
+// and pass them into clout_settle_pool. Right now this falls back to
+// whatever current_metric (single pools) or current_metric_a/b (War Pools)
+// was last recorded — correct once an oracle poller keeps those fresh, but
+// not yet wired up for CLOUT.
 export async function GET(req: Request) {
   const url = new URL(req.url)
   const secret = url.searchParams.get('secret')
@@ -35,10 +36,17 @@ export async function GET(req: Request) {
     try {
       const { data: settled, error } = await supabase.rpc('clout_settle_pool', {
         p_pool_id: poolId,
-        p_final_metric: null,
+        p_final_metric_a: null,
+        p_final_metric_b: null,
       })
       if (error) throw error
-      results.push({ poolId, status: settled?.status, finalMetric: settled?.final_metric, voidReason: settled?.void_reason })
+      results.push({
+        poolId,
+        status: settled?.status,
+        finalMetricA: settled?.final_metric_a,
+        finalMetricB: settled?.final_metric_b,
+        voidReason: settled?.void_reason,
+      })
     } catch (err: any) {
       results.push({ poolId, error: err.message })
     }

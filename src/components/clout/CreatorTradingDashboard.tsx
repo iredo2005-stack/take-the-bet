@@ -29,11 +29,11 @@ type Props = {
   onTrade?: (params: { side: PoolSide; leverage: number; wagerUsdc: number }) => void | Promise<void>
 }
 
-// The main Creator Trading Dashboard — dark obsidian Web3 terminal shell
-// composing the live media grid, the CLOUT Meter, the Trade Module, and the
-// gated Alpha Chat sidebar. Every sub-panel is presentational and receives
-// its slice of `pool` as narrow, typed props — this component's only job is
-// layout + mapping the API response onto them.
+// The main Creator Trading Dashboard — a light, frosted-glass Web3 terminal
+// shell composing the live media grid, the CLOUT Meter, the Trade Module,
+// and the gated Alpha Chat sidebar. Every sub-panel is presentational and
+// receives its slice of `pool` as narrow, typed props — this component's
+// only job is layout + mapping the API response onto them.
 export default function CreatorTradingDashboard({
   pool,
   balanceUsdc,
@@ -58,7 +58,7 @@ export default function CreatorTradingDashboard({
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#05070A] bg-[radial-gradient(ellipse_at_20%_0%,rgba(177,78,255,0.08)_0%,transparent_50%),radial-gradient(ellipse_at_80%_0%,rgba(0,240,255,0.06)_0%,transparent_50%)] px-4 py-6 text-white md:px-8">
+    <div className="min-h-screen w-full bg-[#F9FAFB] bg-[radial-gradient(ellipse_at_20%_0%,rgba(199,184,255,0.25)_0%,transparent_50%),radial-gradient(ellipse_at_80%_10%,rgba(16,185,129,0.10)_0%,transparent_50%)] px-4 py-6 text-gray-900 md:px-8">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 lg:grid-cols-[1fr_380px]">
         {/* Main column */}
         <div className="flex flex-col gap-6">
@@ -70,12 +70,12 @@ export default function CreatorTradingDashboard({
           />
 
           {/* Pool header strip */}
-          <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
             <span>
               {isWar ? `${pool.creatorA?.display_name} vs ${pool.creatorB?.display_name}` : pool.creatorA?.display_name} ·{' '}
               {pool.windowLabel}
             </span>
-            <span className="text-[#00F0FF]">{pool.metricType}</span>
+            <span className="text-violet-500">{pool.metricType}</span>
           </div>
 
           {/* 2. Gamified Momentum Gauge */}

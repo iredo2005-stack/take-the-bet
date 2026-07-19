@@ -57,41 +57,46 @@ export default function AlphaChatWidget({
   }
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0A0E14]/80 shadow-[0_0_40px_rgba(0,0,0,0.5)]">
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-2xl border border-black/5 bg-white/70 shadow-xl shadow-black/5 backdrop-blur-xl">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+      <div className="flex items-center justify-between border-b border-black/5 px-4 py-3">
         <div className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-[#B14EFF] shadow-[0_0_8px_2px_rgba(177,78,255,0.8)]" />
-          <span className="text-sm font-black uppercase tracking-wider text-[#B14EFF]">{chatName}</span>
+          <span className="h-2 w-2 rounded-full bg-violet-500 shadow-[0_0_6px_1px_rgba(139,92,246,0.6)]" />
+          <span className="text-sm font-black uppercase tracking-wider text-violet-600">{chatName}</span>
         </div>
-        <span className="font-mono text-[10px] uppercase tracking-widest text-gray-500">Alpha Only</span>
+        <span className="font-mono text-[10px] uppercase tracking-widest text-gray-400">Alpha Only</span>
       </div>
 
       {/* Message feed (relative container so the lock overlay can sit on top) */}
       <div className="relative flex-1 overflow-hidden">
         <div className={`h-full space-y-3 overflow-y-auto px-4 py-3 ${gated ? 'pointer-events-none blur-[2px]' : ''}`}>
-          {messages.length === 0 && <p className="text-xs text-gray-600">No messages yet — be the first alpha call.</p>}
+          {messages.length === 0 && <p className="text-xs text-gray-400">No messages yet — be the first alpha call.</p>}
           {messages.map((m) => (
             <div key={m.id} className="text-sm">
-              <span className="font-bold text-[#00F0FF]">{m.displayName}</span>
-              <span className="text-gray-600"> · </span>
-              <span className="text-gray-300">{m.messageText}</span>
+              <span className="font-bold text-violet-600">{m.displayName}</span>
+              <span className="text-gray-300"> · </span>
+              <span className="text-gray-600">{m.messageText}</span>
             </div>
           ))}
         </div>
 
         {gated && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/70 px-6 text-center backdrop-blur-sm">
-            <span className="text-3xl">🔒</span>
-            <p className="text-sm font-semibold text-white">
-              Access Gated: You need <span className="text-[#FFD23B]">{roiGapPercent.toFixed(1)}% more</span> 30-day ROI to enter the{' '}
-              {chatName}.
-            </p>
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white/40 px-6 text-center backdrop-blur-lg">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-b from-gray-100 to-gray-300 shadow-inner shadow-black/10 ring-1 ring-black/10">
+              <span className="text-2xl grayscale">🔒</span>
+            </div>
+
+            <div className="rounded-xl border border-black/5 bg-white/90 px-4 py-3 shadow-sm">
+              <p className="text-sm font-semibold text-gray-800">
+                Access Gated: You need <span className="text-amber-600">{roiGapPercent.toFixed(1)}% more</span> 30-day ROI to enter the{' '}
+                {chatName}.
+              </p>
+            </div>
 
             <div className="w-full max-w-xs">
-              <div className="h-2 w-full overflow-hidden rounded-full bg-black ring-1 ring-white/10">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-black/5 ring-1 ring-black/5">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-[#B14EFF] to-[#00F0FF] transition-all duration-700 ease-out"
+                  className="h-full rounded-full bg-gradient-to-r from-violet-500 to-blue-500 transition-all duration-700 ease-out"
                   style={{ width: `${roiProgressPercent}%` }}
                 />
               </div>
@@ -104,7 +109,7 @@ export default function AlphaChatWidget({
             <button
               type="button"
               onClick={onRequestUpgrade}
-              className="mt-1 rounded-lg border border-[#B14EFF] bg-[#B14EFF]/10 px-4 py-2 text-xs font-bold uppercase tracking-wide text-[#B14EFF] transition hover:bg-[#B14EFF]/20"
+              className="mt-1 rounded-lg border border-violet-300 bg-violet-50 px-4 py-2 text-xs font-bold uppercase tracking-wide text-violet-700 transition hover:bg-violet-100"
             >
               Wager More to Qualify
             </button>
@@ -113,7 +118,7 @@ export default function AlphaChatWidget({
       </div>
 
       {/* Composer */}
-      <div className="border-t border-white/10 p-3">
+      <div className="border-t border-black/5 p-3">
         <div className="flex items-center gap-2">
           <input
             type="text"
@@ -122,13 +127,13 @@ export default function AlphaChatWidget({
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && send()}
             placeholder={gated ? 'Locked — clear the ROI bar to chat' : 'Drop some alpha…'}
-            className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white outline-none placeholder:text-gray-600 disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full rounded-lg border border-black/10 bg-gray-50/80 px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-400 disabled:cursor-not-allowed disabled:opacity-50"
           />
           <button
             type="button"
             disabled={gated || !draft.trim()}
             onClick={send}
-            className="rounded-lg bg-[#B14EFF] px-3 py-2 text-xs font-bold uppercase text-black transition disabled:cursor-not-allowed disabled:opacity-30"
+            className="rounded-lg bg-violet-600 px-3 py-2 text-xs font-bold uppercase text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-30"
           >
             Send
           </button>
@@ -136,14 +141,14 @@ export default function AlphaChatWidget({
       </div>
 
       {/* Network win ticker */}
-      <div className="overflow-hidden border-t border-white/10 bg-black/60 py-2">
+      <div className="overflow-hidden border-t border-black/5 bg-gray-50/80 py-2">
         <div className="flex w-max animate-ticker gap-8 whitespace-nowrap">
           {[...tickerEntries, ...tickerEntries].map((entry, i) => (
             <span key={`${entry.id}-${i}`} className="flex items-center gap-1.5 text-xs font-semibold">
-              <span className="text-[#FFD23B]">⚡</span>
-              <span className="text-white">{entry.displayName}</span>
+              <span className="text-amber-500">⚡</span>
+              <span className="text-gray-900">{entry.displayName}</span>
               <span className="text-gray-400">just secured</span>
-              <span className="text-[#39FF88]">+{entry.amountUsdc.toFixed(0)} $CLOUT</span>
+              <span className="text-emerald-600">+{entry.amountUsdc.toFixed(0)} $CLOUT</span>
               <span className="text-gray-400">on {entry.poolLabel}!</span>
             </span>
           ))}

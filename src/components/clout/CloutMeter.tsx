@@ -58,36 +58,36 @@ function WarMeter({ creatorAName, creatorBName, shareAPercent, baselineSharePerc
   const shareB = 100 - shareA
 
   return (
-    <div className="w-full rounded-2xl border border-white/10 bg-[#0A0E14]/80 p-4 shadow-[0_0_40px_rgba(0,0,0,0.5)]">
+    <div className="w-full rounded-2xl border border-black/5 bg-white/70 p-4 shadow-xl shadow-black/5 backdrop-blur-xl">
       <div className="mb-2 flex items-center justify-between text-xs font-bold uppercase tracking-wider">
-        <span className="text-[#39FF88]">{creatorAName} · HYPE</span>
-        <span className="text-[#FF3B5C]">{creatorBName} · FADE</span>
+        <span className="text-emerald-600">{creatorAName} · HYPE</span>
+        <span className="text-rose-500">{creatorBName} · FADE</span>
       </div>
 
       <div
-        className={`relative h-7 w-full overflow-hidden rounded-full bg-black ring-1 ring-white/10 ${
-          pulsing ? 'text-[#39FF88] animate-clout-meter-pulse' : ''
+        className={`relative h-7 w-full overflow-hidden rounded-full bg-black/5 ring-1 ring-black/5 ${
+          pulsing ? 'text-emerald-500 animate-clout-meter-pulse' : ''
         }`}
       >
         <div
-          className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#0FBE63] to-[#39FF88] transition-all duration-700 ease-out"
+          className="absolute inset-y-0 left-0 bg-gradient-to-r from-emerald-400 to-emerald-500 transition-all duration-700 ease-out"
           style={{ width: `${shareA}%` }}
         />
         <div
-          className="absolute inset-y-0 right-0 bg-gradient-to-l from-[#C21F3E] to-[#FF3B5C] transition-all duration-700 ease-out"
+          className="absolute inset-y-0 right-0 bg-gradient-to-l from-rose-400 to-rose-500 transition-all duration-700 ease-out"
           style={{ width: `${shareB}%` }}
         />
         {/* Opening baseline tick */}
         <div
-          className="absolute top-0 h-full w-0.5 bg-white/60"
+          className="absolute top-0 h-full w-0.5 bg-black/25"
           style={{ left: `${clamp(baselineSharePercent, 0, 100)}%` }}
           title={`Opening ratio: ${baselineSharePercent.toFixed(1)}%`}
         />
       </div>
 
       <div className="mt-2 flex justify-between font-mono text-sm font-bold">
-        <span className="text-[#39FF88]">{shareA.toFixed(1)}%</span>
-        <span className="text-[#FF3B5C]">{shareB.toFixed(1)}%</span>
+        <span className="text-emerald-600">{shareA.toFixed(1)}%</span>
+        <span className="text-rose-500">{shareB.toFixed(1)}%</span>
       </div>
     </div>
   )
@@ -105,40 +105,40 @@ function SingleMeter({ metricLabel = 'Metric', currentMetric, baselineMetric, tr
   const dangerHighPos = clamp(dangerHighPct / 2, 0, 100)
 
   return (
-    <div className="w-full rounded-2xl border border-white/10 bg-[#0A0E14]/80 p-4 shadow-[0_0_40px_rgba(0,0,0,0.5)]">
+    <div className="w-full rounded-2xl border border-black/5 bg-white/70 p-4 shadow-xl shadow-black/5 backdrop-blur-xl">
       <div className="mb-2 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-gray-400">
         <span>{metricLabel} vs 4-Week Baseline</span>
-        <span className={isUp ? 'text-[#39FF88]' : 'text-[#FF3B5C]'}>{isUp ? '▲ HYPE' : '▼ FADE'}</span>
+        <span className={isUp ? 'text-emerald-600' : 'text-rose-500'}>{isUp ? '▲ HYPE' : '▼ FADE'}</span>
       </div>
 
       <div
-        className={`relative h-7 w-full overflow-hidden rounded-full bg-black ring-1 ring-white/10 ${
-          pulsing ? `animate-clout-meter-pulse ${isUp ? 'text-[#39FF88]' : 'text-[#FF3B5C]'}` : ''
+        className={`relative h-7 w-full overflow-hidden rounded-full bg-black/5 ring-1 ring-black/5 ${
+          pulsing ? `animate-clout-meter-pulse ${isUp ? 'text-emerald-500' : 'text-rose-500'}` : ''
         }`}
       >
         {/* Liquidation danger zones */}
-        <div className="absolute inset-y-0 left-0 bg-[#FF3B5C]/10" style={{ width: `${dangerLowPos}%` }} />
-        <div className="absolute inset-y-0 right-0 bg-[#39FF88]/10" style={{ width: `${100 - dangerHighPos}%` }} />
+        <div className="absolute inset-y-0 left-0 bg-rose-500/10" style={{ width: `${dangerLowPos}%` }} />
+        <div className="absolute inset-y-0 right-0 bg-emerald-500/10" style={{ width: `${100 - dangerHighPos}%` }} />
 
         {/* Fill up to the current position */}
         <div
           className={`absolute inset-y-0 left-0 transition-all duration-700 ease-out ${
-            isUp ? 'bg-gradient-to-r from-[#0FBE63] to-[#39FF88]' : 'bg-gradient-to-r from-[#39FF88] via-[#FFD23B] to-[#FF3B5C]'
+            isUp ? 'bg-gradient-to-r from-emerald-400 to-emerald-500' : 'bg-gradient-to-r from-emerald-400 via-amber-400 to-rose-500'
           }`}
           style={{ width: `${position}%` }}
         />
 
         {/* Baseline center tick (100%) */}
-        <div className="absolute top-0 h-full w-0.5 bg-white/60" style={{ left: '50%' }} title="Baseline" />
+        <div className="absolute top-0 h-full w-0.5 bg-black/25" style={{ left: '50%' }} title="Baseline" />
         {/* Liquidation trigger ticks */}
-        <div className="absolute top-0 h-full w-px bg-[#FF3B5C]/70" style={{ left: `${dangerLowPos}%` }} title="UP liquidation line" />
-        <div className="absolute top-0 h-full w-px bg-[#39FF88]/70" style={{ left: `${dangerHighPos}%` }} title="DOWN liquidation line" />
+        <div className="absolute top-0 h-full w-px bg-rose-500/60" style={{ left: `${dangerLowPos}%` }} title="UP liquidation line" />
+        <div className="absolute top-0 h-full w-px bg-emerald-500/60" style={{ left: `${dangerHighPos}%` }} title="DOWN liquidation line" />
       </div>
 
       <div className="mt-2 flex justify-between font-mono text-sm font-bold">
-        <span className="text-gray-500">0%</span>
-        <span className={isUp ? 'text-[#39FF88]' : 'text-[#FF3B5C]'}>{pctOfBaseline.toFixed(1)}% of baseline</span>
-        <span className="text-gray-500">200%</span>
+        <span className="text-gray-400">0%</span>
+        <span className={isUp ? 'text-emerald-600' : 'text-rose-500'}>{pctOfBaseline.toFixed(1)}% of baseline</span>
+        <span className="text-gray-400">200%</span>
       </div>
     </div>
   )

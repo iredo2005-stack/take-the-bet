@@ -102,7 +102,17 @@ export default function CreatorTradingDashboard({
 
           {/* 3. Quick-Action Trade Module */}
           <div id="clout-trade-module">
-            <TradeModule pool={tradeModulePool} balanceUsdc={balanceUsdc} onSubmit={onTrade} />
+            <TradeModule
+              pool={tradeModulePool}
+              poolType={pool.poolType}
+              poolLabel={pool.windowLabel}
+              creatorAName={pool.creatorA?.display_name ?? 'Creator A'}
+              creatorAPhotoUrl={pool.creatorA?.photo_url}
+              creatorBName={pool.creatorB?.display_name}
+              creatorBPhotoUrl={pool.creatorB?.photo_url}
+              balanceUsdc={balanceUsdc}
+              onSubmit={onTrade}
+            />
           </div>
         </div>
 

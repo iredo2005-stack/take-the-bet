@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Lock, Send } from 'lucide-react'
 
 export type AlphaChatMessage = {
   id: string
@@ -26,6 +27,37 @@ type Props = {
   requiredRoiPercent?: number
   onRequestUpgrade?: () => void
   onSendMessage?: (text: string) => void | Promise<void>
+}
+
+const AVATAR_GRADIENTS = [
+  'from-indigo-400 to-violet-500',
+  'from-pink-400 to-rose-500',
+  'from-emerald-400 to-teal-500',
+  'from-amber-400 to-orange-500',
+  'from-sky-400 to-blue-500',
+]
+
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/)
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+}
+
+// Deterministic pick so the same trader always gets the same avatar color.
+function avatarGradient(name: string): string {
+  let hash = 0
+  for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) >>> 0
+  return AVATAR_GRADIENTS[hash % AVATAR_GRADIENTS.length]
+}
+
+function timeAgo(iso: string): string {
+  const diffMs = Date.now() - new Date(iso).getTime()
+  const mins = Math.floor(diffMs / 60000)
+  if (mins < 1) return 'now'
+  if (mins < 60) return `${mins}m`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours}h`
+  return `${Math.floor(hours / 24)}d`
 }
 
 // The gated Alpha Chat ("Whale Chat") trollbox — mirrors
@@ -69,13 +101,22 @@ export default function AlphaChatWidget({
 
       {/* Message feed (relative container so the lock overlay can sit on top) */}
       <div className="relative flex-1 overflow-hidden">
-        <div className={`h-full space-y-3 overflow-y-auto px-4 py-3 ${gated ? 'pointer-events-none blur-[2px]' : ''}`}>
-          {messages.length === 0 && <p className="text-xs text-gray-400">No messages yet — be the first alpha call.</p>}
+        <div className={`h-full space-y-1 overflow-y-auto px-2 py-3 ${gated ? 'pointer-events-none blur-[2px]' : ''}`}>
+          {messages.length === 0 && <p className="px-2 text-xs text-gray-400">No messages yet — be the first alpha call.</p>}
           {messages.map((m) => (
-            <div key={m.id} className="text-sm">
-              <span className="font-bold text-violet-600">{m.displayName}</span>
-              <span className="text-gray-300"> · </span>
-              <span className="text-gray-600">{m.messageText}</span>
+            <div key={m.id} className="flex gap-2 px-2 py-1.5">
+              <div
+                className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-[10px] font-bold text-white ${avatarGradient(m.displayName)}`}
+              >
+                {initials(m.displayName)}
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-xs font-bold text-gray-900">{m.displayName}</span>
+                  <span className="text-[10px] text-gray-400">{timeAgo(m.createdAt)}</span>
+                </div>
+                <div className="mt-0.5 inline-block rounded-2xl bg-gray-100 px-3 py-1.5 text-xs text-gray-700">{m.messageText}</div>
+              </div>
             </div>
           ))}
         </div>
@@ -83,7 +124,7 @@ export default function AlphaChatWidget({
         {gated && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white/40 px-6 text-center backdrop-blur-lg">
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-b from-gray-100 to-gray-300 shadow-inner shadow-black/10 ring-1 ring-black/10">
-              <span className="text-2xl grayscale">🔒</span>
+              <Lock className="h-6 w-6 text-gray-500" strokeWidth={2.25} />
             </div>
 
             <div className="rounded-xl border border-black/5 bg-white/90 px-4 py-3 shadow-sm">
@@ -118,26 +159,25 @@ export default function AlphaChatWidget({
       </div>
 
       {/* Composer */}
-      <div className="border-t border-black/5 p-3">
-        <div className="flex items-center gap-2">
-          <input
-            type="text"
-            value={draft}
-            disabled={gated}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && send()}
-            placeholder={gated ? 'Locked — clear the ROI bar to chat' : 'Drop some alpha…'}
-            className="w-full rounded-lg border border-black/10 bg-gray-50/80 px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-400 disabled:cursor-not-allowed disabled:opacity-50"
-          />
-          <button
-            type="button"
-            disabled={gated || !draft.trim()}
-            onClick={send}
-            className="rounded-lg bg-violet-600 px-3 py-2 text-xs font-bold uppercase text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-30"
-          >
-            Send
-          </button>
-        </div>
+      <div className="flex items-center gap-2 border-t border-black/5 p-3">
+        <input
+          type="text"
+          value={draft}
+          disabled={gated}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && send()}
+          placeholder={gated ? 'Locked — clear the ROI bar to chat' : 'Drop some alpha…'}
+          className="w-full rounded-full border-none bg-gray-100 px-4 py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 disabled:cursor-not-allowed disabled:opacity-50"
+        />
+        <button
+          type="button"
+          disabled={gated || !draft.trim()}
+          onClick={send}
+          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-violet-600 text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-30"
+          aria-label="Send"
+        >
+          <Send className="h-4 w-4" strokeWidth={2.25} />
+        </button>
       </div>
 
       {/* Network win ticker */}

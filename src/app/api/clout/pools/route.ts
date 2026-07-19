@@ -57,6 +57,7 @@ export async function POST(req: Request) {
       embedChannelIdA,
       embedPlatformB,
       embedChannelIdB,
+      baselineShareA,
     } = body
 
     if (poolType !== 'single' && poolType !== 'war') {
@@ -77,6 +78,14 @@ export async function POST(req: Request) {
     }
     if (embedPlatformB && !EMBED_PLATFORMS.includes(embedPlatformB)) {
       return NextResponse.json({ error: 'embedPlatformB must be "youtube" or "twitch"' }, { status: 400 })
+    }
+    if (
+      poolType === 'war' &&
+      baselineShareA !== undefined &&
+      baselineShareA !== null &&
+      !(baselineShareA > 0 && baselineShareA < 1)
+    ) {
+      return NextResponse.json({ error: 'baselineShareA must be strictly between 0 and 1' }, { status: 400 })
     }
 
     const platformShareBps = body.platformShareBps ?? DEFAULT_PLATFORM_SHARE_BPS
@@ -102,6 +111,11 @@ export async function POST(req: Request) {
         current_metric: baselineMetric,
         current_metric_a: poolType === 'war' ? baselineMetric : null,
         current_metric_b: poolType === 'war' ? baselineMetric : null,
+        // War Pool market-share baseline (0..1). Left null (defaults to 0.5 /
+        // 50-50 inside clout_check_liquidations) unless the admin explicitly
+        // overrides it — e.g. to seed a War Pool that opens already favoring
+        // one creator's metric.
+        baseline_share_a: poolType === 'war' ? baselineShareA ?? null : null,
         embed_platform_a: embedPlatformA ?? null,
         embed_channel_id_a: embedChannelIdA ?? null,
         embed_platform_b: poolType === 'war' ? (embedPlatformB ?? null) : null,

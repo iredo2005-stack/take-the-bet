@@ -27,6 +27,14 @@
     {
       "path": "/api/cron/poll-instagram?secret=test",
       "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/clout/cron/liquidate?secret=test",
+      "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/clout/cron/settle-pools?secret=test",
+      "schedule": "*/5 * * * *"
     }
   ]
 }

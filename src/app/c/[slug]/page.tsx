@@ -8,6 +8,7 @@ import { basePricePerShare, type CreatorMetrics } from '@/lib/pricing'
 import type { CreatorRow, OfferingRow, PriceHistoryRow } from '@/types/database'
 import PriceChart from './PriceChart'
 import BuyPanel from './BuyPanel'
+import LiveTradingSection from './LiveTradingSection'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -25,7 +26,14 @@ async function getCreatorData(slug: string) {
     const { data } = await supabase.from('price_history').select('*').eq('offering_id', offering.id).order('recorded_at', { ascending: true })
     priceHistory = data || []
   }
-  return { creator, offering, priceHistory }
+  const { data: liveTicksDesc } = await supabase
+    .from('live_ticks')
+    .select('index_price, ts')
+    .eq('creator_id', creator.id)
+    .order('ts', { ascending: false })
+    .limit(200)
+  const liveTicks = (liveTicksDesc || []).slice().reverse()
+  return { creator, offering, priceHistory, liveTicks }
 }
 
 export default async function CreatorPage({ params, searchParams }: Props) {
@@ -35,7 +43,7 @@ export default async function CreatorPage({ params, searchParams }: Props) {
 
   const data = await getCreatorData(slug)
   if (!data) notFound()
-  const { creator, offering, priceHistory } = data
+  const { creator, offering, priceHistory, liveTicks } = data
 
   let isOwner = false
   try {
@@ -103,6 +111,17 @@ export default async function CreatorPage({ params, searchParams }: Props) {
             </div>
           )}
         </div>
+
+        {/* Live stream + leveraged index trading */}
+        <LiveTradingSection
+          creatorId={creator.id}
+          platform={(creator as any).platform ?? null}
+          platformId={(creator as any).platform_id ?? null}
+          lastVideoId={(creator as any).last_seen_content_id ?? null}
+          isLive={(creator as any).is_live ?? false}
+          initialIndexPrice={Number((creator as any).index_price ?? 1)}
+          initialTicks={liveTicks}
+        />
 
         {offering ? (
           <>

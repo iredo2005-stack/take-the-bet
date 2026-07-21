@@ -13,6 +13,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <div className="flex items-center gap-3">
           <Link href="/about" className="text-[#707A8A] hover:text-[#1E2329] text-xs transition-colors hidden sm:block">How it works</Link>
           <Link href="/leaderboard" className="text-[#707A8A] hover:text-[#1E2329] text-xs transition-colors hidden sm:block">🏆 Leaderboard</Link>
+          <Link href="/chat" className="text-[#707A8A] hover:text-[#1E2329] text-xs transition-colors hidden sm:block">💬 Rooms</Link>
           {user.role === 'admin' && (
             <Link href="/admin" className="text-[10px] bg-accent/10 text-accent border border-accent/20 px-2 py-0.5 rounded-full font-medium hover:bg-accent/20 transition-colors">Admin</Link>
           )}

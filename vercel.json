@@ -7,6 +7,34 @@
     {
       "path": "/api/cron/settle-bets?secret=test",
       "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/funding-rate?secret=test",
+      "schedule": "0 */4 * * *"
+    },
+    {
+      "path": "/api/cron/liquidate?secret=test",
+      "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/cron/resolve-pools?secret=test",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/poll-x?secret=test",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/poll-instagram?secret=test",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/clout/cron/liquidate?secret=test",
+      "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/clout/cron/settle-pools?secret=test",
+      "schedule": "*/5 * * * *"
     }
   ]
 }

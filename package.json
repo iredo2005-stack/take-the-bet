@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "live-ingest": "node scripts/liveIngest.mjs"
   },
   "dependencies": {
     "@clerk/nextjs": "^5.7.2",
